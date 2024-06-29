@@ -1,0 +1,4 @@
+[submodule "grammar/xnf"]
+	path = grammar/xnf
+	url = git@gitlab.com:yaokai-liu/xnf.git
+	branch = liu-regex

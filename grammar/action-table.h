@@ -10,25 +10,23 @@
 #ifndef REGEX_ACTION_TABLE_H
 #define REGEX_ACTION_TABLE_H
 
-#include <stdint.h>
 #include "target.h"
+#include <stdint.h>
 
 typedef struct state state;
 typedef struct action {
-  enum : uint16_t {
+  enum : uint8_t {
     reject = 0,
     stack = 1,
     reduce = 2
-  } action;
-  uint16_t type;
-  int32_t count;
-  union {
-    const state * state;
-    fn_product * product;
-  } target;
+  } action: 4;
+  int8_t count: 4;
+  uint8_t type;
+  const uint16_t offset;
 } action;
 
-action * getAction(const state * state, uint32_t ahead);
-state * jump(const state * state, uint32_t current);
+const action *getAction(const state *state, uint32_t ahead);
+const state *jump(const state *state, uint32_t current);
+const state *getState(uint16_t offset);
 
 #endif  // REGEX_ACTION_TABLE_H

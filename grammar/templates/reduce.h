@@ -1,9 +1,7 @@
 /**
  * Project Name: regex
  * Module Name: grammar/templates
- * Filename: reduces.h
- * Creator: Yaokai Liu
- * Create Date: 24-6-29
+ * Filename: reduces.gen.h
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
@@ -12,6 +10,10 @@
 
 #include "target.h"
 
-${reduces};
+enum __PRODUCT_RULE_ENUM__ {
+  ${enum_reduces}
+};
+
+${reduces}
 
 #endif  // REGEX_REDUCES_H

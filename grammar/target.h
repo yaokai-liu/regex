@@ -73,9 +73,8 @@ struct Charset {
 
 #include "allocator.h"
 
-typedef void *fn_product(void * argv[], const Allocator *allocator);
+typedef void *fn_product(void *argv[], const Allocator *allocator);
 
 extern fn_product * const PRODUCTS[];
-extern fn_product * const EXTEND_PRODUCT;
 
 #endif  // REGEX_TARGET_H

@@ -1,9 +1,7 @@
 /**
  * Project Name: regex
  * Module Name: grammar/templates
- * Filename: tokens.h
- * Creator: Yaokai Liu
- * Create Date: 24-6-29
+ * Filename: tokens.gen.h
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 

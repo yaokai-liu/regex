@@ -7,13 +7,12 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#include <malloc.h>
-#include <stdint.h>
 #include "token.h"
 #include "terminal.h"
 #include "tokens.gen.h"
+#include <malloc.h>
+#include <stdint.h>
 #define len(a) ((sizeof a) / sizeof(a[0]))
-
 
 int32_t stridx_i(const char *string, char ch, int32_t len);
 

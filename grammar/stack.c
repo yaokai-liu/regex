@@ -13,24 +13,24 @@
 struct Stack {
   uint32_t alloc_len;
   uint32_t used_len;
-  uint64_t * stack;
+  uint64_t *stack;
 };
 
-#define  ALLOC_LEN  32
-#define min(a, b)   ((a) < (b) ? (a) : (b))
+#define ALLOC_LEN 32
+#define min(a, b) ((a) < (b) ? (a) : (b))
 
-Stack * Stack_new() {
-  Stack * stack = malloc(sizeof(Stack));
-  stack->stack = malloc( ALLOC_LEN* sizeof(uint64_t));
+Stack *Stack_new() {
+  Stack *stack = malloc(sizeof(Stack));
+  stack->stack = malloc(ALLOC_LEN * sizeof(uint64_t));
   stack->alloc_len = ALLOC_LEN;
   stack->used_len = 0;
   return stack;
 }
-void Stack_release(Stack * stack) {
+void Stack_release(Stack *stack) {
   free(stack->stack);
   free(stack);
 }
-int32_t Stack_push(Stack * stack, uint64_t * elements, int32_t n_ele) {
+int32_t Stack_push(Stack *stack, uint64_t *elements, int32_t n_ele) {
   uint32_t len = stack->alloc_len - 1 - stack->used_len;
   if (len < n_ele) {
     stack->alloc_len += ((n_ele - len - 1) / ALLOC_LEN + 1) * ALLOC_LEN;
@@ -42,7 +42,7 @@ int32_t Stack_push(Stack * stack, uint64_t * elements, int32_t n_ele) {
   stack->used_len += n_ele;
   return n_ele;
 }
-int32_t Stack_pop(Stack * stack, uint64_t *dest, int32_t n_ele) {
+int32_t Stack_pop(Stack *stack, uint64_t *dest, int32_t n_ele) {
   n_ele = min(stack->used_len, n_ele);
   stack->used_len -= n_ele;
   if (!dest) { return n_ele; }

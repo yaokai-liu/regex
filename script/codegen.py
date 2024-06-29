@@ -20,7 +20,14 @@ terminals = __tokens['terminal']
 targets = __tokens['non-terminal']
 targets.remove("~")
 tokens = ['TERMINATOR'] + sorted(terminals + targets)
-table = get_json_from("machine.json")
+terminals = ['TERMINATOR'] + sorted(terminals)
+if os.path.isfile(GRAMMAR_DIR / "json" / "machine-compact.json"):
+    table = get_json_from("machine-compact.json")
+else:
+    table = get_json_from("machine.json")
+for val in table.values():
+    if '$' in val.keys():
+        val['TERMINATOR'] = val.pop('$')
 rules = get_json_from("rules.json")
 
 
@@ -28,6 +35,8 @@ class Rule:
     def __init__(self, name):
         target, items = rules[name].split('->')
         self.target = target.strip()
+        if self.target == '~':
+            self.target = 'Regexp'
         self.items = items.strip().split(' ')
 
 
@@ -61,7 +70,7 @@ def gen_terminals():
     global terminals
     template = Tp(get_temp_from("terminal.c"))
     body = ',\n  '.join([f'[{t}] = {repr(TERMINALS[t])}' for t in terminals])
-    terminals_entry = template.substitute(n_terminal=len(terminals), terminals=body)
+    terminals_entry = template.substitute(terminals=body)
     with open(GRAMMAR_DIR / "terminal.gen.c", 'w') as fp:
         fp.write(terminals_entry)
 
@@ -78,28 +87,44 @@ class Action:
             self.action = "reduce"
             self.type = rule.target
             self.count = len(rule.items)
-            self.target = f"{{.product = p_{p}}}"
+            self.offset = f"{p}"
         else:
             self.action = "stack"
             self.type = 0
             self.count = 0
-            self.target = f"{{.state = &STATES[{reflect[p]}]}}"
+            self.offset = f"{reflect[p]}"
+
+    def __eq__(self, other):
+        return self.action == other.action \
+            and self.type == other.type \
+            and self.count == other.count \
+            and self.offset == other.offset
 
     def toString(self):
         return ("{"
                 f".action = {self.action},"
                 f".type = {self.type},"
                 f".count = {self.count},"
-                f".target = {self.target},"
+                f".offset = {self.offset},"
                 "}")
 
 
 def gen_reduces():
     global rules
+    enum_reduces = [f"{r}" for r in rules.keys()]
     reduces = [f"fn_product p_{r};" for r in rules.keys()]
-    template = Tp(get_temp_from("reduces.h"))
-    content = template.substitute(reduces='\n'.join(reduces))
-    with open(GRAMMAR_DIR / "reduces.gen.h", 'w') as fp:
+    assign_reduces = [f"[{r}] = p_{r}" for r in rules.keys()]
+    template = Tp(get_temp_from("reduce.h"))
+    content = template.substitute(
+        enum_reduces=',\n  '.join(enum_reduces),
+        reduces='\n'.join(reduces)
+    )
+    with open(GRAMMAR_DIR / "reduce.gen.h", 'w') as fp:
+        fp.write(content)
+    content = Tp(get_temp_from("target.c")).substitute(
+        assign_reduces=',\n  '.join(assign_reduces)
+    )
+    with open(GRAMMAR_DIR / "target.gen.c", 'w') as fp:
         fp.write(content)
 
 
@@ -107,7 +132,7 @@ def gen_action_table():
     global table, terminals, targets
     states, actions, jumps, units = [], [], [], []
     for p, q in table.items():
-        _tokens = set(q.keys()) - {'$'}
+        _tokens = q.keys()
         _terminals = sorted(_tokens & set(terminals))
         _targets = sorted(_tokens & set(targets))
         state = {
@@ -117,11 +142,16 @@ def gen_action_table():
             "n_tokens": len(_tokens),
         }
         items, ndx = dict(), []
+        offset, addend = 0, []
         for i, t in enumerate(_terminals):
-            actions.append(Action(q[t]).toString())
-            items[t] = i
+            act = Action(q[t])
+            if act not in addend:
+                addend.append(act)
+                offset += 1
+            items[t] = offset
+        actions += [a.toString() for a in addend]
         for i, t in enumerate(_targets):
-            jumps.append(f"&STATES[{reflect[q[t]]}]")
+            jumps.append(f"{reflect[q[t]]}")
             items[t] = i
         for i, t in enumerate(sorted(_tokens)):
             ndx.append(str(i))

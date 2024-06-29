@@ -13,14 +13,11 @@
 #include "stddef.h"
 
 typedef struct {
-    void *(*malloc)(size_t size);
-    void *(*realloc)(void *ptr, size_t size);
-    void *(*calloc)(size_t count, size_t size);
+  void *(*malloc)(size_t size);
+  void *(*realloc)(void *ptr, size_t size);
+  void *(*calloc)(size_t count, size_t size);
 } Allocator;
 
-#include <malloc.h>
-const Allocator STDAllocator = {
-  .malloc = malloc, .realloc = realloc, .calloc = calloc
-};
+extern const Allocator STDAllocator;
 
 #endif  // REGEX_ALLOCATOR_H

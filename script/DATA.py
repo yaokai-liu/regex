@@ -1,4 +1,5 @@
 TERMINALS = {
+    "TERMINATOR":       0,
     "BEGIN_CHARSET":    '[',
     "BEGIN_GROUP":      '(',
     "BEGIN_QUANTIFIER": '{',

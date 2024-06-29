@@ -6,6 +6,7 @@ cmake-*
 build
 .vscode
 *.list
+json
 *.json
 __pycache__
 *.gen.h

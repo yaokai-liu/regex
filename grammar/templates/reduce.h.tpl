@@ -14,8 +14,6 @@ enum __PRODUCT_RULE_ENUM__ {
   ${enum_reduces}
 };
 
-$ {
-  reduces
-}
+${reduces}
 
 #endif  // REGEX_REDUCES_H

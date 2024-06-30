@@ -7,4 +7,6 @@
 
 #include "tokens.gen.h"
 
-const char *REGEX_TOKEN_NAMES[] = {${names}};
+const char *REGEX_TOKEN_NAMES[] = {
+  ${names}
+};

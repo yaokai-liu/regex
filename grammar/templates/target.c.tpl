@@ -8,4 +8,6 @@
 #include "target.h"
 #include "reduce.gen.h"
 
-fn_product * const PRODUCTS[] = {${assign_reduces}};
+fn_product * const PRODUCTS[] = {
+  ${assign_reduces}
+};

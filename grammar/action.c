@@ -7,11 +7,11 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#include "stack.h"
 #include "action.h"
-#include "target.h"
 #include "action-table.h"
 #include "reduce.gen.h"
+#include "stack.h"
+#include "target.h"
 #include "tokens.gen.h"
 
 #define ALLOC_LEN 32

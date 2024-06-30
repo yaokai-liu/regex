@@ -5,9 +5,9 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#include "tokens.gen.h"
-#include "reduce.gen.h"
 #include "action-table.h"
+#include "reduce.gen.h"
+#include "tokens.gen.h"
 
 struct state {
   const uint16_t ndx_base;
@@ -26,21 +26,13 @@ const struct unit UNITS[];
 
 const struct unit *getUnit(const state *state, uint32_t look);
 
-const struct action ACTIONS[] = {
-  ${actions}
-};
+const struct action ACTIONS[] = {${actions}};
 
-const uint16_t JUMPS[] = {
-  ${jumps}
-};
+const uint16_t JUMPS[] = {${jumps}};
 
-const struct unit UNITS[] = {
-  ${units}
-};
+const struct unit UNITS[] = {${units}};
 
-const struct state STATES[] = {
-  ${states}
-};
+const struct state STATES[] = {${states}};
 
 inline const struct unit *getUnit(const state *state, uint32_t look) {
   const struct unit *unit = nullptr;
@@ -62,13 +54,13 @@ inline const struct unit *getUnit(const state *state, uint32_t look) {
 
 inline const action *getAction(const state *state, uint32_t ahead) {
   const struct unit *unit = getUnit(state, ahead);
-  if (!unit) return nullptr;
+  if (!unit) { return nullptr; }
   const action *act = &ACTIONS[state->ndx_base + unit->offset];
   return act;
 }
 inline const state *jump(const state *state, uint32_t current) {
   const struct unit *unit = getUnit(state, current);
-  if (!unit) return nullptr;
+  if (!unit) { return nullptr; }
   return &STATES[JUMPS[unit->offset]];
 }
 

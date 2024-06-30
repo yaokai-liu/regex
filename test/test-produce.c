@@ -16,7 +16,7 @@ int main() {
   const char *string = "([<a-z>stc])";
   uint32_t cost = 0, n_tokens = 0;
   Terminal *tokens = tokenize(string, &cost, &n_tokens);
-  struct Regexp * regexp = produce(tokens);
+  struct Regexp *regexp = produce(tokens);
   if (!regexp) { return -1; }
   return 0;
 }

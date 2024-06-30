@@ -19,8 +19,8 @@ typedef struct action {
     reject = 0,
     stack = 1,
     reduce = 2
-  } action: 4;
-  int8_t count: 4;
+  } action     : 4;
+  int8_t count : 4;
   uint8_t type;
   const uint16_t offset;
 } action;

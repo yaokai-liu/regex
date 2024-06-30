@@ -5,9 +5,7 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#include "reduce.gen.h"
 #include "target.h"
+#include "reduce.gen.h"
 
-fn_product * const PRODUCTS[] = {
-  ${assign_reduces}
-};
+fn_product * const PRODUCTS[] = {${assign_reduces}};

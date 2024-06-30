@@ -20,6 +20,7 @@ struct Sequence {
 struct Object {
   uint8_t type;
   uint8_t inv;
+  uint32_t post_state;
   void *target;
 };
 struct Quantifier {
@@ -30,24 +31,16 @@ struct Quantified {
   struct Quantifier quant;
   struct Object object;
 };
-struct BranchArray {
-  uint32_t length;
-  uint32_t alloc;
-  struct Branch *array;
-};
-struct ObjectArray {
-  uint32_t length;
-  uint32_t alloc;
-  struct Object *array;
-};
 struct Regexp {
-  struct BranchArray branches;
+  uint32_t length;
+  uint32_t alloc;
+  struct Branch *branches;
 };
 struct NumQuantifier {
   uint8_t min;
   uint8_t max;
 };
-struct CharsetUnit {
+struct Unit {
   uint8_t type;
   uint8_t inv;
   void *target;
@@ -57,18 +50,21 @@ struct Range {
   uint8_t max;
 };
 struct Branch {
-  struct ObjectArray objects;
+  uint32_t length;
+  uint32_t alloc;
+  uint32_t post_state;
+  struct Object *objects;
 };
 struct Group {
   struct Regexp regexp;
 };
-struct CharsetUnitArray {
+struct UnitArray {
   uint32_t length;
   uint32_t alloc;
-  struct CharsetUnit *array;
+  struct Unit *array;
 };
 struct Charset {
-  struct CharsetUnitArray units;
+  struct UnitArray units;
 };
 
 #include "allocator.h"

@@ -33,15 +33,12 @@ rules = get_json_from("rules.json")
 
 class Rule:
     def __init__(self, name):
+        self.name = name
         target, items = rules[name].split('->')
         self.target = target.strip()
         if self.target == '~':
             self.target = 'Regexp'
         self.items = items.strip().split(' ')
-
-
-def read_rule(name: str):
-    return Rule(name)
 
 
 def get_temp_from(filename: str):
@@ -111,9 +108,14 @@ class Action:
 
 def gen_reduces():
     global rules
-    enum_reduces = [f"{r}" for r in rules.keys()]
-    reduces = [f"fn_product p_{r};" for r in rules.keys()]
-    assign_reduces = [f"[{r}] = p_{r}" for r in rules.keys()]
+    rule_names = rules.keys()
+    args = "(void * argv[], const Allocator * allocator);"
+    enum_reduces = sorted(f"{r}" for r in rule_names)
+    reduces = sorted(f"struct {r.split('_')[0]} * p_{r}" + args
+                     if r != '__EXTEND_RULE__'
+                     else f"struct Regexp * p_{r}" + args
+                     for r in rule_names)
+    assign_reduces = sorted([f"[{r}] = (fn_product *) p_{r}" for r in rule_names])
     template = Tp(get_temp_from("reduce.h"))
     content = template.substitute(
         enum_reduces=',\n  '.join(enum_reduces),

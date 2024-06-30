@@ -26,6 +26,10 @@ const struct unit UNITS[];
 
 const struct unit *getUnit(const state *state, uint32_t look);
 
+enum __STATE_ENUM__ {
+    ${state_enum}
+};
+
 const struct action ACTIONS[] = {
   ${actions}
 };
@@ -42,22 +46,23 @@ const struct state STATES[] = {
   ${states}
 };
 
+
 inline const struct unit *getUnit(const state *state, uint32_t look) {
-  const struct unit *unit = nullptr;
-  uint32_t pad = state->n_tokens / 2;
-  uint32_t u_idx = pad + state->token_base;
-  unit = &UNITS[u_idx];
-  while (unit->type != look || pad == 0) {
-    pad /= 2;
-    if (unit->type < look) {
-      u_idx += pad;
-    } else {
-      u_idx -= pad;
+    const struct unit *unit, *base = &UNITS[state->token_base];
+    uint32_t left = 0, right = state->n_tokens - 1;
+    uint32_t u_idx = (left + right) / 2;
+    unit = &base[u_idx];
+    while (unit->type != look && left < right) {
+        if (unit->type < look) {
+            left = u_idx + 1;
+        } else {
+            right = u_idx - 1;
+        }
+        u_idx = (left + right) / 2;
+        unit = &base[u_idx];
     }
-    unit = &UNITS[u_idx];
-  }
-  if (unit->type != look) { return nullptr; }
-  return unit;
+    if (unit->type != look) { return nullptr; }
+    return unit;
 }
 
 
@@ -69,11 +74,11 @@ inline const action *getAction(uint32_t index, uint32_t ahead) {
     return act;
 }
 
-inline const state *jump(uint32_t index, uint32_t current) {
+inline int32_t jump(uint32_t index, uint32_t current) {
     const state *state = &STATES[index];
     const struct unit *unit = getUnit(state, current);
-    if (!unit) { return nullptr; }
-    return &STATES[JUMPS[unit->offset]];
+    if (!unit) { return -1; }
+    return JUMPS[state->goto_base + unit->offset];
 }
 
 inline const state *getState(uint16_t index) {

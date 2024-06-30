@@ -41,9 +41,9 @@ Terminal *tokenize(const char *input, uint32_t *cost, uint32_t *n_tokens) {
       if (!p) { goto __failed_tokenize; }
       tokens = p;
     }
-    int32_t idx = stridx_i(TERMINALS, *sp, N_TERMINAL);
-    if (idx > 0) {
-      tokens[used_len].type = idx;
+    int32_t idx = stridx_i(TERMINAL_STRING, *sp, N_TERMINAL);
+    if (idx >= 0) {
+      tokens[used_len].type = TERMINALS[idx];
       tokens[used_len].value = 0;
       if (idx == BEGIN_QUANTIFIER) { is_quant = true; }
       if (idx == END_QUANTIFIER) { is_quant = false; }

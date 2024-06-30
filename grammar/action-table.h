@@ -20,13 +20,13 @@ typedef struct action {
     stack = 1,
     reduce = 2
   } action     : 4;
-  int8_t count : 4;
+  uint8_t count: 4;
   uint8_t type;
   const uint16_t offset;
 } action;
 
-const action *getAction(const state *state, uint32_t ahead);
-const state *jump(const state *state, uint32_t current);
-const state *getState(uint16_t offset);
+const action *getAction(uint32_t index, uint32_t ahead);
+int32_t jump(uint32_t index, uint32_t current);
+const state *getState(uint16_t index);
 
 #endif  // REGEX_ACTION_TABLE_H

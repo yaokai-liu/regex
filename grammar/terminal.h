@@ -18,6 +18,7 @@ typedef struct {
 } Terminal;
 Terminal *tokenize(const char *input, uint32_t *cost, uint32_t *n_tokens);
 extern const char TERMINALS[];
+extern const char * const TERMINAL_STRING;
 extern const int32_t N_TERMINAL;
 
 #endif  // REGEX_TERMINAL_H

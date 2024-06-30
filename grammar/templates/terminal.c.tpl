@@ -9,4 +9,6 @@
 const char TERMINALS[] = {
   ${terminals}
 };
+
+const char * const TERMINAL_STRING = "${string}";
 const int32_t N_TERMINAL = sizeof(TERMINALS);

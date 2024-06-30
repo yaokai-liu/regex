@@ -16,11 +16,11 @@ def get_json_from(filename: str):
 
 
 __tokens = get_json_from("tokens.json")
-terminals = __tokens['terminal']
+terminals = sorted(['TERMINATOR'] + __tokens['terminal'])
 targets = __tokens['non-terminal']
 targets.remove("~")
-tokens = ['TERMINATOR'] + sorted(terminals + targets)
-terminals = ['TERMINATOR'] + sorted(terminals)
+targets = sorted(targets)
+tokens = sorted(terminals + targets)
 if os.path.isfile(GRAMMAR_DIR / "json" / "machine-compact.json"):
     table = get_json_from("machine-compact.json")
 else:
@@ -48,7 +48,7 @@ def get_temp_from(filename: str):
 
 def gen_token_enum():
     global tokens
-    template = Tp(get_temp_from("tokens.h"))
+    template = Tp(get_temp_from("tokens.h.tpl"))
     enums = ',\n  '.join([f"{t} = {i}" for i, t in enumerate(tokens)])
     enums_entry = template.substitute(enums=enums)
     with open(GRAMMAR_DIR / "tokens.gen.h", 'w') as fp:
@@ -56,7 +56,7 @@ def gen_token_enum():
 
 
 def gen_token_name():
-    template = Tp(get_temp_from("tokens.c"))
+    template = Tp(get_temp_from("tokens.c.tpl"))
     names = ',\n  '.join([f'[{t}] = "{t}"' for t in tokens])
     names_entry = template.substitute(names=names)
     with open(GRAMMAR_DIR / "tokens.gen.c", 'w') as fp:
@@ -65,9 +65,10 @@ def gen_token_name():
 
 def gen_terminals():
     global terminals
-    template = Tp(get_temp_from("terminal.c"))
-    body = ',\n  '.join([f'[{t}] = {repr(TERMINALS[t])}' for t in terminals])
-    terminals_entry = template.substitute(terminals=body)
+    template = Tp(get_temp_from("terminal.c.tpl"))
+    body = ',\n  '.join([f'{t}' for t in terminals if TERMINALS[t] != 0])
+    string = ''.join([f'{TERMINALS[t]}' for t in terminals if TERMINALS[t] != 0])
+    terminals_entry = template.substitute(string=string, terminals=body)
     with open(GRAMMAR_DIR / "terminal.gen.c", 'w') as fp:
         fp.write(terminals_entry)
 
@@ -75,6 +76,12 @@ def gen_terminals():
 status, reflect = dict(), dict()
 for s, p in enumerate(table.keys()):
     status[s], reflect[p] = table[p], s
+
+
+def state_to_enum(p):
+    _state = '_'.join(p.strip('()').split(', '))
+    _state = ('__' + _state) if _state else '__EMPTY__'
+    return _state
 
 
 class Action:
@@ -89,7 +96,7 @@ class Action:
             self.action = "stack"
             self.type = 0
             self.count = 0
-            self.offset = f"{reflect[p]}"
+            self.offset = f"{state_to_enum(p)}"
 
     def __eq__(self, other):
         return self.action == other.action \
@@ -110,20 +117,20 @@ def gen_reduces():
     global rules
     rule_names = rules.keys()
     args = "(void * argv[], const Allocator * allocator);"
-    enum_reduces = sorted(f"{r}" for r in rule_names)
+    enum_reduces = sorted(f"{r} = {i}" for i, r in enumerate(rule_names))
     reduces = sorted(f"struct {r.split('_')[0]} * p_{r}" + args
                      if r != '__EXTEND_RULE__'
                      else f"struct Regexp * p_{r}" + args
                      for r in rule_names)
     assign_reduces = sorted([f"[{r}] = (fn_product *) p_{r}" for r in rule_names])
-    template = Tp(get_temp_from("reduce.h"))
+    template = Tp(get_temp_from("reduce.h.tpl"))
     content = template.substitute(
         enum_reduces=',\n  '.join(enum_reduces),
         reduces='\n'.join(reduces)
     )
     with open(GRAMMAR_DIR / "reduce.gen.h", 'w') as fp:
         fp.write(content)
-    content = Tp(get_temp_from("target.c")).substitute(
+    content = Tp(get_temp_from("target.c.tpl")).substitute(
         assign_reduces=',\n  '.join(assign_reduces)
     )
     with open(GRAMMAR_DIR / "target.gen.c", 'w') as fp:
@@ -132,8 +139,10 @@ def gen_reduces():
 
 def gen_action_table():
     global table, terminals, targets
-    states, actions, jumps, units = [], [], [], []
+    state_enum, states, actions, jumps, units = [], [], [], [], []
     for p, q in table.items():
+        _state = state_to_enum(p)
+        state_enum.append(f'{_state} = {len(state_enum)}')
         _tokens = q.keys()
         _terminals = sorted(_tokens & set(terminals))
         _targets = sorted(_tokens & set(targets))
@@ -143,29 +152,28 @@ def gen_action_table():
             "token_base": len(units),
             "n_tokens": len(_tokens),
         }
-        items, ndx = dict(), []
-        offset, addend = 0, []
-        for i, t in enumerate(_terminals):
+        items, ndx, addend = dict(), [], []
+        for t in _terminals:
             act = Action(q[t])
             if act not in addend:
                 addend.append(act)
-                offset += 1
-            items[t] = offset
+            items[t] = addend.index(act)
         actions += [a.toString() for a in addend]
         for i, t in enumerate(_targets):
-            jumps.append(f"{reflect[q[t]]}")
+            jumps.append(f"{state_to_enum(q[t])}")
             items[t] = i
         for i, t in enumerate(sorted(_tokens)):
             ndx.append(str(i))
             units.append(f"{{.type = {t}, .offset = {items[t]}}}")
         string = ', '.join([f".{k} = {v}" for k, v in state.items()])
-        states.append(string)
-    template = Tp(get_temp_from("action-table.c"))
+        states.append(f"[{_state}] = {{{string}}}")
+    template = Tp(get_temp_from("action-table.c.tpl"))
     content = template.substitute(
+        state_enum=',\n  '.join(state_enum),
         actions=",\n  ".join(actions),
         jumps=", ".join(jumps),
         units=", ".join(units),
-        states="{" + "},\n  {".join(states) + "}"
+        states=",\n  ".join(states)
     )
     with open(GRAMMAR_DIR / "action-table.gen.c", 'w') as fp:
         fp.write(content)

@@ -28,6 +28,7 @@ struct Branch *p_Branch_0(void *argv[], const Allocator *allocator) {
   }
   struct Object *dest = &_arg1->objects[_arg1->length];
   memcpy(dest, _arg0, sizeof(struct Object));
+  allocator->free(_arg0);
   _arg1->length++;
   return _arg1;
 }
@@ -38,6 +39,7 @@ struct Branch *p_Branch_1(void *argv[], const Allocator *allocator) {
   br->objects = allocator->malloc(ALLOC_LEN * sizeof(struct Object));
   br->alloc = ALLOC_LEN;
   memcpy(br->objects, _arg0, sizeof(struct Object));
+  allocator->free(_arg0);
   br->length = 1;
   br->post_state = STATE_COUNT++;
   return br;
@@ -107,6 +109,7 @@ struct UnitArray *p_UnitArray_0(void *argv[], const Allocator *allocator) {
   }
   struct Unit *dest = &_arg1->array[_arg1->length];
   memcpy(dest, _arg0, sizeof(struct Unit));
+  allocator->free(_arg0);
   _arg1->length++;
   return _arg1;
 }
@@ -117,13 +120,16 @@ struct UnitArray *p_UnitArray_1(void *argv[], const Allocator *allocator) {
   array->array = allocator->malloc(ALLOC_LEN * sizeof(struct Unit));
   array->alloc = ALLOC_LEN;
   memcpy(array->array, _arg0, sizeof(struct Unit));
+  allocator->free(_arg0);
   array->length = 1;
   return array;
 }
 
 struct Group *p_Group_0(void *argv[], const Allocator *) {
-  struct Regexp *_arg0 = argv[0];
-  return (struct Group *) _arg0;
+  Terminal *_arg0 = argv[0];
+  struct Regexp *_arg1= argv[1];
+    Terminal *_arg2 = argv[2];
+  return (struct Group *) _arg1;
 }
 
 struct NumQuantifier *p_NumQuantifier_0(void *argv[], const Allocator *allocator) {
@@ -281,6 +287,7 @@ struct Regexp *p_Regexp_0(void *argv[], const Allocator *allocator) {
   }
   struct Branch *dest = &_arg2->branches[_arg2->length];
   memcpy(dest, _arg0, sizeof(struct Branch));
+  allocator->free(_arg0);
   _arg2->length++;
   return _arg2;
 }
@@ -291,6 +298,7 @@ struct Regexp *p_Regexp_1(void *argv[], const Allocator *allocator) {
   regex->branches = allocator->malloc(ALLOC_LEN * sizeof(struct Branch));
   regex->alloc = ALLOC_LEN;
   memcpy(regex->branches, _arg0, sizeof(struct Branch));
+  allocator->free(_arg0);
   regex->length = 1;
   return regex;
 }

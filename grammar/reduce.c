@@ -52,6 +52,31 @@ struct Charset *p_Charset_0(void *argv[], const Allocator *) {
   return (struct Charset *) _arg1;
 }
 
+struct Sequence *p_Sequence_0(void *argv[], const Allocator *allocator) {
+    Terminal *_arg0 = argv[0];
+    struct Sequence *seq = allocator->calloc(1, sizeof(struct Sequence));
+    seq->plains = allocator->malloc(ALLOC_LEN * sizeof(uint8_t));
+    seq->alloc = ALLOC_LEN;
+    seq->plains[0] = _arg0->value;
+    seq->length = 1;
+    return seq;
+}
+
+struct Sequence *p_Sequence_1(void *argv[], const Allocator *allocator) {
+    Terminal *_arg0 = argv[0];
+    struct Sequence *_arg1 = argv[1];
+    if (_arg1->length + 1 >= _arg1->alloc) {
+        _arg1->alloc += ALLOC_LEN;
+        size_t size = _arg1->alloc * sizeof(uint8_t);
+        void *p = allocator->realloc(_arg1->plains, size);
+        if (!p) { return nullptr; }
+        _arg1->plains = p;
+    }
+    _arg1->plains[_arg1->length] = _arg0->value;
+    _arg1->length++;
+    return _arg1;
+}
+
 struct Unit *p_Unit_0(void *argv[], const Allocator *allocator) {
   Terminal *_arg0 = argv[0];
   struct Unit *unit = allocator->calloc(1, sizeof(struct Unit));
@@ -126,9 +151,9 @@ struct UnitArray *p_UnitArray_1(void *argv[], const Allocator *allocator) {
 }
 
 struct Group *p_Group_0(void *argv[], const Allocator *) {
-  Terminal *_arg0 = argv[0];
+//  Terminal *_arg0 = argv[0];
   struct Regexp *_arg1= argv[1];
-    Terminal *_arg2 = argv[2];
+//  Terminal *_arg2 = argv[2];
   return (struct Group *) _arg1;
 }
 
@@ -155,12 +180,12 @@ struct NumQuantifier *p_NumQuantifier_1(void *argv[], const Allocator *allocator
 }
 
 struct Object *p_Object_0(void *argv[], const Allocator *allocator) {
-  Terminal *_arg0 = argv[0];
+  struct Sequence *_arg0 = argv[0];
   struct Object *obj = allocator->calloc(1, sizeof(struct Object));
-  obj->type = _arg0->type;
+  obj->type = Sequence;
   obj->inv = false;
   obj->post_state = STATE_COUNT++;
-  obj->target = (void *) (uint64_t) _arg0->value;
+  obj->target = (void *) _arg0;
   return obj;
 }
 
@@ -307,4 +332,3 @@ struct Regexp *p___EXTEND_RULE__(void *argv[], const Allocator *) {
   struct Regexp *regex = argv[0];
   return regex;
 }
-

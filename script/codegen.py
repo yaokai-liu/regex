@@ -49,7 +49,7 @@ def get_temp_from(filename: str):
 def gen_token_enum():
     global tokens
     template = Tp(get_temp_from("tokens.h.tpl"))
-    enums = ',\n  '.join([f"{t} = {i}" for i, t in enumerate(tokens)])
+    enums = ',\n  '.join([f"{t} = {i + 1}" for i, t in enumerate(tokens)])
     enums_entry = template.substitute(enums=enums)
     with open(GRAMMAR_DIR / "tokens.gen.h", 'w') as fp:
         fp.write(enums_entry)

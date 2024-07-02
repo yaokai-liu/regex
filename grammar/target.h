@@ -15,7 +15,7 @@
 struct Sequence {
   uint32_t length;
   uint32_t alloc;
-  char *plains;
+  uint8_t *plains;
 };
 struct Object {
   uint8_t type;

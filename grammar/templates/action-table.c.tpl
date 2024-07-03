@@ -20,7 +20,7 @@ struct unit {
   uint8_t offset;
 };
 
-const struct action ACTIONS[];
+const struct grammar_action ACTIONS[];
 const uint16_t JUMPS[];
 const struct unit UNITS[];
 
@@ -30,7 +30,7 @@ enum __STATE_ENUM__ {
     ${state_enum}
 };
 
-const struct action ACTIONS[] = {
+const struct grammar_action ACTIONS[] = {
   ${actions}
 };
 
@@ -66,11 +66,11 @@ inline const struct unit *getUnit(const state *state, uint32_t look) {
 }
 
 
-inline const action *getAction(uint32_t index, uint32_t ahead) {
+inline const struct grammar_action *getAction(uint32_t index, uint32_t ahead) {
     const state *state = &STATES[index];
     const struct unit *unit = getUnit(state, ahead);
     if (!unit) { return nullptr; }
-    const action *act = &ACTIONS[state->ndx_base + unit->offset];
+    const struct grammar_action *act = &ACTIONS[state->ndx_base + unit->offset];
     return act;
 }
 

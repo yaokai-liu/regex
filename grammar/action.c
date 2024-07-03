@@ -1,7 +1,7 @@
 /**
  * Project Name: regex
  * Module Name:
- * Filename: action.c
+ * Filename: _grammar_action.c
  * Creator: Yaokai Liu
  * Create Date: 24-6-26
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
@@ -26,7 +26,7 @@ struct Regexp *produce(const Terminal *tokens) {
   int32_t state = 0;
   Stack_push(status_stack, &state, sizeof(int32_t));
   while (true) {
-    const action *act = getAction(state, tp->type);
+    const struct grammar_action *act = getAction(state, tp->type);
     if (!act) { goto __failed_to_product; }
     if (act->action == stack) {
       state = act->offset;

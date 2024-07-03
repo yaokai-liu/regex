@@ -11,3 +11,4 @@ json
 __pycache__
 *.gen.h
 *.gen.c
+.cache

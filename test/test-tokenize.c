@@ -7,9 +7,9 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#include "grammar/terminal.h"
-#include "grammar/token.h"
-#include "grammar/tokens.gen.h"
+#include "terminal.h"
+#include "token.h"
+#include "tokens.gen.h"
 #include <malloc.h>
 #include <stdio.h>
 

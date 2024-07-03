@@ -8,9 +8,8 @@
  **/
 
 #include <stdio.h>
-#include "grammar/target.h"
-#include "grammar/action.h"
-#include "grammar/token.h"
+#include "target.h"
+#include "action.h"
 
 #define len(a) ((sizeof a) / sizeof(a[0]))
 

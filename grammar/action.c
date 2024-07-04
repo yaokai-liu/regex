@@ -16,7 +16,7 @@
 #define ALLOC_LEN      32
 #define _sizeof(_type) ((int32_t) sizeof(_type))
 
-struct Regexp *produce(const Terminal *tokens) {
+Regexp *produce(const Terminal *tokens) {
   void *result;
   const Terminal *tp = tokens;
   uint64_t argv[10] = {};

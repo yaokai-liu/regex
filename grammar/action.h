@@ -10,7 +10,9 @@
 #ifndef REGEX_ACTION_H
 #define REGEX_ACTION_H
 
+#include "target.h"
 #include "terminal.h"
-struct Regexp *produce(const Terminal *tokens);
+
+Regexp *produce(const Terminal *tokens);
 
 #endif  // REGEX_ACTION_H

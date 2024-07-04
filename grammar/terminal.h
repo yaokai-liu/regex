@@ -11,10 +11,11 @@
 #define REGEX_TERMINAL_H
 
 #include <stdint.h>
+#include "char_t.h"
 
 typedef struct {
   uint8_t type;
-  uint8_t value;
+  char_t value;
 } Terminal;
 Terminal *tokenize(const char *input, uint32_t *cost, uint32_t *n_tokens);
 extern const char TERMINALS[];

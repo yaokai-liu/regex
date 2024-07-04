@@ -23,7 +23,7 @@ int32_t lex_number(const char *input, Terminal *token, bool is_number) {
     token->value = (token->value * 10) + *sp - '0';
     sp++;
   }
-  token->type = NUMBER;
+  token->type = enum_NUMBER;
   return (int32_t) (sp - input);
 }
 
@@ -45,15 +45,15 @@ Terminal *tokenize(const char *input, uint32_t *cost, uint32_t *n_tokens) {
     if (idx >= 0) {
       tokens[used_len].type = TERMINALS[idx];
       tokens[used_len].value = 0;
-      if (tokens[used_len].type == BEGIN_QUANTIFIER) { is_quant = true; }
-      if (tokens[used_len].type == END_QUANTIFIER) { is_quant = false; }
+      if (tokens[used_len].type == enum_BEGIN_QUANTIFIER) { is_quant = true; }
+      if (tokens[used_len].type == enum_END_QUANTIFIER) { is_quant = false; }
       sp++;
       used_len++;
       continue;
     }
     idx = lex_number(sp, &tokens[used_len], is_quant);
     if (idx == 0) {
-      tokens[used_len].type = CHAR;
+      tokens[used_len].type = enum_CHAR;
       tokens[used_len].value = *sp & 0xff;
       sp++;
     } else {
@@ -68,7 +68,7 @@ Terminal *tokenize(const char *input, uint32_t *cost, uint32_t *n_tokens) {
     if (!p) { goto __failed_tokenize; }
     tokens = p;
   }
-  tokens[used_len].type = TERMINATOR;
+  tokens[used_len].type = enum_TERMINATOR;
   tokens[used_len].value = 0;
   used_len++;
   *n_tokens = used_len;

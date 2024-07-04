@@ -36,15 +36,11 @@ typedef struct Quantified {
   struct Object object;
 } Quantified;
 
-typedef struct Regexp {
-  uint32_t length;
-  uint32_t alloc;
-  struct Branch *branches;
-} Regexp;
+typedef Array Regexp;
 
 typedef struct Unit {
   uint8_t type;
-  uint8_t inv;
+  bool    inv;
   void *target;
 } Unit;
 
@@ -58,14 +54,14 @@ typedef struct Range {
 typedef Array Branch;
 
 typedef struct Group {
-  struct Regexp regexp;
+  Regexp * regexp;
 } Group;
 
 typedef struct Charset {
-  Array * pos_plains;
-  Array * pos_ranges;
-  Array * neg_plains;
-  Array * neg_ranges;
+  struct charset_tap {
+    Array * plains;
+    Array * ranges;
+  } taps[2];
 } Charset;
 
 #include "allocator.h"

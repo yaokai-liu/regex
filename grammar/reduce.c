@@ -7,11 +7,16 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
+#include "allocator.h"
 #include "array.h"
 #include "reduce.gen.h"
+#include "target.h"
 #include "terminal.h"
 #include "tokens.gen.h"
+#include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 
 #define ALLOC_LEN 32
 
@@ -20,37 +25,57 @@ thread_local static uint32_t STATE_COUNT = 0;
 Branch *p_Branch_0(void *argv[], const Allocator *allocator) {
   Object *_arg0 = argv[0];
   Branch *_arg1 = argv[1];
-  if (_arg1->length + 1 >= _arg1->alloc) {
-    _arg1->alloc += ALLOC_LEN;
-    size_t size = _arg1->alloc * sizeof(Object);
-    void *p = allocator->realloc(_arg1->objects, size);
-    if (!p) { return nullptr; }
-    _arg1->objects = p;
-  }
-  Object *dest = &_arg1->objects[_arg1->length];
-  memcpy(dest, _arg0, sizeof(Object));
+  Array_append(_arg1, _arg1, 1);
   allocator->free(_arg0);
-  _arg1->length++;
   return _arg1;
 }
 
 Branch *p_Branch_1(void *argv[], const Allocator *allocator) {
   Object *_arg0 = argv[0];
-  Branch *br = allocator->calloc(1, sizeof(Branch));
-  br->objects = allocator->malloc(ALLOC_LEN * sizeof(Object));
-  br->alloc = ALLOC_LEN;
-  memcpy(br->objects, _arg0, sizeof(Object));
+  Branch *br = Array_new(sizeof(Object), allocator);
+  Array_append(br, _arg0, 1);
   allocator->free(_arg0);
-  br->length = 1;
-  br->post_state = STATE_COUNT++;
   return br;
 }
 
-Charset *p_Charset_0(void *argv[], const Allocator *) {
+Charset *p_Charset_0(void *argv[], const Allocator * allocator) {
   //    Terminal *_arg0 = argv[0];
   UnitArray *_arg1 = argv[1];
   //    Terminal *_arg2 = argv[2];
-  return (Charset *) _arg1;
+
+  Charset * charset = allocator->calloc(1, sizeof(Charset));
+  charset->taps[0].plains = Array_new(sizeof(char_t), allocator);
+  charset->taps[0].ranges = Array_new(sizeof(Range), allocator);
+  charset->taps[1].plains = Array_new(sizeof(char_t), allocator);
+  charset->taps[1].ranges = Array_new(sizeof(Range), allocator);
+
+  uint32_t length = Array_length(_arg1);
+  for(int i = 0; i < length; i++) {
+    Unit * unit = Array_get(_arg1, i);
+    if (unit->type == enum_Charset) {
+      struct charset_tap * tap0 = &charset->taps[unit->inv];
+      struct charset_tap * tap1 = &charset->taps[!unit->inv];
+      Charset * target = unit->target;
+      Array_no_duplicated_concat(tap0->plains, target->taps[0].plains);
+      Array_no_duplicated_concat(tap0->ranges, target->taps[0].ranges);
+      Array_no_duplicated_concat(tap1->plains, target->taps[1].plains);
+      Array_no_duplicated_concat(tap1->ranges, target->taps[1].ranges);
+    } else if (unit->type == enum_CHAR) {
+      struct charset_tap * tap = &charset->taps[unit->inv];
+      char_t the_char = (char_t) (uint64_t) unit->target;
+      Array_append(tap->plains, &the_char, 1);
+    } else if (unit->type == enum_Range) {
+      struct charset_tap * tap = &charset->taps[unit->inv];
+      Array_append(tap->ranges, unit->target, 1);
+    } else {
+      return nullptr;
+    }
+  }
+
+  Array_release(_arg1, nullptr);
+  free(_arg1);
+
+  return charset;
 }
 
 Sequence *p_Sequence_0(void *argv[], const Allocator *allocator) {
@@ -112,12 +137,6 @@ Unit *p_Unit_3(void *argv[], const Allocator *allocator) {
 }
 
 Unit *p_Unit_4(void *argv[], const Allocator *allocator) {
-  Unit *unit = p_Unit_1(argv, allocator);
-  unit->inv = true;
-  return unit;
-}
-
-Unit *p_Unit_5(void *argv[], const Allocator *allocator) {
   Unit *unit = p_Unit_2(argv, allocator);
   unit->inv = true;
   return unit;
@@ -287,28 +306,15 @@ Regexp *p_Regexp_0(void *argv[], const Allocator *allocator) {
   Branch *_arg0 = argv[0];
   //    Terminal *_arg1 = argv[1];
   Regexp *_arg2 = argv[2];
-  if (_arg2->length + 1 >= _arg2->alloc) {
-    _arg2->alloc += ALLOC_LEN;
-    size_t size = _arg2->alloc * sizeof(Branch);
-    void *p = allocator->realloc(_arg2->branches, size);
-    if (!p) { return nullptr; }
-    _arg2->branches = p;
-  }
-  Branch *dest = &_arg2->branches[_arg2->length];
-  memcpy(dest, _arg0, sizeof(Branch));
+  Array_append(_arg2, _arg0, 1);
   allocator->free(_arg0);
-  _arg2->length++;
   return _arg2;
 }
 
 Regexp *p_Regexp_1(void *argv[], const Allocator *allocator) {
   Branch *_arg0 = argv[0];
-  Regexp *regex = allocator->calloc(1, sizeof(Regexp));
-  regex->branches = allocator->malloc(ALLOC_LEN * sizeof(Branch));
-  regex->alloc = ALLOC_LEN;
-  memcpy(regex->branches, _arg0, sizeof(Branch));
+  Regexp *regex = Array_new(sizeof_array, allocator);
   allocator->free(_arg0);
-  regex->length = 1;
   return regex;
 }
 

@@ -17,26 +17,26 @@
 
 int main() {
   const char *string = "+-*^,12345{123,45}()[]";
-  const uint8_t type_list[20] = {PLUS,
-                                 MINUS,
-                                 TIMES,
-                                 NOT,
-                                 COMMA,
-                                 CHAR,
-                                 CHAR,
-                                 CHAR,
-                                 CHAR,
-                                 CHAR,
-                                 BEGIN_QUANTIFIER,
-                                 NUMBER,
-                                 COMMA,
-                                 NUMBER,
-                                 END_QUANTIFIER,
-                                 BEGIN_GROUP,
-                                 END_GROUP,
-                                 BEGIN_CHARSET,
-                                 END_CHARSET,
-                                 TERMINATOR};
+  const uint8_t type_list[20] = {enum_PLUS,
+                                 enum_MINUS,
+                                 enum_TIMES,
+                                 enum_NOT,
+                                 enum_COMMA,
+                                 enum_CHAR,
+                                 enum_CHAR,
+                                 enum_CHAR,
+                                 enum_CHAR,
+                                 enum_CHAR,
+                                 enum_BEGIN_QUANTIFIER,
+                                 enum_NUMBER,
+                                 enum_COMMA,
+                                 enum_NUMBER,
+                                 enum_END_QUANTIFIER,
+                                 enum_BEGIN_GROUP,
+                                 enum_END_GROUP,
+                                 enum_BEGIN_CHARSET,
+                                 enum_END_CHARSET,
+                                 enum_TERMINATOR};
   uint32_t cost = 0, n_tokens = 0;
   Terminal *tokens = tokenize(string, &cost, &n_tokens);
   if (n_tokens != len(type_list)) { return -1; }

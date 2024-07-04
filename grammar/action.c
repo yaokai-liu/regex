@@ -12,9 +12,8 @@
 #include "reduce.gen.h"
 #include "stack.h"
 #include "target.h"
-#include "tokens.gen.h"
 
-#define ALLOC_LEN 32
+#define ALLOC_LEN      32
 #define _sizeof(_type) ((int32_t) sizeof(_type))
 
 struct Regexp *produce(const Terminal *tokens) {
@@ -45,11 +44,13 @@ struct Regexp *produce(const Terminal *tokens) {
       Stack_push(token_stack, &result, sizeof(void *));
       Stack_push(status_stack, &state, _sizeof(int32_t));
       if (act->offset == __EXTEND_RULE__) { break; }
-    } else { goto __failed_to_product; }
+    } else {
+      goto __failed_to_product;
+    }
   }
   return result;
 
-    __failed_to_product:
+__failed_to_product:
   // TODO: release elements.
   Stack_clear(token_stack);
   Stack_clear(status_stack);

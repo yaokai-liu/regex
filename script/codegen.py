@@ -49,7 +49,7 @@ def get_temp_from(filename: str):
 def gen_token_enum():
     global tokens
     template = Tp(get_temp_from("tokens.h.tpl"))
-    enums = ',\n  '.join([f"{t} = {i + 1}" for i, t in enumerate(tokens)])
+    enums = ',\n  '.join([f"enum_{t} = {i + 1}" for i, t in enumerate(tokens)])
     enums_entry = template.substitute(enums=enums)
     with open(GRAMMAR_DIR / "tokens.gen.h", 'w') as fp:
         fp.write(enums_entry)
@@ -57,7 +57,7 @@ def gen_token_enum():
 
 def gen_token_name():
     template = Tp(get_temp_from("tokens.c.tpl"))
-    names = ',\n  '.join([f'[{t}] = "{t}"' for t in tokens])
+    names = ',\n  '.join([f'[enum_{t}] = "{t}"' for t in tokens])
     names_entry = template.substitute(names=names)
     with open(GRAMMAR_DIR / "tokens.gen.c", 'w') as fp:
         fp.write(names_entry)
@@ -66,7 +66,7 @@ def gen_token_name():
 def gen_terminals():
     global terminals
     template = Tp(get_temp_from("terminal.c.tpl"))
-    body = ',\n  '.join([f'{t}' for t in terminals if TERMINALS[t] != 0])
+    body = ',\n  '.join([f'enum_{t}' for t in terminals if TERMINALS[t] != 0])
     string = ''.join([f'{TERMINALS[t]}' for t in terminals if TERMINALS[t] != 0])
     terminals_entry = template.substitute(string=string, terminals=body)
     with open(GRAMMAR_DIR / "terminal.gen.c", 'w') as fp:
@@ -89,7 +89,7 @@ class Action:
         if not p.startswith('('):
             rule = Rule(p)
             self.action = "reduce"
-            self.type = rule.target
+            self.type = f"enum_{rule.target}"
             self.count = len(rule.items)
             self.offset = f"{p}"
         else:
@@ -118,9 +118,9 @@ def gen_reduces():
     rule_names = rules.keys()
     args = "(void * argv[], const Allocator * allocator);"
     enum_reduces = sorted(f"{r} = {i}" for i, r in enumerate(rule_names))
-    reduces = sorted(f"struct {r.split('_')[0]} * p_{r}" + args
+    reduces = sorted(f"{r.split('_')[0]} * p_{r}" + args
                      if r != '__EXTEND_RULE__'
-                     else f"struct Regexp * p_{r}" + args
+                     else f"Regexp * p_{r}" + args
                      for r in rule_names)
     assign_reduces = sorted([f"[{r}] = (fn_product *) p_{r}" for r in rule_names])
     template = Tp(get_temp_from("reduce.h.tpl"))
@@ -164,7 +164,7 @@ def gen_action_table():
             items[t] = i
         for i, t in enumerate(sorted(_tokens)):
             ndx.append(str(i))
-            units.append(f"{{.type = {t}, .offset = {items[t]}}}")
+            units.append(f"{{.type = enum_{t}, .offset = {items[t]}}}")
         string = ', '.join([f".{k} = {v}" for k, v in state.items()])
         states.append(f"[{_state}] = {{{string}}}")
     template = Tp(get_temp_from("action-table.c.tpl"))

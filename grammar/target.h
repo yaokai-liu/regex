@@ -10,62 +10,63 @@
 #ifndef REGEX_TARGET_H
 #define REGEX_TARGET_H
 
+#include "array.h"
 #include <stdint.h>
 
-struct Sequence {
+typedef struct Sequence {
   uint32_t length;
   uint32_t alloc;
   uint8_t *plains;
-};
-struct Object {
+} Sequence;
+
+typedef struct Object {
   uint8_t type;
   uint8_t inv;
   uint32_t post_state;
   void *target;
-};
-struct Quantifier {
+} Object;
+
+typedef struct Quantifier {
   uint8_t min;
   uint8_t max;
-};
-struct Quantified {
+} Quantifier;
+
+typedef struct Quantified {
   struct Quantifier quant;
   struct Object object;
-};
-struct Regexp {
+} Quantified;
+
+typedef struct Regexp {
   uint32_t length;
   uint32_t alloc;
   struct Branch *branches;
-};
-struct NumQuantifier {
-  uint8_t min;
-  uint8_t max;
-};
-struct Unit {
+} Regexp;
+
+typedef struct Unit {
   uint8_t type;
   uint8_t inv;
   void *target;
-};
-struct Range {
+} Unit;
+
+typedef Array UnitArray;
+
+typedef struct Range {
   uint8_t min;
   uint8_t max;
-};
-struct Branch {
-  uint32_t length;
-  uint32_t alloc;
-  uint32_t post_state;
-  struct Object *objects;
-};
-struct Group {
+} Range;
+
+typedef Array Branch;
+
+typedef struct Group {
   struct Regexp regexp;
-};
-struct UnitArray {
-  uint32_t length;
-  uint32_t alloc;
-  struct Unit *array;
-};
-struct Charset {
-  struct UnitArray units;
-};
+} Group;
+
+typedef struct Charset {
+  Array * pos_plains;
+  Array * pos_ranges;
+  Array * neg_plains;
+  Array * neg_ranges;
+} Charset;
 
 #include "allocator.h"
 

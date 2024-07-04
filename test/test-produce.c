@@ -7,9 +7,9 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#include <stdio.h>
-#include "target.h"
 #include "action.h"
+#include "target.h"
+#include <stdio.h>
 
 #define len(a) ((sizeof a) / sizeof(a[0]))
 

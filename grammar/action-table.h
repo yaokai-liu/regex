@@ -10,7 +10,6 @@
 #ifndef REGEX_ACTION_TABLE_H
 #define REGEX_ACTION_TABLE_H
 
-#include "target.h"
 #include <stdint.h>
 
 typedef struct state state;
@@ -19,8 +18,8 @@ struct grammar_action {
     reject = 0,
     stack = 1,
     reduce = 2
-  } action     : 4;
-  uint8_t count: 4;
+  } action      : 4;
+  uint8_t count : 4;
   uint8_t type;
   const uint16_t offset;
 };

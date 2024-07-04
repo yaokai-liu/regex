@@ -44,16 +44,12 @@ int32_t Stack_push(Stack *stack, const void *data, int32_t size) {
 int32_t Stack_pop(Stack *stack, void *dest, int32_t size) {
   size = min(stack->used, size);
   stack->used -= size;
-  if (dest) {
-      memcpy(dest, stack->stack + stack->used, size);
-  }
+  if (dest) { memcpy(dest, stack->stack + stack->used, size); }
   return size;
 }
 
 int32_t Stack_top(Stack *stack, void *dest, int32_t size) {
-    size = min(stack->used, size);
-    if (dest) {
-        memcpy(dest, stack->stack + stack->used - size, size);
-    }
-    return size;
+  size = min(stack->used, size);
+  if (dest) { memcpy(dest, stack->stack + stack->used - size, size); }
+  return size;
 }

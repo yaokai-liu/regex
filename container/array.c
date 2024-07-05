@@ -49,13 +49,13 @@ inline void *Array_get(struct Array *array, uint32_t index) {
 }
 inline int32_t Array_append(struct Array *array, void *elements, int32_t count) {
     if (array->used_len + count >= array->alloc_len) {
-        uint32_t size = array->alloc_len + ALLOC_LEN;
-        void * p = array->allocator->realloc(array->elements, array->alloc_len);
+        uint32_t length = array->alloc_len + ALLOC_LEN;
+        void * p = array->allocator->realloc(array->elements, length * array->ele_size);
         if (!p) { return -1; }
         array->elements = p;
-        array->alloc_len = size;
+        array->alloc_len = length;
     }
-    void * dest = Array_get(array, array->used_len);
+    void * dest = array->elements + array->ele_size * array->used_len;
     memcpy(dest, elements, count * array->ele_size);
     array->used_len ++;
     return count;
@@ -80,7 +80,7 @@ inline bool Array_all(struct Array * array, bool (*fn_judgment)(void *)) {
 }
 
 
-inline int32_t Array_no_duplicated_concat(struct Array * restrict _to, struct Array * restrict _from) {
+inline uint32_t Array_no_duplicated_concat(struct Array * restrict _to, struct Array * restrict _from) {
   if (_from->ele_size != _to->ele_size) { return 0; }
   void * temp = _to->allocator->malloc(_from->used_len * sizeof(_to->ele_size));
   uint32_t len = 0;

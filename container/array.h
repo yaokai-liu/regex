@@ -23,7 +23,7 @@ uint32_t Array_init(struct Array * array, uint32_t ele_size);
 
 uint32_t Array_length(struct Array *array);
 
-// Note: append may change elements' address, 
+// Note: append may change elements' address,
 // so it is not promised that two `Array_get` of one same `index` will return a same address.
 void *Array_get(struct Array *array, uint32_t index);
 int32_t Array_append(struct Array *array, void *elements, int32_t count);
@@ -36,8 +36,8 @@ bool Array_any(struct Array * array, bool (*fn_judgment)(void *));
 bool Array_all(struct Array * array, bool (*fn_judgment)(void *));
 
 
-// Suppose `_to` and `_from` both are not duplicated array. 
-int32_t Array_no_duplicated_concat(struct Array * restrict _to, struct Array * restrict _from);
+// Suppose `_to` and `_from` both are not duplicated array.
+uint32_t Array_no_duplicated_concat(struct Array * restrict _to, struct Array * restrict _from);
 
 // Clear array and free all element with `fn_free`.
 uint32_t Array_clear(struct Array * array, void (*fn_free)(void *));

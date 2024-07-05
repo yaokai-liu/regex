@@ -6,9 +6,9 @@
  **/
 #include "terminal.h"
 #include "tokens.gen.h"
-const char TERMINALS[] = {
+const char_t TERMINALS[] = {
   ${terminals}
 };
 
-const char * const TERMINAL_STRING = "${string}";
+const char_t * const TERMINAL_STRING = "${string}";
 const int32_t N_TERMINAL = sizeof(TERMINALS);

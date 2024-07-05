@@ -314,7 +314,14 @@ Regexp *p_Regexp_0(void *argv[], const Allocator *allocator) {
 Regexp *p_Regexp_1(void *argv[], const Allocator *allocator) {
   Branch *_arg0 = argv[0];
   Regexp *regex = Array_new(sizeof_array, allocator);
+  Array_append(regex, _arg0, 1);
   allocator->free(_arg0);
+  return regex;
+}
+
+Regexp * p_Regexp_2(void * argv[], const Allocator * allocator) {
+  // since it's an empty rule.
+  Regexp *regex = Array_new(sizeof_array, allocator);
   return regex;
 }
 

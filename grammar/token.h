@@ -10,8 +10,9 @@
 #ifndef REGEX_TOKEN_H
 #define REGEX_TOKEN_H
 
+#include "char_t.h"
 #include <stdint.h>
 
-const char *get_name(uint16_t type);
+const char_t *get_name(uint16_t type);
 
 #endif  // REGEX_TOKEN_H

@@ -38,7 +38,11 @@ class Rule:
         self.target = target.strip()
         if self.target == '~':
             self.target = 'Regexp'
-        self.items = items.strip().split(' ')
+        items = items.strip()
+        if len(items) > 0:
+            self.items = items.split(' ')
+        else:
+            self.items = []
 
 
 def get_temp_from(filename: str):
@@ -57,7 +61,7 @@ def gen_token_enum():
 
 def gen_token_name():
     template = Tp(get_temp_from("tokens.c.tpl"))
-    names = ',\n  '.join([f'[enum_{t}] = "{t}"' for t in tokens])
+    names = ',\n  '.join([f'[enum_{t}] = string_t("{t}")' for t in tokens])
     names_entry = template.substitute(names=names)
     with open(GRAMMAR_DIR / "tokens.gen.c", 'w') as fp:
         fp.write(names_entry)

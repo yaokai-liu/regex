@@ -18,5 +18,11 @@ add_library(automaton STATIC ${AUTOMATON_SRC})
 # for tests
 link_libraries(grammar automaton)
 include_directories(grammar container)
-add_executable(test-tokenize test/test-tokenize.c)
-add_executable(test-produce test/test-produce.c)
+
+aux_source_directory(test/tokenize TEST_TOKENIZE_SRC)
+add_executable(test-tokenize ${TEST_TOKENIZE_SRC})
+aux_source_directory(test/produce TEST_PRODUCE_SRC)
+add_executable(test-produce ${TEST_PRODUCE_SRC})
+
+target_link_libraries(test-tokenize PRIVATE check)
+target_link_libraries(test-produce PRIVATE check)

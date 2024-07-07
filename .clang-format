@@ -73,6 +73,7 @@ StatementMacros:
   - _enter
   - _leave
   - _literal
+  - add_test_for
 TabWidth: 2
 UseCRLF: false
 UseTab: Never

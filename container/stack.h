@@ -16,7 +16,7 @@ typedef struct Stack Stack;
 
 Stack *Stack_new();
 void Stack_clear(Stack *stack);
-int32_t Stack_push(Stack *stack, const void *data, int32_t size);
-int32_t Stack_pop(Stack *stack, void *dest, int32_t size);
-int32_t Stack_top(Stack *stack, void *dest, int32_t size);
+uint32_t Stack_push(Stack *stack, const void *data, uint32_t size);
+uint32_t Stack_pop(Stack *stack, void *dest, uint32_t size);
+uint32_t Stack_top(Stack *stack, void *dest, uint32_t size);
 #endif  // REGEX_STACK_H

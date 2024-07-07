@@ -13,6 +13,6 @@
 // Promise sizeof(char_t) < sizeof(uint64_t).
 typedef char char_t;
 
-#define string_t(_str)  _str
+#define string_t(_str) _str
 
-#endif // REGEX_CHAR_T_H
+#endif  // REGEX_CHAR_T_H

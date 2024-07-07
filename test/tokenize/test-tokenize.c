@@ -11,10 +11,13 @@
 #include <check.h>
 
 int main() {
-    SRunner *srunner = srunner_create(single_character_suite());
-    srunner_run_all(srunner, CK_NORMAL);
-    int n = srunner_ntests_failed(srunner);
-    srunner_free(srunner);
+  SRunner *srunner = srunner_create(nullptr);
+  srunner_add_suite(srunner, single_token_suite());
+  srunner_add_suite(srunner, number_suite());
+  srunner_add_suite(srunner, char_suite());
+  srunner_run_all(srunner, CK_NORMAL);
+  int n = srunner_ntests_failed(srunner);
+  srunner_free(srunner);
 
-    return n ? -1 : 0;
+  return n ? -1 : 0;
 }

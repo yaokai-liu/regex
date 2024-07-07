@@ -10,7 +10,7 @@
 #ifndef REGEX_ALLOCATOR_H
 #define REGEX_ALLOCATOR_H
 
-#include "stddef.h"
+#include <stddef.h>
 
 typedef struct {
   void *(* const malloc)(size_t size);

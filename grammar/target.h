@@ -40,7 +40,7 @@ typedef Array Regexp;
 
 typedef struct Unit {
   uint8_t type;
-  bool    inv;
+  bool inv;
   void *target;
 } Unit;
 
@@ -54,13 +54,13 @@ typedef struct Range {
 typedef Array Branch;
 
 typedef struct Group {
-  Regexp * regexp;
+  Regexp *regexp;
 } Group;
 
 typedef struct Charset {
   struct charset_tap {
-    Array * plains;
-    Array * ranges;
+    Array *plains;
+    Array *ranges;
   } taps[2];
 } Charset;
 

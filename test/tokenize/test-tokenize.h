@@ -12,6 +12,8 @@
 
 #include <check.h>
 
-Suite * single_character_suite();
+Suite *single_token_suite();
+Suite *number_suite();
+Suite *char_suite();
 
-#endif //REGEX_TEST_TOKENIZE_H
+#endif  // REGEX_TEST_TOKENIZE_H

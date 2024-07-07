@@ -38,34 +38,34 @@ Branch *p_Branch_1(void *argv[], const Allocator *allocator) {
   return br;
 }
 
-Charset *p_Charset_0(void *argv[], const Allocator * allocator) {
+Charset *p_Charset_0(void *argv[], const Allocator *allocator) {
   //    Terminal *_arg0 = argv[0];
   UnitArray *_arg1 = argv[1];
   //    Terminal *_arg2 = argv[2];
 
-  Charset * charset = allocator->calloc(1, sizeof(Charset));
+  Charset *charset = allocator->calloc(1, sizeof(Charset));
   charset->taps[0].plains = Array_new(sizeof(char_t), allocator);
   charset->taps[0].ranges = Array_new(sizeof(Range), allocator);
   charset->taps[1].plains = Array_new(sizeof(char_t), allocator);
   charset->taps[1].ranges = Array_new(sizeof(Range), allocator);
 
   uint32_t length = Array_length(_arg1);
-  for(int i = 0; i < length; i++) {
-    Unit * unit = Array_get(_arg1, i);
+  for (uint32_t i = 0; i < length; i++) {
+    Unit *unit = Array_get(_arg1, i);
     if (unit->type == enum_Charset) {
-      struct charset_tap * tap0 = &charset->taps[unit->inv];
-      struct charset_tap * tap1 = &charset->taps[!unit->inv];
-      Charset * target = unit->target;
+      struct charset_tap *tap0 = &charset->taps[unit->inv];
+      struct charset_tap *tap1 = &charset->taps[!unit->inv];
+      Charset *target = unit->target;
       Array_no_duplicated_concat(tap0->plains, target->taps[0].plains);
       Array_no_duplicated_concat(tap0->ranges, target->taps[0].ranges);
       Array_no_duplicated_concat(tap1->plains, target->taps[1].plains);
       Array_no_duplicated_concat(tap1->ranges, target->taps[1].ranges);
     } else if (unit->type == enum_CHAR) {
-      struct charset_tap * tap = &charset->taps[unit->inv];
+      struct charset_tap *tap = &charset->taps[unit->inv];
       char_t the_char = (char_t) (uint64_t) unit->target;
       Array_append(tap->plains, &the_char, 1);
     } else if (unit->type == enum_Range) {
-      struct charset_tap * tap = &charset->taps[unit->inv];
+      struct charset_tap *tap = &charset->taps[unit->inv];
       Array_append(tap->ranges, unit->target, 1);
     } else {
       return nullptr;
@@ -319,8 +319,9 @@ Regexp *p_Regexp_1(void *argv[], const Allocator *allocator) {
   return regex;
 }
 
-Regexp * p_Regexp_2(void * argv[], const Allocator * allocator) {
+Regexp *p_Regexp_2(void *argv[], const Allocator *allocator) {
   // since it's an empty rule.
+  argv[0] = "'-Wall' requires it be used, make the compiler happy.";
   Regexp *regex = Array_new(sizeof_array, allocator);
   return regex;
 }

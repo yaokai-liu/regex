@@ -11,7 +11,6 @@
 #include "allocator.h"
 #include "terminal.h"
 #include "tokens.gen.h"
-#include <malloc.h>
 #include <stdint.h>
 #define len(a) ((sizeof a) / sizeof(a[0]))
 
@@ -20,6 +19,7 @@ int32_t stridx_i(const char_t *string, char_t ch, int32_t len);
 int32_t lex_number(const char_t *input, Terminal *token, bool is_number) {
   if (!is_number) { return 0; }
   const char_t *sp = input;
+  token->value = 0;
   while ('0' <= *sp && *sp < '9') {
     token->value = (token->value * 10) + *sp - '0';
     sp++;
@@ -28,17 +28,18 @@ int32_t lex_number(const char_t *input, Terminal *token, bool is_number) {
   return (int32_t) (sp - input);
 }
 
-Terminal *tokenize(const char_t *input, uint32_t *cost, uint32_t *n_tokens, const Allocator * allocator) {
+Terminal *tokenize(const char_t *input, uint32_t *cost, uint32_t *n_tokens,
+                   const Allocator *allocator) {
   uint32_t alloc_len = 32;
   uint32_t used_len = 0;
-  Terminal *tokens = malloc(alloc_len * sizeof(Terminal));
+  Terminal *tokens = allocator->malloc(alloc_len * sizeof(Terminal));
 
   const char_t *sp = input;
   bool is_quant = false;
   while (*sp) {
     while (used_len >= alloc_len) {
       alloc_len += 32;
-      Terminal *p = realloc(tokens, alloc_len * sizeof(Terminal));
+      Terminal *p = allocator->realloc(tokens, alloc_len * sizeof(Terminal));
       if (!p) { goto __failed_tokenize; }
       tokens = p;
     }
@@ -65,7 +66,7 @@ Terminal *tokenize(const char_t *input, uint32_t *cost, uint32_t *n_tokens, cons
   *cost = sp - input;
   while (used_len >= alloc_len) {
     alloc_len += 32;
-    Terminal *p = realloc(tokens, alloc_len * sizeof(Terminal));
+    Terminal *p = allocator->realloc(tokens, alloc_len * sizeof(Terminal));
     if (!p) { goto __failed_tokenize; }
     tokens = p;
   }
@@ -76,7 +77,7 @@ Terminal *tokenize(const char_t *input, uint32_t *cost, uint32_t *n_tokens, cons
   return tokens;
 
 __failed_tokenize:
-  free(tokens);
+  allocator->free(tokens);
   return nullptr;
 }
 

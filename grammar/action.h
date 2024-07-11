@@ -13,6 +13,8 @@
 #include "target.h"
 #include "terminal.h"
 
-Regexp *produce(const Terminal *tokens);
+#define MAX_ARGC 0x10
+
+Regexp *produce(const Terminal *tokens, const Allocator *allocator);
 
 #endif  // REGEX_ACTION_H

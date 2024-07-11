@@ -16,10 +16,10 @@
 #define ALLOC_LEN      32
 #define _sizeof(_type) ((int32_t) sizeof(_type))
 
-Regexp *produce(const Terminal *tokens) {
+Regexp *produce(const Terminal *tokens, const Allocator * const allocator) {
   void *result;
   const Terminal *tp = tokens;
-  uint64_t argv[10] = {};
+  uint64_t argv[MAX_ARGC] = {};
   Stack *status_stack = Stack_new();
   Stack *token_stack = Stack_new();
   int32_t state = 0;
@@ -37,7 +37,7 @@ Regexp *produce(const Terminal *tokens) {
       Stack_pop(status_stack, nullptr, act->count * _sizeof(int32_t));
       Stack_top(status_stack, (int32_t *) &state, _sizeof(int32_t));
       fn_product *func = PRODUCTS[act->offset];
-      result = func((void **) argv, &STDAllocator);
+      result = func((void **) argv, allocator);
       if (!result) { goto __failed_to_product; }
       state = jump(state, act->type);
       if (state < 0) { goto __failed_to_product; }

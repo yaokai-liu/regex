@@ -13,11 +13,7 @@
 #include "array.h"
 #include <stdint.h>
 
-typedef struct Sequence {
-  uint32_t length;
-  uint32_t alloc;
-  uint8_t *plains;
-} Sequence;
+typedef Array Sequence;
 
 typedef struct Object {
   uint8_t type;

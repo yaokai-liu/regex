@@ -29,7 +29,7 @@ int32_t lex_number(const char_t *input, Terminal *token, bool is_number) {
 }
 
 Terminal *tokenize(const char_t *input, uint32_t *cost, uint32_t *n_tokens,
-                   const Allocator *allocator) {
+                   const Allocator * const allocator) {
   uint32_t alloc_len = 32;
   uint32_t used_len = 0;
   Terminal *tokens = allocator->malloc(alloc_len * sizeof(Terminal));

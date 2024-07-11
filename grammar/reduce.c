@@ -7,6 +7,7 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
+#include "action.h"
 #include "allocator.h"
 #include "array.h"
 #include "reduce.gen.h"
@@ -16,13 +17,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 
 #define ALLOC_LEN 32
 
 thread_local static uint32_t STATE_COUNT = 0;
 
-Branch *p_Branch_0(void *argv[], const Allocator *allocator) {
+Branch *p_Branch_0(void *argv[], const Allocator * const allocator) {
   Object *_arg0 = argv[0];
   Branch *_arg1 = argv[1];
   Array_append(_arg1, _arg1, 1);
@@ -30,7 +30,7 @@ Branch *p_Branch_0(void *argv[], const Allocator *allocator) {
   return _arg1;
 }
 
-Branch *p_Branch_1(void *argv[], const Allocator *allocator) {
+Branch *p_Branch_1(void *argv[], const Allocator * const allocator) {
   Object *_arg0 = argv[0];
   Branch *br = Array_new(sizeof(Object), allocator);
   Array_append(br, _arg0, 1);
@@ -38,7 +38,7 @@ Branch *p_Branch_1(void *argv[], const Allocator *allocator) {
   return br;
 }
 
-Charset *p_Charset_0(void *argv[], const Allocator *allocator) {
+Charset *p_Charset_0(void *argv[], const Allocator * const allocator) {
   //    Terminal *_arg0 = argv[0];
   UnitArray *_arg1 = argv[1];
   //    Terminal *_arg2 = argv[2];
@@ -78,32 +78,22 @@ Charset *p_Charset_0(void *argv[], const Allocator *allocator) {
   return charset;
 }
 
-Sequence *p_Sequence_0(void *argv[], const Allocator *allocator) {
+Sequence *p_Sequence_0(void *argv[], const Allocator * const allocator) {
   Terminal *_arg0 = argv[0];
-  Sequence *seq = allocator->calloc(1, sizeof(Sequence));
-  seq->plains = allocator->malloc(ALLOC_LEN * sizeof(uint8_t));
-  seq->alloc = ALLOC_LEN;
-  seq->plains[0] = _arg0->value;
-  seq->length = 1;
+  Sequence *seq = Array_new(sizeof(char_t), allocator);
+  Array_append(seq, _arg0, 1);
   return seq;
 }
 
-Sequence *p_Sequence_1(void *argv[], const Allocator *allocator) {
+Sequence *p_Sequence_1(void *argv[], const Allocator * const allocator) {
   Terminal *_arg0 = argv[0];
   Sequence *_arg1 = argv[1];
-  if (_arg1->length + 1 >= _arg1->alloc) {
-    _arg1->alloc += ALLOC_LEN;
-    size_t size = _arg1->alloc * sizeof(uint8_t);
-    void *p = allocator->realloc(_arg1->plains, size);
-    if (!p) { return nullptr; }
-    _arg1->plains = p;
-  }
-  _arg1->plains[_arg1->length] = _arg0->value;
-  _arg1->length++;
+  if (allocator) { argv[MAX_ARGC - 1] = "'-Wall' requires it be used, make the compiler happy."; }
+  Array_append(_arg1, _arg0, 1);
   return _arg1;
 }
 
-Unit *p_Unit_0(void *argv[], const Allocator *allocator) {
+Unit *p_Unit_0(void *argv[], const Allocator * const allocator) {
   Terminal *_arg0 = argv[0];
   Unit *unit = allocator->calloc(1, sizeof(Unit));
   unit->type = enum_CHAR;
@@ -112,7 +102,7 @@ Unit *p_Unit_0(void *argv[], const Allocator *allocator) {
   return unit;
 }
 
-Unit *p_Unit_1(void *argv[], const Allocator *allocator) {
+Unit *p_Unit_1(void *argv[], const Allocator * const allocator) {
   Range *_arg0 = argv[0];
   Unit *unit = allocator->calloc(1, sizeof(Unit));
   unit->type = enum_Range;
@@ -121,7 +111,7 @@ Unit *p_Unit_1(void *argv[], const Allocator *allocator) {
   return unit;
 }
 
-Unit *p_Unit_2(void *argv[], const Allocator *allocator) {
+Unit *p_Unit_2(void *argv[], const Allocator * const allocator) {
   Range *_arg0 = argv[0];
   Unit *unit = allocator->calloc(1, sizeof(Unit));
   unit->type = enum_Charset;
@@ -130,19 +120,19 @@ Unit *p_Unit_2(void *argv[], const Allocator *allocator) {
   return unit;
 }
 
-Unit *p_Unit_3(void *argv[], const Allocator *allocator) {
+Unit *p_Unit_3(void *argv[], const Allocator * const allocator) {
   Unit *unit = p_Unit_0(argv, allocator);
   unit->inv = true;
   return unit;
 }
 
-Unit *p_Unit_4(void *argv[], const Allocator *allocator) {
+Unit *p_Unit_4(void *argv[], const Allocator * const allocator) {
   Unit *unit = p_Unit_2(argv, allocator);
   unit->inv = true;
   return unit;
 }
 
-UnitArray *p_UnitArray_0(void *argv[], const Allocator *allocator) {
+UnitArray *p_UnitArray_0(void *argv[], const Allocator * const allocator) {
   Unit *_arg0 = argv[0];
   UnitArray *_arg1 = argv[1];
   Array_append(_arg1, _arg0, 1);
@@ -150,7 +140,7 @@ UnitArray *p_UnitArray_0(void *argv[], const Allocator *allocator) {
   return _arg1;
 }
 
-UnitArray *p_UnitArray_1(void *argv[], const Allocator *allocator) {
+UnitArray *p_UnitArray_1(void *argv[], const Allocator * const allocator) {
   Unit *_arg0 = argv[0];
   UnitArray *array = Array_new(sizeof(Unit), allocator);
   Array_append(array, _arg0, 1);
@@ -165,7 +155,7 @@ Group *p_Group_0(void *argv[], const Allocator *) {
   return (Group *) _arg1;
 }
 
-Object *p_Object_0(void *argv[], const Allocator *allocator) {
+Object *p_Object_0(void *argv[], const Allocator * const allocator) {
   Sequence *_arg0 = argv[0];
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = enum_Sequence;
@@ -175,7 +165,7 @@ Object *p_Object_0(void *argv[], const Allocator *allocator) {
   return obj;
 }
 
-Object *p_Object_1(void *argv[], const Allocator *allocator) {
+Object *p_Object_1(void *argv[], const Allocator * const allocator) {
   Charset *_arg0 = argv[0];
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = enum_Charset;
@@ -185,7 +175,7 @@ Object *p_Object_1(void *argv[], const Allocator *allocator) {
   return obj;
 }
 
-Object *p_Object_2(void *argv[], const Allocator *allocator) {
+Object *p_Object_2(void *argv[], const Allocator * const allocator) {
   Group *_arg0 = argv[0];
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = enum_Group;
@@ -195,7 +185,7 @@ Object *p_Object_2(void *argv[], const Allocator *allocator) {
   return obj;
 }
 
-Object *p_Object_3(void *argv[], const Allocator *allocator) {
+Object *p_Object_3(void *argv[], const Allocator * const allocator) {
   Quantified *_arg0 = argv[0];
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = enum_Quantified;
@@ -205,7 +195,7 @@ Object *p_Object_3(void *argv[], const Allocator *allocator) {
   return obj;
 }
 
-Object *p_Object_4(void *argv[], const Allocator *allocator) {
+Object *p_Object_4(void *argv[], const Allocator * const allocator) {
   Terminal *_arg0 = argv[0];
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = _arg0->type;
@@ -215,7 +205,7 @@ Object *p_Object_4(void *argv[], const Allocator *allocator) {
   return obj;
 }
 
-Object *p_Object_5(void *argv[], const Allocator *allocator) {
+Object *p_Object_5(void *argv[], const Allocator * const allocator) {
   Charset *_arg0 = argv[0];
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = enum_Charset;
@@ -225,7 +215,7 @@ Object *p_Object_5(void *argv[], const Allocator *allocator) {
   return obj;
 }
 
-Object *p_Object_6(void *argv[], const Allocator *allocator) {
+Object *p_Object_6(void *argv[], const Allocator * const allocator) {
   Terminal *_arg0 = argv[0];
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = _arg0->type;
@@ -235,7 +225,7 @@ Object *p_Object_6(void *argv[], const Allocator *allocator) {
   return obj;
 }
 
-Quantified *p_Quantified_0(void *argv[], const Allocator *allocator) {
+Quantified *p_Quantified_0(void *argv[], const Allocator * const allocator) {
   Object *_arg0 = argv[0];
   Quantifier *_arg1 = argv[1];
   Quantified *quant = allocator->calloc(1, sizeof(Quantified));
@@ -246,7 +236,7 @@ Quantified *p_Quantified_0(void *argv[], const Allocator *allocator) {
   return quant;
 }
 
-Quantifier *p_Quantifier_0(void *[], const Allocator *allocator) {
+Quantifier *p_Quantifier_0(void *[], const Allocator * const allocator) {
   //    Terminal *_arg0 = argv[0];
   Quantifier *quant = allocator->calloc(1, sizeof(Quantifier));
   quant->min = 0;
@@ -254,7 +244,7 @@ Quantifier *p_Quantifier_0(void *[], const Allocator *allocator) {
   return quant;
 }
 
-Quantifier *p_Quantifier_1(void *[], const Allocator *allocator) {
+Quantifier *p_Quantifier_1(void *[], const Allocator * const allocator) {
   //    Terminal *_arg0 = argv[0];
   Quantifier *quant = allocator->calloc(1, sizeof(Quantifier));
   quant->min = 1;
@@ -262,7 +252,7 @@ Quantifier *p_Quantifier_1(void *[], const Allocator *allocator) {
   return quant;
 }
 
-Quantifier *p_Quantifier_2(void *[], const Allocator *allocator) {
+Quantifier *p_Quantifier_2(void *[], const Allocator * const allocator) {
   //    Terminal *_arg0 = argv[0];
   Quantifier *quant = allocator->calloc(1, sizeof(Quantifier));
   quant->min = 0;
@@ -270,7 +260,7 @@ Quantifier *p_Quantifier_2(void *[], const Allocator *allocator) {
   return quant;
 }
 
-Quantifier *p_Quantifier_3(void *argv[], const Allocator *allocator) {
+Quantifier *p_Quantifier_3(void *argv[], const Allocator * const allocator) {
   //    Terminal *_arg0 = argv[0];
   Terminal *_arg1 = argv[1];
   //    Terminal *_arg2 = argv[2];
@@ -282,7 +272,7 @@ Quantifier *p_Quantifier_3(void *argv[], const Allocator *allocator) {
   return quant;
 }
 
-Quantifier *p_Quantifier_4(void *argv[], const Allocator *allocator) {
+Quantifier *p_Quantifier_4(void *argv[], const Allocator * const allocator) {
   //    Terminal *_arg0 = argv[0];
   Terminal *_arg1 = argv[1];
   //    Terminal *_arg2 = argv[2];
@@ -292,7 +282,7 @@ Quantifier *p_Quantifier_4(void *argv[], const Allocator *allocator) {
   return quant;
 }
 
-Range *p_Range_0(void *argv[], const Allocator *allocator) {
+Range *p_Range_0(void *argv[], const Allocator * const allocator) {
   Terminal *_arg0 = argv[0];
   //    Terminal *_arg1 = argv[1];
   Terminal *_arg2 = argv[2];
@@ -302,7 +292,7 @@ Range *p_Range_0(void *argv[], const Allocator *allocator) {
   return rng;
 }
 
-Regexp *p_Regexp_0(void *argv[], const Allocator *allocator) {
+Regexp *p_Regexp_0(void *argv[], const Allocator * const allocator) {
   Branch *_arg0 = argv[0];
   //    Terminal *_arg1 = argv[1];
   Regexp *_arg2 = argv[2];
@@ -311,7 +301,7 @@ Regexp *p_Regexp_0(void *argv[], const Allocator *allocator) {
   return _arg2;
 }
 
-Regexp *p_Regexp_1(void *argv[], const Allocator *allocator) {
+Regexp *p_Regexp_1(void *argv[], const Allocator * const allocator) {
   Branch *_arg0 = argv[0];
   Regexp *regex = Array_new(sizeof_array, allocator);
   Array_append(regex, _arg0, 1);
@@ -319,9 +309,9 @@ Regexp *p_Regexp_1(void *argv[], const Allocator *allocator) {
   return regex;
 }
 
-Regexp *p_Regexp_2(void *argv[], const Allocator *allocator) {
+Regexp *p_Regexp_2(void *argv[], const Allocator * const allocator) {
   // since it's an empty rule.
-  argv[0] = "'-Wall' requires it be used, make the compiler happy.";
+  argv[MAX_ARGC - 1] = "'-Wall' requires it be used, make the compiler happy.";
   Regexp *regex = Array_new(sizeof_array, allocator);
   return regex;
 }

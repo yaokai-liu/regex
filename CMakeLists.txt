@@ -31,5 +31,5 @@ add_executable(test-produce ${TEST_PRODUCE_SRC})
 target_link_libraries(test-tokenize PRIVATE check)
 target_link_libraries(test-produce PRIVATE check)
 
-add_executable(debug debug-token.c)
-target_link_libraries(debug PRIVATE grammar container)
+#add_executable(debug debug-token.c)
+#target_link_libraries(debug PRIVATE grammar container)

@@ -53,6 +53,10 @@ typedef struct Group {
   Regexp *regexp;
 } Group;
 
+enum TAP_TYPE : bool {
+  CT_NORMAL = false,
+  CT_INVERSE = true
+};
 typedef struct Charset {
   struct charset_tap {
     Array *plains;
@@ -65,5 +69,13 @@ typedef struct Charset {
 typedef void *fn_product(void *argv[], const Allocator *allocator);
 
 extern fn_product * const PRODUCTS[];
+
+void releaseRegexp(Regexp *regexp, const Allocator *allocator);
+void releaseBranch(Branch *branch, const Allocator *allocator);
+void releaseGroup(Group *group, const Allocator *allocator);
+void releaseObject(Object *object, const Allocator *allocator);
+void releaseCharset(Charset *charset, const Allocator *allocator);
+void releaseSequence(Sequence *sequence, const Allocator *allocator);
+void releaseQuantified(Quantified *quantified, const Allocator *allocator);
 
 #endif  // REGEX_TARGET_H

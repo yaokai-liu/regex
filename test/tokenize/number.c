@@ -3,7 +3,7 @@
  * Module Name: test/tokenize
  * Filename: number.c
  * Creator: Yaokai Liu
- * Create Date: 24-7-6
+ * Create Date: 2024-7-6
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
@@ -39,7 +39,7 @@ START_TEST(test_NUMBER) {
 END_TEST
 
 Suite *number_suite() {
-  Suite *suite = suite_create("Single Token");
+  Suite *suite = suite_create("Continuous Tokens");
   TCase *tc_number = tcase_create("number");
   tcase_add_test(tc_number, test_NUMBER);
   suite_add_tcase(suite, tc_number);

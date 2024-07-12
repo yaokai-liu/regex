@@ -3,7 +3,7 @@
  * Module Name: grammar
  * Filename: allocator.c
  * Creator: Yaokai Liu
- * Create Date: 24-6-29
+ * Create Date: 2024-6-29
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 

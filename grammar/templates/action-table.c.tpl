@@ -80,7 +80,3 @@ inline int32_t jump(uint32_t index, uint32_t current) {
     if (!unit) { return -1; }
     return JUMPS[state->goto_base + unit->offset];
 }
-
-inline const state *getState(uint16_t index) {
-    return &STATES[index];
-}

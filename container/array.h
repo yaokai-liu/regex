@@ -39,7 +39,9 @@ bool Array_all(struct Array *array, bool (*fn_judgment)(void *));
 uint32_t Array_no_duplicated_concat(struct Array * restrict _to, struct Array * restrict _from);
 
 // Clear array and free all element with `fn_free`.
-uint32_t Array_clear(struct Array *array, void (*fn_free)(void *));
-// Release array and free all element with `fn_free`.
-uint32_t Array_release(struct Array *array, void (*fn_free)(void *));
+uint32_t Array_clear(struct Array *array, void (*fn_free)(void *, const Allocator *));
+// Reset array and free all element with `fn_free`.
+uint32_t Array_reset(struct Array *array, void (*fn_free)(void *, const Allocator *));
+// Maybe cause memory leak if not reset array before destroy it.
+void Array_destroy(struct Array *array);
 #endif  // REGEX_ARRAY_H

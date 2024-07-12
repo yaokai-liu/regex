@@ -3,7 +3,7 @@
  * Module Name: automaton
  * Filename: nfa.c
  * Creator: Yaokai Liu
- * Create Date: 24-7-1
+ * Create Date: 2024-7-1
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 

@@ -3,7 +3,7 @@
  * Module Name: container
  * Filename: array.c
  * Creator: Yaokai Liu
- * Create Date: 24-7-3
+ * Create Date: 2024-7-3
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
@@ -57,7 +57,7 @@ inline int32_t Array_append(struct Array *array, void *elements, int32_t count) 
   }
   void *dest = array->elements + array->ele_size * array->used_len;
   memcpy(dest, elements, count * array->ele_size);
-  array->used_len++;
+  array->used_len += count;
   return count;
 }
 
@@ -82,6 +82,7 @@ inline bool Array_all(struct Array *array, bool (*fn_judgment)(void *)) {
 inline uint32_t Array_no_duplicated_concat(struct Array * restrict _to,
                                            struct Array * restrict _from) {
   if (_from->ele_size != _to->ele_size) { return 0; }
+  if (_from->used_len == 0) { return 0; }
   void *temp = _to->allocator->malloc(_from->used_len * sizeof(_to->ele_size));
   uint32_t len = 0;
   for (uint32_t i = 0; i < _from->used_len; i++) {
@@ -92,17 +93,18 @@ inline uint32_t Array_no_duplicated_concat(struct Array * restrict _to,
     }
     memcpy(temp + len * _to->ele_size, p1, _to->ele_size);
     len++;
-__Array_no_duplicated_concat_for_duplicated:
+__Array_no_duplicated_concat_for_duplicated:;
   }
-  if (len) { len = Array_append(_to, temp, len); }
+  if (len) { Array_append(_to, temp, (int32_t) len); }
+  _to->allocator->free(temp);
   return len;
 }
 
-uint32_t Array_clear(struct Array *array, void (*fn_free)(void *)) {
+uint32_t Array_clear(struct Array *array, void (*fn_free)(void *, const Allocator *)) {
   if (fn_free) {
     for (uint32_t i = 0; i < array->used_len; i++) {
       void *ele = Array_get(array, i);
-      fn_free(ele);
+      fn_free(ele, array->allocator);
     }
   }
   uint32_t len = array->used_len;
@@ -110,12 +112,16 @@ uint32_t Array_clear(struct Array *array, void (*fn_free)(void *)) {
   return len;
 }
 
-uint32_t Array_release(struct Array *array, void (*fn_free)(void *)) {
+uint32_t Array_reset(struct Array *array, void (*fn_free)(void *, const Allocator *)) {
   Array_clear(array, fn_free);
   uint32_t len = array->alloc_len;
-  array->allocator->free(array->elements);
+  if (array->elements) { array->allocator->free(array->elements); }
   array->elements = nullptr;
   array->alloc_len = 0;
   array->used_len = 0;
   return len;
+}
+
+void Array_destroy(struct Array *array) {
+  array->allocator->free(array);
 }

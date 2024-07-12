@@ -3,7 +3,7 @@
  * Module Name:
  * Filename: token.c
  * Creator: Yaokai Liu
- * Create Date: 24-6-25
+ * Create Date: 2024-6-25
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
@@ -33,6 +33,7 @@ Terminal *tokenize(const char_t *input, uint32_t *cost, uint32_t *n_tokens,
   uint32_t alloc_len = 32;
   uint32_t used_len = 0;
   Terminal *tokens = allocator->malloc(alloc_len * sizeof(Terminal));
+  if (!tokens) { return nullptr; }
 
   const char_t *sp = input;
   bool is_quant = false;
@@ -78,6 +79,7 @@ Terminal *tokenize(const char_t *input, uint32_t *cost, uint32_t *n_tokens,
 
 __failed_tokenize:
   allocator->free(tokens);
+  *n_tokens = 0;
   return nullptr;
 }
 

@@ -176,7 +176,7 @@ def gen_action_table():
         state_enum=',\n  '.join(state_enum),
         actions=",\n  ".join(actions),
         jumps=", ".join(jumps),
-        units=", ".join(units),
+        units=", \n  ".join(units),
         states=",\n  ".join(states)
     )
     with open(GRAMMAR_DIR / "action-table.gen.c", 'w') as fp:

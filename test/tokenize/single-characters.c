@@ -3,7 +3,7 @@
  * Module Name: test/produce
  * Filename: single-characters.c
  * Creator: Yaokai Liu
- * Create Date: 24-7-5
+ * Create Date: 2024-7-5
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 

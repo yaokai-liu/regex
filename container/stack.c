@@ -3,7 +3,7 @@
  * Module Name:
  * Filename: stack.c
  * Creator: Yaokai Liu
- * Create Date: 24-6-27
+ * Create Date: 2024-6-27
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
@@ -28,6 +28,8 @@ Stack *Stack_new() {
 }
 void Stack_clear(Stack *stack) {
   free(stack->stack);
+  stack->allocated = 0;
+  stack->used = 0;
   stack->stack = nullptr;
 }
 uint32_t Stack_push(Stack *stack, const void *data, uint32_t size) {

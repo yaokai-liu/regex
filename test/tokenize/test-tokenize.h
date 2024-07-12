@@ -15,5 +15,6 @@
 Suite *single_token_suite();
 Suite *number_suite();
 Suite *char_suite();
+Suite *over_len_suite();
 
 #endif  // REGEX_TEST_TOKENIZE_H

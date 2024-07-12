@@ -26,6 +26,5 @@ struct grammar_action {
 
 const struct grammar_action *getAction(uint32_t index, uint32_t ahead);
 int32_t jump(uint32_t index, uint32_t current);
-const state *getState(uint16_t index);
 
 #endif  // REGEX_ACTION_TABLE_H

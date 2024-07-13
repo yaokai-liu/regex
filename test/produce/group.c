@@ -68,6 +68,7 @@ START_TEST(test_GROUP_NORMAL) {
   ck_assert_uint_eq(sub_object5->inv, false);
 
   releaseRegexp(regexp, &STDAllocator);
+  Array_destroy(regexp);
   STDAllocator.free(terminals);
 }
 

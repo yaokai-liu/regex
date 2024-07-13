@@ -13,10 +13,9 @@
 
 void releaseSequence(Sequence *sequence, const Allocator *) {
   Array_reset(sequence, nullptr);
-  Array_destroy(sequence);
 }
 
-void releaseCharset(Charset *charset, const Allocator *allocator) {
+void releaseCharset(Charset *charset, const Allocator *) {
   Array_reset(charset->taps[0].plains, nullptr);
   Array_reset(charset->taps[0].ranges, nullptr);
   Array_reset(charset->taps[1].plains, nullptr);
@@ -25,17 +24,15 @@ void releaseCharset(Charset *charset, const Allocator *allocator) {
   Array_destroy(charset->taps[0].ranges);
   Array_destroy(charset->taps[1].plains);
   Array_destroy(charset->taps[1].ranges);
-  allocator->free(charset);
 }
 
 void releaseGroup(Group *group, const Allocator *allocator) {
   releaseRegexp(group->regexp, allocator);
-  allocator->free(group);
+  Array_destroy(group->regexp);
 }
 
 void releaseRegexp(Regexp *regexp, const Allocator *) {
   Array_reset(regexp, (void (*)(void *, const Allocator *)) releaseBranch);
-  Array_destroy(regexp);
 }
 
 void releaseBranch(Branch *branch, const Allocator *) {
@@ -44,7 +41,6 @@ void releaseBranch(Branch *branch, const Allocator *) {
 
 void releaseQuantified(Quantified *quantified, const Allocator *allocator) {
   releaseObject(&quantified->object, allocator);
-  allocator->free(quantified);
 }
 
 void releaseObject(Object *object, const Allocator *allocator) {
@@ -54,18 +50,22 @@ void releaseObject(Object *object, const Allocator *allocator) {
     }
     case enum_Sequence: {
       releaseSequence(object->target, allocator);
+      Array_destroy(object->target);
       return;
     }
     case enum_Charset: {
       releaseCharset(object->target, allocator);
+      allocator->free(object->target);
       break;
     }
     case enum_Group: {
       releaseGroup(object->target, allocator);
+      allocator->free(object->target);
       break;
     }
     case enum_Quantified: {
       releaseQuantified(object->target, allocator);
+      allocator->free(object->target);
       break;
     }
   }

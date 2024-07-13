@@ -49,6 +49,7 @@ START_TEST(test_SEQUENCE_NORMAL) {
   }
 
   releaseRegexp(regexp, &STDAllocator);
+  Array_destroy(regexp);
   STDAllocator.free(terminals);
 }
 END_TEST

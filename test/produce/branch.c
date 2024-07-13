@@ -65,6 +65,7 @@ START_TEST(test_BRANCH_NORMAL) {
   ck_assert_uint_eq(Array_length(sub_regexp), 0);
 
   releaseRegexp(regexp, &STDAllocator);
+  Array_destroy(regexp);
   STDAllocator.free(terminals);
 }
 

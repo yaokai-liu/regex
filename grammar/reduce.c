@@ -61,6 +61,7 @@ Charset *p_Charset_0(void *argv[], const Allocator * const allocator) {
       Array_no_duplicated_concat(tap1->plains, target->taps[CT_INVERSE].plains);
       Array_no_duplicated_concat(tap1->ranges, target->taps[CT_INVERSE].ranges);
       releaseCharset(unit->target, allocator);
+      allocator->free(unit->target);
     } else if (unit->type == enum_CHAR) {
       struct charset_tap *tap = &charset->taps[unit->inv];
       char_t the_char = (char_t) (uint64_t) unit->target;

@@ -51,6 +51,7 @@ START_TEST(test_QUANTIFIED_NURMAL0) {
   ck_assert_uint_eq(quantified->quant.max, 1);
 
   releaseRegexp(regexp, &STDAllocator);
+  Array_destroy(regexp);
   STDAllocator.free(terminals);
 }
 
@@ -92,6 +93,7 @@ START_TEST(test_QUANTIFIED_NURMAL1) {
   ck_assert_uint_eq(quantified->quant.max, 0);
 
   releaseRegexp(regexp, &STDAllocator);
+  Array_destroy(regexp);
   STDAllocator.free(terminals);
 }
 
@@ -133,6 +135,7 @@ START_TEST(test_QUANTIFIED_NURMAL2) {
   ck_assert_uint_eq(quantified->quant.max, 0);
 
   releaseRegexp(regexp, &STDAllocator);
+  Array_destroy(regexp);
   STDAllocator.free(terminals);
 }
 
@@ -174,6 +177,7 @@ START_TEST(test_QUANTIFIED_NURMAL3) {
   ck_assert_uint_eq(quantified->quant.max, 3);
 
   releaseRegexp(regexp, &STDAllocator);
+  Array_destroy(regexp);
   STDAllocator.free(terminals);
 }
 
@@ -215,6 +219,7 @@ START_TEST(test_QUANTIFIED_NURMAL4) {
   ck_assert_uint_eq(quantified->quant.max, 7);
 
   releaseRegexp(regexp, &STDAllocator);
+  Array_destroy(regexp);
   STDAllocator.free(terminals);
 }
 

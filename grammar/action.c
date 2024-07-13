@@ -16,6 +16,10 @@
 #define ALLOC_LEN      32
 #define _sizeof(_type) ((int32_t) sizeof(_type))
 
+Regexp *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, uint64_t *argv, uint32_t argc);
+Regexp *failed_to_produce(Stack *state_stack, Stack *token_stack, uint64_t *argv, uint32_t argc);
+Regexp *failed_to_get_action(Stack *state_stack, Stack *token_stack);
+
 Regexp *produce(const Terminal *tokens, const Allocator * const allocator) {
   void *result;
   const Terminal *tp = tokens;
@@ -26,7 +30,7 @@ Regexp *produce(const Terminal *tokens, const Allocator * const allocator) {
   Stack_push(state_stack, &state, sizeof(int32_t));
   while (true) {
     const struct grammar_action *act = getAction(state, tp->type);
-    if (!act) { goto __failed_to_product; }
+    if (!act) { failed_to_get_action(state_stack, token_stack); }
     if (act->action == stack) {
       state = act->offset;
       Stack_push(token_stack, &tp, sizeof(void *));
@@ -38,9 +42,9 @@ Regexp *produce(const Terminal *tokens, const Allocator * const allocator) {
       Stack_top(state_stack, (int32_t *) &state, _sizeof(int32_t));
       fn_product *func = PRODUCTS[act->offset];
       result = func((void **) argv, allocator);
-      if (!result) { goto __failed_to_product; }
+      if (!result) { return failed_to_produce(state_stack, token_stack, argv, act->count); }
       state = jump(state, act->type);
-      if (state < 0) { goto __failed_to_product; }
+      if (state < 0) { failed_to_get_next_state(state_stack, token_stack, argv, act->count); }
       Stack_push(token_stack, &result, sizeof(void *));
       Stack_push(state_stack, &state, _sizeof(int32_t));
       if (act->offset == __EXTEND_RULE__) { break; }
@@ -53,12 +57,16 @@ Regexp *produce(const Terminal *tokens, const Allocator * const allocator) {
   allocator->free(token_stack);
   allocator->free(state_stack);
   return result;
+}
 
-__failed_to_product:
-  // TODO: release elements.
-  Stack_clear(token_stack);
-  Stack_clear(state_stack);
-  allocator->free(token_stack);
-  allocator->free(state_stack);
-  return nullptr;
+Regexp *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, uint64_t *argv, uint32_t argc) {
+    return nullptr;
+}
+
+Regexp *failed_to_produce(Stack *state_stack, Stack *token_stack, uint64_t *argv, uint32_t argc) {
+    return nullptr;
+}
+
+Regexp *failed_to_get_action(Stack *state_stack, Stack *token_stack) {
+    return nullptr;
 }

@@ -66,6 +66,7 @@ START_TEST(test_CHARSET_NORMAL) {
   ck_assert_uint_eq(range1->max, 'z');
 
   releaseRegexp(regexp, &STDAllocator);
+  Array_destroy(regexp);
   STDAllocator.free(terminals);
 }
 

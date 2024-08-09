@@ -21,6 +21,10 @@ target_link_libraries(grammar PRIVATE container)
 aux_source_directory(automaton AUTOMATON_SRC)
 add_library(automaton STATIC ${AUTOMATON_SRC})
 
+add_compile_definitions("TARGET_X64" "UNIX64")
+aux_source_directory(codegen CODEGEN_SRC)
+aux_source_directory(codegen/x64 MCODE_SRC)
+add_library(codegen STATIC ${CODEGEN_SRC} ${MCODE_SRC})
 
 add_executable(debug test/debug.c)
 target_link_libraries(debug PRIVATE grammar container)

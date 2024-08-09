@@ -21,6 +21,7 @@ Array *Array_new(uint32_t ele_size, const Allocator *allocator);
 
 uint32_t Array_init(struct Array *array, uint32_t ele_size);
 
+const Allocator *Array_allocator(struct Array *array);
 uint32_t Array_length(struct Array *array);
 
 // Note: append may change elements' address,
@@ -35,6 +36,7 @@ bool Array_any(struct Array *array, bool (*fn_judgment)(void *));
 // So that for traversing elements.
 bool Array_all(struct Array *array, bool (*fn_judgment)(void *));
 
+uint32_t Array_no_duplicated_append(struct Array * restrict _to, void *elements, uint32_t count);
 // Suppose `_to` and `_from` both are not duplicated array.
 uint32_t Array_no_duplicated_concat(struct Array * restrict _to, struct Array * restrict _from);
 
@@ -44,4 +46,5 @@ uint32_t Array_clear(struct Array *array, void (*fn_free)(void *, const Allocato
 uint32_t Array_reset(struct Array *array, void (*fn_free)(void *, const Allocator *));
 // Maybe cause memory leak if not reset array before destroy it.
 void Array_destroy(struct Array *array);
+
 #endif  // REGEX_ARRAY_H

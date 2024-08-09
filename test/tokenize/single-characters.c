@@ -47,22 +47,14 @@ END_TEST
   }                                                                          \
   END_TEST
 
-add_test_for(BEGIN_CHARSET, "[")
-add_test_for(BEGIN_GROUP, "(")
-add_test_for(BEGIN_QUANTIFIER, "{")
-add_test_for(COMMA, ",")
-add_test_for(END_CHARSET, "]")
-add_test_for(END_GROUP, ")")
-add_test_for(END_QUANTIFIER, "}")
-add_test_for(MINUS, "-")
-add_test_for(NOT, "^")
-add_test_for(SPLIT, "|")
-add_test_for(PLUS, "+")
-add_test_for(QUEST, "?")
-add_test_for(TIMES, "*")
+add_test_for(BEGIN_CHARSET, "[") add_test_for(BEGIN_GROUP, "(") add_test_for(BEGIN_QUANTIFIER, "{")
+  add_test_for(COMMA, ",") add_test_for(END_CHARSET, "]") add_test_for(END_GROUP, ")")
+    add_test_for(END_QUANTIFIER, "}") add_test_for(MINUS, "-") add_test_for(NOT, "^")
+      add_test_for(SPLIT, "|") add_test_for(PLUS, "+") add_test_for(QUEST, "?")
+        add_test_for(TIMES, "*")
 
-Suite *single_token_suite() {
-  Suite *suite = suite_create("Single Token");
+          Suite *single_token_suite() {
+  Suite *suite          = suite_create("Single Token");
   TCase *tc_single_char = tcase_create("single-character");
   tcase_add_test(tc_single_char, test_TERMINATOR);
   tcase_add_test(tc_single_char, test_BEGIN_CHARSET);

@@ -66,14 +66,8 @@ SpacesBeforeTrailingComments: 2
 SpacesInCStyleCastParentheses: false
 SpacesInConditionalStatement: false
 SpacesInContainerLiterals: false
-SpacesInLineCommentPrefix:
-  Maximum: 4
-  Minimum: 1
-StatementMacros:
-  - _enter
-  - _leave
-  - _literal
-  - add_test_for
+SpacesInLineCommentPrefix: { Maximum: 4, Minimum: 1 }
+StatementMacros: []
 TabWidth: 2
 UseCRLF: false
 UseTab: Never

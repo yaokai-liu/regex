@@ -226,7 +226,7 @@ START_TEST(test_QUANTIFIED_NURMAL4) {
 END_TEST
 
 Suite *quantified_suite() {
-  Suite *suite = suite_create("Quantified");
+  Suite *suite  = suite_create("Quantified");
   TCase *t_case = tcase_create("quantified");
   tcase_add_test(t_case, test_QUANTIFIED_NURMAL0);
   tcase_add_test(t_case, test_QUANTIFIED_NURMAL1);

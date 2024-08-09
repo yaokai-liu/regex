@@ -11,39 +11,39 @@
 #include "allocator.h"
 #include "tokens.gen.h"
 
-void releaseSequence(Sequence *sequence, const Allocator *) {
+inline void releaseSequence(Sequence *sequence, const Allocator *) {
   Array_reset(sequence, nullptr);
 }
 
-void releaseCharset(Charset *charset, const Allocator *) {
-  Array_reset(charset->taps[0].plains, nullptr);
-  Array_reset(charset->taps[0].ranges, nullptr);
-  Array_reset(charset->taps[1].plains, nullptr);
-  Array_reset(charset->taps[1].ranges, nullptr);
-  Array_destroy(charset->taps[0].plains);
-  Array_destroy(charset->taps[0].ranges);
-  Array_destroy(charset->taps[1].plains);
-  Array_destroy(charset->taps[1].ranges);
+inline void releaseCharset(Charset *charset, const Allocator *) {
+  Array_reset(charset->parts[0].plains, nullptr);
+  Array_reset(charset->parts[0].ranges, nullptr);
+  Array_reset(charset->parts[1].plains, nullptr);
+  Array_reset(charset->parts[1].ranges, nullptr);
+  Array_destroy(charset->parts[0].plains);
+  Array_destroy(charset->parts[0].ranges);
+  Array_destroy(charset->parts[1].plains);
+  Array_destroy(charset->parts[1].ranges);
 }
 
-void releaseGroup(Group *group, const Allocator *allocator) {
+inline void releaseGroup(Group *group, const Allocator *allocator) {
   releaseRegexp(group->regexp, allocator);
   Array_destroy(group->regexp);
 }
 
-void releaseRegexp(Regexp *regexp, const Allocator *) {
+inline void releaseRegexp(Regexp *regexp, const Allocator *) {
   Array_reset(regexp, (void (*)(void *, const Allocator *)) releaseBranch);
 }
 
-void releaseBranch(Branch *branch, const Allocator *) {
+inline void releaseBranch(Branch *branch, const Allocator *) {
   Array_reset(branch, (void (*)(void *, const Allocator *)) releaseObject);
 }
 
-void releaseQuantified(Quantified *quantified, const Allocator *allocator) {
+inline void releaseQuantified(Quantified *quantified, const Allocator *allocator) {
   releaseObject(&quantified->object, allocator);
 }
 
-void releaseObject(Object *object, const Allocator *allocator) {
+inline void releaseObject(Object *object, const Allocator *allocator) {
   switch (object->type) {
     case enum_CHAR: {
       return;
@@ -66,6 +66,27 @@ void releaseObject(Object *object, const Allocator *allocator) {
     case enum_Quantified: {
       releaseQuantified(object->target, allocator);
       allocator->free(object->target);
+      break;
+    }
+  }
+}
+
+inline void releaseUnitArray(UnitArray *unitArray, const Allocator *) {
+  Array_reset(unitArray, (void (*)(void *, const Allocator *)) releaseUnit);
+}
+
+inline void releaseUnit(Unit *unit, const Allocator *allocator) {
+  switch (unit->type) {
+    case enum_CHAR: {
+      break;
+    }
+    case enum_Range: {
+      allocator->free(unit->target);
+      break;
+    }
+    case enum_Charset: {
+      releaseCharset(unit->target, allocator);
+      allocator->free(unit->target);
       break;
     }
   }

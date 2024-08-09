@@ -11,16 +11,15 @@
 #include "allocator.h"
 #include "array.h"
 #include "reduce.gen.h"
+#include "stack.h"
 #include "target.h"
 #include "terminal.h"
 #include "tokens.gen.h"
+#include "utils.h"
 #include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 
 #define ALLOC_LEN 32
-
-thread_local static uint32_t STATE_COUNT = 0;
 
 Branch *p_Branch_0(void *argv[], const Allocator * const allocator) {
   Branch *_arg0 = argv[0];
@@ -44,38 +43,43 @@ Charset *p_Charset_0(void *argv[], const Allocator * const allocator) {
   //    Terminal *_arg2 = argv[2];
 
   Charset *charset = allocator->calloc(1, sizeof(Charset));
-  charset->taps[CT_NORMAL].plains = Array_new(sizeof(char_t), allocator);
-  charset->taps[CT_NORMAL].ranges = Array_new(sizeof(Range), allocator);
-  charset->taps[CT_INVERSE].plains = Array_new(sizeof(char_t), allocator);
-  charset->taps[CT_INVERSE].ranges = Array_new(sizeof(Range), allocator);
+
+  // create parts
+  charset->parts[CT_NORMAL].plains = Array_new(sizeof(char_t), allocator);
+  charset->parts[CT_NORMAL].ranges = Array_new(sizeof(Range), allocator);
+  charset->parts[CT_INVERSE].plains = Array_new(sizeof(char_t), allocator);
+  charset->parts[CT_INVERSE].ranges = Array_new(sizeof(Range), allocator);
 
   uint32_t length = Array_length(_arg1);
   for (uint32_t i = 0; i < length; i++) {
     Unit *unit = Array_get(_arg1, i);
     if (unit->type == enum_Charset) {
-      struct charset_tap *tap0 = &charset->taps[unit->inv];
-      struct charset_tap *tap1 = &charset->taps[!unit->inv];
+      // select part
+      struct charset_part *tap0 = &charset->parts[unit->inv];
+      struct charset_part *tap1 = &charset->parts[!unit->inv];
+      // copy without duplicate
       Charset *target = unit->target;
-      Array_no_duplicated_concat(tap0->plains, target->taps[CT_NORMAL].plains);
-      Array_no_duplicated_concat(tap0->ranges, target->taps[CT_NORMAL].ranges);
-      Array_no_duplicated_concat(tap1->plains, target->taps[CT_INVERSE].plains);
-      Array_no_duplicated_concat(tap1->ranges, target->taps[CT_INVERSE].ranges);
-      releaseCharset(unit->target, allocator);
-      allocator->free(unit->target);
+      Array_no_duplicated_concat(tap0->plains, target->parts[CT_NORMAL].plains);
+      Array_no_duplicated_concat(tap0->ranges, target->parts[CT_NORMAL].ranges);
+      Array_no_duplicated_concat(tap1->plains, target->parts[CT_INVERSE].plains);
+      Array_no_duplicated_concat(tap1->ranges, target->parts[CT_INVERSE].ranges);
     } else if (unit->type == enum_CHAR) {
-      struct charset_tap *tap = &charset->taps[unit->inv];
+      // select part
+      struct charset_part *tap = &charset->parts[unit->inv];
+      // update plains
       char_t the_char = (char_t) (uint64_t) unit->target;
-      Array_append(tap->plains, &the_char, 1);
+      Array_no_duplicated_append(tap->plains, &the_char, 1);
     } else if (unit->type == enum_Range) {
-      struct charset_tap *tap = &charset->taps[unit->inv];
-      Array_append(tap->ranges, unit->target, 1);
-      allocator->free(unit->target);
+      // select part
+      struct charset_part *tap = &charset->parts[unit->inv];
+      // update range
+      Range_array_update(tap->ranges, unit->target);
     } else {
       // never be touched
     }
   }
-  Array_reset(_arg1, nullptr);
-  allocator->free(_arg1);
+  releaseUnitArray(_arg1, allocator);
+  Array_destroy(_arg1);
   return charset;
 }
 
@@ -171,7 +175,6 @@ Object *p_Object_0(void *argv[], const Allocator * const allocator) {
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = enum_Sequence;
   obj->inv = false;
-  obj->post_state = STATE_COUNT++;
   obj->target = (void *) _arg0;
   return obj;
 }
@@ -181,7 +184,6 @@ Object *p_Object_1(void *argv[], const Allocator * const allocator) {
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = enum_Charset;
   obj->inv = false;
-  obj->post_state = STATE_COUNT++;
   obj->target = (void *) _arg0;
   return obj;
 }
@@ -191,7 +193,6 @@ Object *p_Object_2(void *argv[], const Allocator * const allocator) {
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = enum_Group;
   obj->inv = false;
-  obj->post_state = STATE_COUNT++;
   obj->target = (void *) _arg0;
   return obj;
 }
@@ -201,7 +202,6 @@ Object *p_Object_3(void *argv[], const Allocator * const allocator) {
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = enum_Quantified;
   obj->inv = false;
-  obj->post_state = STATE_COUNT++;
   obj->target = (void *) _arg0;
   return obj;
 }
@@ -212,7 +212,6 @@ Object *p_Object_4(void *argv[], const Allocator * const allocator) {
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = _arg1->type;
   obj->inv = true;
-  obj->post_state = STATE_COUNT++;
   obj->target = (void *) (uint64_t) _arg1->value;
   return obj;
 }
@@ -223,7 +222,6 @@ Object *p_Object_5(void *argv[], const Allocator * const allocator) {
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = enum_Charset;
   obj->inv = true;
-  obj->post_state = STATE_COUNT++;
   obj->target = _arg1;
   return obj;
 }
@@ -234,7 +232,6 @@ Object *p_Object_6(void *argv[], const Allocator * const allocator) {
   Object *obj = allocator->calloc(1, sizeof(Object));
   obj->type = enum_Group;
   obj->inv = true;
-  obj->post_state = STATE_COUNT++;
   obj->target = _arg1;
   return obj;
 }
@@ -242,12 +239,12 @@ Object *p_Object_6(void *argv[], const Allocator * const allocator) {
 Quantified *p_Quantified_0(void *argv[], const Allocator * const allocator) {
   Object *_arg0 = argv[0];
   Quantifier *_arg1 = argv[1];
-  Quantified *quant = allocator->calloc(1, sizeof(Quantified));
-  memcpy(&quant->quant, _arg1, sizeof(Quantifier));
-  memcpy(&quant->object, _arg0, sizeof(Object));
+  Quantified *quantified = allocator->calloc(1, sizeof(Quantified));
+  memcpy(&quantified->quant, _arg1, sizeof(Quantifier));
+  memcpy(&quantified->object, _arg0, sizeof(Object));
   allocator->free(_arg0);
   allocator->free(_arg1);
-  return quant;
+  return quantified;
 }
 
 Quantifier *p_Quantifier_0(void *[], const Allocator * const allocator) {
@@ -333,4 +330,73 @@ Regexp *p_Regexp_2(void *argv[], const Allocator * const allocator) {
 Regexp *p___EXTEND_RULE__(void *argv[], const Allocator *) {
   Regexp *regex = argv[0];
   return regex;
+}
+
+Regexp *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *result,
+                                 uint32_t result_type, const Allocator *allocator);
+Regexp *failed_to_produce(Stack *state_stack, Stack *token_stack, uint64_t *argv, uint32_t argc,
+                          const Allocator *allocator);
+Regexp *failed_to_get_action(Stack *state_stack, Stack *token_stack, const Allocator *allocator);
+
+Regexp *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *result,
+                                 uint32_t result_type, const Allocator *allocator) {
+  int32_t state = 0;
+  Stack_top(state_stack, (int32_t *) &state, sizeof(int32_t));
+  switch (result_type) {
+    case enum_Regexp: {
+      releaseRegexp(result, allocator);
+      break;
+    }
+    case enum_Branch: {
+      releaseBranch(result, allocator);
+      break;
+    }
+    case enum_Group: {
+      releaseGroup(result, allocator);
+      break;
+    }
+    case enum_Object: {
+      releaseObject(result, allocator);
+      break;
+    }
+    case enum_Quantified: {
+      releaseQuantified(result, allocator);
+      break;
+    }
+    case enum_Charset: {
+      releaseCharset(result, allocator);
+      break;
+    }
+    case enum_Sequence: {
+      releaseSequence(result, allocator);
+      break;
+    }
+    case enum_UnitArray: {
+      releaseUnitArray(result, allocator);
+      break;
+    }
+    case enum_Unit: {
+      releaseUnit(result, allocator);
+      break;
+    }
+    default: {
+    }
+  }
+  allocator->free(result);
+  return failed_to_get_action(state_stack, token_stack, allocator);
+}
+
+Regexp *failed_to_produce(Stack *state_stack, Stack *token_stack, uint64_t *, uint32_t,
+                          const Allocator *allocator) {
+  // TODO： release memory allocated.
+  return failed_to_get_action(state_stack, token_stack, allocator);
+}
+
+Regexp *failed_to_get_action(Stack *state_stack, Stack *token_stack, const Allocator *allocator) {
+  // TODO： release memory allocated.
+  Stack_clear(token_stack);
+  Stack_clear(state_stack);
+  allocator->free(token_stack);
+  allocator->free(state_stack);
+  return nullptr;
 }

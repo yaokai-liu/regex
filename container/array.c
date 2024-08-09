@@ -40,6 +40,9 @@ uint32_t Array_init(struct Array *array, uint32_t ele_size) {
   return ele_size;
 }
 
+inline const Allocator *Array_allocator(struct Array *array) {
+  return array->allocator;
+}
 inline uint32_t Array_length(struct Array *array) {
   return array->used_len;
 }
@@ -82,11 +85,16 @@ inline bool Array_all(struct Array *array, bool (*fn_judgment)(void *)) {
 inline uint32_t Array_no_duplicated_concat(struct Array * restrict _to,
                                            struct Array * restrict _from) {
   if (_from->ele_size != _to->ele_size) { return 0; }
-  if (_from->used_len == 0) { return 0; }
-  void *temp = _to->allocator->malloc(_from->used_len * sizeof(_to->ele_size));
+  return Array_no_duplicated_append(_to, _from->elements, _from->used_len);
+}
+
+inline uint32_t Array_no_duplicated_append(struct Array * restrict _to, void *elements,
+                                           uint32_t count) {
+  if (count == 0) { return 0; }
+  void *temp = _to->allocator->malloc(count * sizeof(_to->ele_size));
   uint32_t len = 0;
-  for (uint32_t i = 0; i < _from->used_len; i++) {
-    void *p1 = Array_get(_from, i);
+  for (uint32_t i = 0; i < count; i++) {
+    void *p1 = ((char *) elements) + i * _to->ele_size;
     for (uint32_t j = 0; j < _to->used_len; j++) {
       void *p2 = Array_get(_to, j);
       if (memcmp(p1, p2, _to->ele_size) == 0) { goto __Array_no_duplicated_concat_for_duplicated; }

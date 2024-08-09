@@ -11,6 +11,7 @@
 #define REGEX_TARGET_H
 
 #include "array.h"
+#include "char_t.h"
 #include <stdint.h>
 
 typedef Array Sequence;
@@ -18,7 +19,9 @@ typedef Array Sequence;
 typedef struct Object {
   uint8_t type;
   uint8_t inv;
-  uint32_t post_state;
+  char_t *regex;
+  uint32_t start;
+  uint32_t length;
   void *target;
 } Object;
 
@@ -43,8 +46,8 @@ typedef struct Unit {
 typedef Array UnitArray;
 
 typedef struct Range {
-  uint8_t min;
-  uint8_t max;
+  char_t min;
+  char_t max;
 } Range;
 
 typedef Array Branch;
@@ -58,10 +61,10 @@ enum TAP_TYPE : bool {
   CT_INVERSE = true
 };
 typedef struct Charset {
-  struct charset_tap {
+  struct charset_part {
     Array *plains;
     Array *ranges;
-  } taps[2];
+  } parts[2];
 } Charset;
 
 #include "allocator.h"
@@ -77,5 +80,7 @@ void releaseObject(Object *object, const Allocator *allocator);
 void releaseCharset(Charset *charset, const Allocator *allocator);
 void releaseSequence(Sequence *sequence, const Allocator *allocator);
 void releaseQuantified(Quantified *quantified, const Allocator *allocator);
+void releaseUnitArray(UnitArray *unitArray, const Allocator *);
+void releaseUnit(Unit *unit, const Allocator *allocator);
 
 #endif  // REGEX_TARGET_H

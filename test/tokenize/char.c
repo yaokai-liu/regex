@@ -92,7 +92,7 @@ START_TEST(test_CHAR_SYMBOL) {
 END_TEST
 
 Suite *char_suite() {
-  Suite *suite = suite_create("Single Token");
+  Suite *suite     = suite_create("Single Token");
   TCase *tc_number = tcase_create("char");
   tcase_add_test(tc_number, test_CHAR_DIGITAL);
   tcase_add_test(tc_number, test_CHAR_LOWER);

@@ -40,8 +40,8 @@ START_TEST(test_CHARSET_NORMAL) {
 
   Charset *charset = (Charset *) object->target;
   ck_assert_ptr_ne(charset, nullptr);
-  struct charset_tap *tap0 = &charset->taps[CT_NORMAL];
-  struct charset_tap *tap1 = &charset->taps[CT_INVERSE];
+  struct charset_part *tap0 = &charset->parts[CT_NORMAL];
+  struct charset_part *tap1 = &charset->parts[CT_INVERSE];
   ck_assert_ptr_ne(tap0->plains, nullptr);
   ck_assert_ptr_ne(tap0->ranges, nullptr);
   ck_assert_ptr_ne(tap1->plains, nullptr);
@@ -72,10 +72,59 @@ START_TEST(test_CHARSET_NORMAL) {
 
 END_TEST
 
+#define string_to_test1 "[01234234341g-ma-kl-sA-Z]"
+START_TEST(test_CHARSET_DUPLICATED) {
+  char_t *string = string_to_test1;
+  uint32_t cost, n_tokens;
+  Terminal *terminals = tokenize(string, &cost, &n_tokens, &STDAllocator);
+  ck_assert_uint_eq(cost, (sizeof string_to_test1) - 1);
+  ck_assert_uint_eq(n_tokens, (sizeof string_to_test1));
+  ck_assert_ptr_ne(terminals, nullptr);
+  ck_assert_uint_eq(terminals[n_tokens - 1].type, enum_TERMINATOR);
+  ck_assert_uint_eq(terminals[n_tokens - 1].value, 0);
+  ck_assert_str_eq(get_name(terminals[n_tokens - 1].type), string_t("TERMINATOR"));
+  Regexp *regexp = produce(terminals, &STDAllocator);
+  ck_assert_ptr_ne(regexp, nullptr);
+  ck_assert_uint_eq(Array_length(regexp), 1);
+  Branch *branch = (Branch *) Array_get(regexp, 0);
+  ck_assert_ptr_ne(branch, nullptr);
+  ck_assert_uint_eq(Array_length(branch), 1);
+  Object *object = (Object *) Array_get(branch, 0);
+  ck_assert_ptr_ne(object, nullptr);
+  ck_assert_uint_eq(object->type, enum_Charset);
+  ck_assert_uint_eq(object->inv, false);
+
+  Charset *charset = (Charset *) object->target;
+  ck_assert_ptr_ne(charset, nullptr);
+  struct charset_part *tap0 = &charset->parts[CT_NORMAL];
+  struct charset_part *tap1 = &charset->parts[CT_INVERSE];
+  ck_assert_ptr_ne(tap0->plains, nullptr);
+  ck_assert_ptr_ne(tap0->ranges, nullptr);
+  ck_assert_ptr_ne(tap1->plains, nullptr);
+  ck_assert_ptr_ne(tap1->ranges, nullptr);
+  ck_assert_uint_eq(Array_length(tap0->plains), (sizeof "01234") - 1);
+  ck_assert_uint_eq(Array_length(tap0->ranges), 2);
+  ck_assert_uint_eq(Array_length(tap1->plains), 0);
+  ck_assert_uint_eq(Array_length(tap1->ranges), 0);
+  Range *range0 = (Range *) Array_get(tap0->ranges, 0);
+  ck_assert_uint_eq(range0->min, 'a');
+  ck_assert_uint_eq(range0->max, 's');
+  Range *range1 = (Range *) Array_get(tap0->ranges, 1);
+  ck_assert_uint_eq(range1->min, 'A');
+  ck_assert_uint_eq(range1->max, 'Z');
+
+  releaseRegexp(regexp, &STDAllocator);
+  Array_destroy(regexp);
+  STDAllocator.free(terminals);
+}
+
+END_TEST
+
 Suite *charset_suite() {
-  Suite *suite = suite_create("Charset");
+  Suite *suite  = suite_create("Charset");
   TCase *t_case = tcase_create("charset");
   tcase_add_test(t_case, test_CHARSET_NORMAL);
+  tcase_add_test(t_case, test_CHARSET_DUPLICATED);
   suite_add_tcase(suite, t_case);
   return suite;
 }

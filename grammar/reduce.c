@@ -86,7 +86,8 @@ Charset *p_Charset_0(void *argv[], const Allocator * const allocator) {
 Sequence *p_Sequence_0(void *argv[], const Allocator * const allocator) {
   Terminal *_arg0 = argv[0];
   Sequence *seq = Array_new(sizeof(char_t), allocator);
-  Array_append(seq, &_arg0->value, 1);
+  char_t the_char = (uint8_t) _arg0->value & 0xff;
+  Array_append(seq, &the_char, 1);
   return seq;
 }
 
@@ -94,7 +95,8 @@ Sequence *p_Sequence_1(void *argv[], const Allocator * const allocator) {
   Sequence *_arg0 = argv[0];
   Terminal *_arg1 = argv[1];
   if (allocator) { argv[MAX_ARGC - 1] = "'-Wall' requires it be used, make the compiler happy."; }
-  Array_append(_arg0, &_arg1->value, 1);
+  char_t the_char = (uint8_t) _arg1->value & 0xff;
+  Array_append(_arg0, &the_char, 1);
   return _arg0;
 }
 

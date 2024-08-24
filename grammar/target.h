@@ -26,8 +26,8 @@ typedef struct Object {
 } Object;
 
 typedef struct Quantifier {
-  uint8_t min;
-  uint8_t max;
+  uint16_t min;
+  uint16_t max;
 } Quantifier;
 
 typedef struct Quantified {

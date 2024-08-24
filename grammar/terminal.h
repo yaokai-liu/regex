@@ -16,7 +16,7 @@
 
 typedef struct {
   uint8_t type;
-  char_t value;
+  uint32_t value: 24;
 } Terminal;
 Terminal *tokenize(const char_t *input, uint32_t *cost, uint32_t *n_tokens,
                    const Allocator *allocator);

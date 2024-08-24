@@ -75,7 +75,7 @@ START_TEST(test_GROUP_NORMAL) {
 END_TEST
 
 Suite *group_suite() {
-  Suite *suite  = suite_create("Group");
+  Suite *suite = suite_create("Group");
   TCase *t_case = tcase_create("group");
   tcase_add_test(t_case, test_GROUP_NORMAL);
   suite_add_tcase(suite, t_case);

@@ -33,7 +33,7 @@ START_TEST(test_REALLOC) {
 END_TEST
 
 #define BUFFER_SIZE (64 * sizeof(Terminal))
-thread_local static uint32_t allocated       = 0;
+thread_local static uint32_t allocated = 0;
 thread_local static char buffer[BUFFER_SIZE] = {};
 
 void *moc_malloc(size_t size) {
@@ -90,7 +90,7 @@ START_TEST(test_REALLOC_FAILED) {
 END_TEST
 
 Suite *over_len_suite() {
-  Suite *suite       = suite_create("Continuous Tokens");
+  Suite *suite = suite_create("Continuous Tokens");
   TCase *tc_over_len = tcase_create("over-len");
   tcase_add_test(tc_over_len, test_REALLOC);
   tcase_add_test(tc_over_len, test_REALLOC_LAST);

@@ -15,19 +15,19 @@
 
 enum LEGACY_PREFIX : uint8_t {
   // prefix group 1
-  LEGACY_LOCK   = 0xf0,
+  LEGACY_LOCK = 0xf0,
   LEGACY_REP_NZ = 0xf2,
-  LEGACY_REP_Z  = 0xf3,
+  LEGACY_REP_Z = 0xf3,
 
   // prefix group 2
-  LEGACY_CS    = 0x2E,
-  LEGACY_SS    = 0x36,
-  LEGACY_DS    = 0x3E,
-  LEGACY_ES    = 0x26,
-  LEGACY_FS    = 0x64,
-  LEGACY_GS    = 0x65,
+  LEGACY_CS = 0x2E,
+  LEGACY_SS = 0x36,
+  LEGACY_DS = 0x3E,
+  LEGACY_ES = 0x26,
+  LEGACY_FS = 0x64,
+  LEGACY_GS = 0x65,
   LEGACY_BR_NT = 0x2E,
-  LEGACY_BR_T  = 0x3E,
+  LEGACY_BR_T = 0x3E,
 
   // prefix group 3
   LEGACY_SIZE_OD = 0x66,

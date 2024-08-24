@@ -1,37 +1,33 @@
 /**
  * Project Name: regex
  * Module Name: codegen
- * Filename: instruction.c
+ * Filename: regex-actions.c
  * Creator: Yaokai Liu
  * Create Date: 2024-07-20
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#include "instruction.h"
-#ifdef TARGET_X64
-  #include "x64/mcode.h"
-#endif
+#include "regex-actions.h"
+#include "mcode.h"
+#include "target/target.h"
 
-uint32_t Codegen_ranges(Range *ranges, uint32_t n_ranges, Array *inst_array) {
-  Array *lbs = Array_new(sizeof(char_t), Array_allocator(inst_array));
-  Array *ubs = Array_new(sizeof(char_t), Array_allocator(inst_array));
+uint32_t Codegen_ranges(Range *ranges, uint32_t n_ranges, const Target *target) {
+  Array *inst_array = target->instrBuffer;
+  uint32_t lbs_offset = Array_length(target->rodataBuffer);
   for (uint32_t i = 0; i < n_ranges; i++) {
-    Array_append(lbs, (void *) &ranges[i].min, 1);
-    Array_append(ubs, (void *) &ranges[i].max, 1);
+    Array_append(target->rodataBuffer, (void *) &ranges[i].min, 1);
   }
-  Array *mc_array = mcode_ranges(Array_get(lbs, 0), Array_get(ubs, 0), n_ranges);
-  Array_append(inst_array, Array_get(mc_array, 0), (int32_t) Array_length(mc_array));
-  uint32_t size = Array_length(mc_array);
-  Array_reset(lbs, nullptr);
-  Array_reset(ubs, nullptr);
-  Array_reset(mc_array, nullptr);
-  Array_destroy(lbs);
-  Array_destroy(ubs);
-  Array_destroy(mc_array);
-  return size;
+  uint32_t ubs_offset = Array_length(target->rodataBuffer);
+  for (uint32_t i = 0; i < n_ranges; i++) {
+    Array_append(target->rodataBuffer, (void *) &ranges[i].max, 1);
+  }
+
+  mcode_ranges((uint64_t) lbs_offset, (uint64_t) ubs_offset, n_ranges, target);
+  return 0;
 }
 
-uint32_t Codegen_char(char_t the_char, bool inverse, Array *inst_array) {
+uint32_t Codegen_char(char_t the_char, bool inverse, const Target *target) {
+  Array *inst_array = target->instrBuffer;
   Array *mcode_array = mcode_char(the_char);
   Array_append(inst_array, Array_get(mcode_array, 0), (int32_t) Array_length(mcode_array));
   if (inverse) {
@@ -43,7 +39,8 @@ uint32_t Codegen_char(char_t the_char, bool inverse, Array *inst_array) {
   return size;
 }
 
-uint32_t Codegen_plains(char_t *plains, uint32_t n_plains, Array *inst_array) {
+uint32_t Codegen_plains(char_t *plains, uint32_t n_plains, const Target *target) {
+  Array *inst_array = target->instrBuffer;
   Array *mcode_array = mcode_plains(plains, n_plains);
   Array_append(inst_array, Array_get(mcode_array, 0), (int32_t) Array_length(mcode_array));
   uint32_t size = Array_length(mcode_array);
@@ -52,28 +49,31 @@ uint32_t Codegen_plains(char_t *plains, uint32_t n_plains, Array *inst_array) {
   return size;
 }
 
-uint32_t Codegen_charset(Charset *charset, Array *inst_array) {
+uint32_t Codegen_charset(Charset *charset, const Target *target) {
   Array *range_array, *plain_array;
-  Array *normal_inst_array = Array_new(sizeof(uint8_t), Array_allocator(inst_array));
-  Array *inverse_inst_array = Array_new(sizeof(uint8_t), Array_allocator(inst_array));
+  Target *normal_target = Target_new(target->allocator),
+         *inverse_target = Target_new(target->allocator);
 
   range_array = charset->parts[CT_NORMAL].ranges;
   plain_array = charset->parts[CT_NORMAL].ranges;
-  Codegen_ranges(Array_get(range_array, 0), Array_length(range_array), normal_inst_array);
-  Codegen_plains(Array_get(plain_array, 0), Array_length(plain_array), normal_inst_array);
+  Codegen_ranges(Array_get(range_array, 0), Array_length(range_array), normal_target);
+  Codegen_plains(Array_get(plain_array, 0), Array_length(plain_array), normal_target);
+  Target_concat(target, normal_target);
   // TODO: $$failed, jump to failed process program.
   // TODO: if normal part is matched, jump to $inverse_case
   // $inverse_case
   range_array = charset->parts[CT_INVERSE].ranges;
   plain_array = charset->parts[CT_INVERSE].ranges;
-  Codegen_ranges(Array_get(range_array, 0), Array_length(range_array), inverse_inst_array);
-  Codegen_plains(Array_get(plain_array, 0), Array_length(plain_array), inverse_inst_array);
+  Codegen_ranges(Array_get(range_array, 0), Array_length(range_array), inverse_target);
+  Codegen_plains(Array_get(plain_array, 0), Array_length(plain_array), inverse_target);
+  Target_concat(target, inverse_target);
   // $succeeded, make sp++
 
   return 0;
 }
 
-uint32_t Codegen_sequence(Array *sequence, Array *inst_array) {
+uint32_t Codegen_sequence(Array *sequence, const Target *target) {
+  Array *inst_array = target->instrBuffer;
   Array *mcode_array = mcode_sequence(Array_get(sequence, 0), Array_length(sequence));
   // if this is matched, jump to $$failed
   Array_append(inst_array, Array_get(mcode_array, 0), (int32_t) Array_length(mcode_array));
@@ -85,8 +85,8 @@ uint32_t Codegen_sequence(Array *sequence, Array *inst_array) {
 }
 
 uint32_t Codegen_quantified(Array *obj_inst_array, uint32_t loop_min, uint32_t loop_max,
-                            Array *inst_array) {
-  uint32_t offset = Array_length(inst_array);
+                            const Target *target) {
+  Array *inst_array = target->instrBuffer;
   // $entry
   // TODO: xor REREG_REPEAT, REREG_REPEAT
   // TODO: address fill back in obj_inst_array $internal_failed
@@ -104,16 +104,16 @@ uint32_t Codegen_quantified(Array *obj_inst_array, uint32_t loop_min, uint32_t l
   return 0;
 }
 
-uint32_t Codegen_branch(Array *) {
+uint32_t Codegen_branch(const Target *) {
   // TODO: fill address all should jump to failed: $failed
   return 0;
 }
 
-uint32_t Codegen_branches(Array *) {
+uint32_t Codegen_branches(const Target *) {
   // TODO: fill address all should jump to failed: $succeeded
   return 0;
 }
 
-uint32_t Codegen_group(Array *, bool) {
+uint32_t Codegen_group(const Target *, bool) {
   return 0;
 }

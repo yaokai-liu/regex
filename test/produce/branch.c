@@ -72,7 +72,7 @@ START_TEST(test_BRANCH_NORMAL) {
 END_TEST
 
 Suite *branch_suite() {
-  Suite *suite  = suite_create("Branch");
+  Suite *suite = suite_create("Branch");
   TCase *t_case = tcase_create("branch");
   tcase_add_test(t_case, test_BRANCH_NORMAL);
   suite_add_tcase(suite, t_case);

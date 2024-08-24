@@ -121,7 +121,7 @@ START_TEST(test_CHARSET_DUPLICATED) {
 END_TEST
 
 Suite *charset_suite() {
-  Suite *suite  = suite_create("Charset");
+  Suite *suite = suite_create("Charset");
   TCase *t_case = tcase_create("charset");
   tcase_add_test(t_case, test_CHARSET_NORMAL);
   tcase_add_test(t_case, test_CHARSET_DUPLICATED);

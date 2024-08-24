@@ -39,7 +39,7 @@ START_TEST(test_NUMBER) {
 END_TEST
 
 Suite *number_suite() {
-  Suite *suite     = suite_create("Continuous Tokens");
+  Suite *suite = suite_create("Continuous Tokens");
   TCase *tc_number = tcase_create("number");
   tcase_add_test(tc_number, test_NUMBER);
   suite_add_tcase(suite, tc_number);

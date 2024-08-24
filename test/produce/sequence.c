@@ -55,7 +55,7 @@ START_TEST(test_SEQUENCE_NORMAL) {
 END_TEST
 
 Suite *sequence_suite() {
-  Suite *suite  = suite_create("Sequence");
+  Suite *suite = suite_create("Sequence");
   TCase *t_case = tcase_create("sequence");
   tcase_add_test(t_case, test_SEQUENCE_NORMAL);
   suite_add_tcase(suite, t_case);

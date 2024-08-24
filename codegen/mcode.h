@@ -12,8 +12,10 @@
 
 #include "array.h"
 #include "char_t.h"
+#include "target/target.h"
 
-Array *mcode_ranges(char_t *lower_bounds, char_t *upper_bounds, uint32_t n_ranges);
+uint32_t mcode_ranges(uint32_t lower_bounds, uint32_t upper_bounds, uint32_t n_ranges,
+                      const Target *target);
 Array *mcode_char(char_t the_char);
 Array *mcode_plains(char_t *plains, uint32_t n_plains);
 Array *mcode_sequence(char_t *plains, uint32_t n_plains);

@@ -50,7 +50,12 @@ inline void *Array_get(struct Array *array, uint32_t index) {
   if (index >= array->used_len) { return nullptr; }
   return array->elements + array->ele_size * index;
 }
-inline int32_t Array_append(struct Array *array, void *elements, int32_t count) {
+
+inline uint32_t Array_concat(struct Array *dest, struct Array *addend) {
+  return Array_append(dest, addend->elements, (int32_t) addend->used_len);
+}
+
+inline uint32_t Array_append(struct Array *array, void *elements, uint32_t count) {
   if (array->used_len + count >= array->alloc_len) {
     uint32_t length = array->alloc_len + ALLOC_LEN;
     void *p = array->allocator->realloc(array->elements, length * array->ele_size);

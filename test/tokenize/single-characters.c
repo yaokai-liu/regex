@@ -54,7 +54,7 @@ add_test_for(BEGIN_CHARSET, "[") add_test_for(BEGIN_GROUP, "(") add_test_for(BEG
         add_test_for(TIMES, "*")
 
           Suite *single_token_suite() {
-  Suite *suite          = suite_create("Single Token");
+  Suite *suite = suite_create("Single Token");
   TCase *tc_single_char = tcase_create("single-character");
   tcase_add_test(tc_single_char, test_TERMINATOR);
   tcase_add_test(tc_single_char, test_BEGIN_CHARSET);

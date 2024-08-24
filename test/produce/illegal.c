@@ -36,7 +36,7 @@ START_TEST(test_ILLEGAL) {
 END_TEST
 
 Suite *illegal_suite() {
-  Suite *suite  = suite_create("_Illegal");
+  Suite *suite = suite_create("_Illegal");
   TCase *t_case = tcase_create("illegal");
   tcase_add_test(t_case, test_ILLEGAL);
   suite_add_tcase(suite, t_case);

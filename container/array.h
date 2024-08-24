@@ -27,7 +27,10 @@ uint32_t Array_length(struct Array *array);
 // Note: append may change elements' address,
 // so it is not promised that two `Array_get` of one same `index` will return a same address.
 void *Array_get(struct Array *array, uint32_t index);
-int32_t Array_append(struct Array *array, void *elements, int32_t count);
+
+uint32_t Array_concat(struct Array *dest, struct Array *addend);
+
+uint32_t Array_append(struct Array *array, void *elements, uint32_t count);
 
 // Promised that every element would be detected with `fn_judgment`.
 // So that for traversing elements.

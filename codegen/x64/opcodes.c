@@ -9,8 +9,4 @@
 
 #include "opcodes.h"
 
-Opcode generateOpcode() {
-  Opcode opcode = {};
-  opcode.form.hNibble = 0;
-  return opcode;
-}
+

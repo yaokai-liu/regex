@@ -16,14 +16,6 @@
 
 #include <stdint.h>
 
-typedef union {
-  uint8_t value;
-  struct {
-    uint8_t lNibble : 4;
-    uint8_t hNibble : 4;
-  } form;
-} Opcode;
-
-Opcode generateOpcode();
+uint32_t generateInstruction(uint8_t * dest, uint32_t instr_op, uint32_t instr_form, ...);
 
 #endif  // REGEX_OPCODES_H

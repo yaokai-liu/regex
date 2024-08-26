@@ -14,7 +14,10 @@
 
 uint32_t mcode_ranges(uint32_t lower_bounds, uint32_t upper_bounds, uint32_t n_ranges,
                       const Target *target) {
+  uint8_t instr[32] = {};
+  uint32_t instr_size = 0;
   // pseudo: mov   REREG_PATTERN1, <lower_bounds>
+  instr_size = generateInstruction(instr, IOP_PRIME_MOV, IF2_G64_I64, REREG_PATTERN1, lower_bounds);
   // pseudo: mov   REREG_PATTERN2, <upper_bounds>
   // pseudo: setEveryBytes   xmm0, BYTE PTR [REREG_STR_PTR]
   while (n_ranges > 16) {

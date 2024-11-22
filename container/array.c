@@ -56,7 +56,7 @@ inline uint32_t Array_concat(struct Array *dest, struct Array *addend) {
 }
 
 inline uint32_t Array_append(struct Array *array, void *elements, uint32_t count) {
-  if (array->used_len + count >= array->alloc_len) {
+  while (array->used_len + count >= array->alloc_len) {
     uint32_t length = array->alloc_len + ALLOC_LEN;
     void *p = array->allocator->realloc(array->elements, length * array->ele_size);
     if (!p) { return -1; }

@@ -24,15 +24,15 @@ const size_t sizeof_array = sizeof(Array);
 
 #define ALLOC_LEN 32
 
-inline Array *Array_new(uint32_t ele_size, const Allocator * const allocator) {
-  Array *array = allocator->calloc(1, sizeof(struct Array));
-  array->allocator = allocator;
+Array *Array_new(const uint32_t ele_size, const Allocator * const allocator) {
   if (ele_size == 0) { return nullptr; }
-  Array_init(array, ele_size);
+  Array *array = allocator->calloc(1, sizeof(struct Array));
+  Array_init(array, ele_size, allocator);
   return array;
 }
 
-uint32_t Array_init(struct Array *array, uint32_t ele_size) {
+uint32_t Array_init(Array *array, const uint32_t ele_size, const Allocator *allocator) {
+  array->allocator = allocator;
   array->ele_size = ele_size;
   array->elements = nullptr;
   array->alloc_len = 0;

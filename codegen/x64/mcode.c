@@ -21,16 +21,15 @@ uint32_t mcode_ranges(uint32_t lower_bounds, uint32_t upper_bounds, uint32_t n_r
   // pseudo: mov   REREG_PATTERN2, <upper_bounds>
   // pseudo: setEveryBytes   xmm0, BYTE PTR [REREG_STR_PTR]
   while (n_ranges > 16) {
-  // pseudo: load16bytes    xmm1, BYTE PTR [REREG_PATTERN1]
-  // pseudo: load16bytes    xmm2, BYTE PTR [REREG_PATTERN2]
-  // $match:
-  // pseudo: cmp PER-BYTE LT  xmm1, xmm0, xmm1    // xmm1 =[BYTE] xmm0 < xmm1
-  // pseudo: cmp PER-BYTE GT  xmm2, xmm0, xmm2    // xmm2 =[BYTE] xmm0 > xmm2
-  // pseudo: or  PER-BYTE     xmm1, xmm1, xmm2    // xmm1 =[BYTE] xmm1 || xmm2
-  // pseudo: test ALL ONE     xmm1                // in XMM registers, -1 means true and 0 means false
-  // pseudo: jmp [FALSE]      $succeeded
-  // pseudo: add              REREG_PATTERN1, 16
-  // pseudo: add              REREG_PATTERN2, 16
+    // pseudo: load16bytes    xmm1, BYTE PTR [REREG_PATTERN1]
+    // pseudo: load16bytes    xmm2, BYTE PTR [REREG_PATTERN2]
+    // $match:
+    // pseudo: cmp PER-BYTE LT  xmm1, xmm0, xmm1    // xmm1 =[BYTE] xmm0 < xmm1
+    // pseudo: cmp PER-BYTE GT  xmm2, xmm0, xmm2    // xmm2 =[BYTE] xmm0 > xmm2
+    // pseudo: or  PER-BYTE     xmm1, xmm1, xmm2    // xmm1 =[BYTE] xmm1 || xmm2
+    // pseudo: test ALL ONE     xmm1                // in XMM registers, -1 means true and 0 means
+    // false pseudo: jmp [FALSE]      $succeeded pseudo: add              REREG_PATTERN1, 16 pseudo:
+    // add              REREG_PATTERN2, 16
   }
   return 0;
 }
@@ -41,7 +40,7 @@ Array *mcode_char(char_t the_char) {
   return nullptr;
 }
 
-Array *mcode_plains(char_t *plains, uint32_t n_plains) {
+Array *mcode_plains(const char_t *plains, const uint32_t n_plains) {
   // pseudo: mov   REREG_PATTERN1, <plains>
   // pseudo: setEveryBytes   xmm0, BYTE PTR [REREG_STR_PTR]
   while (n_plains > 16) {
@@ -55,7 +54,7 @@ Array *mcode_plains(char_t *plains, uint32_t n_plains) {
   return nullptr;
 }
 
-Array *mcode_sequence(char_t *plains, uint32_t n_plains) {
+Array *mcode_sequence(const char_t *plains, uint32_t n_plains) {
   // pseudo: mov   REREG_PATTERN1, <plains>
   // pseudo: mov   xmm0, BYTE PTR [REREG_STR_PTR]
   while (n_plains > 16) {

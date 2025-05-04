@@ -9,21 +9,34 @@
 
 #include "target.h"
 #include "allocator.h"
-#include "tokens.gen.h"
+#include "enum.h"
+#include "generated/tokens.gen.h"
+
+const Range ESCAPE_RANGES[] = {
+  {.min = 'a', .max = 'z'},
+  {.min = 'A', .max = 'Z'},
+  {.min = '0', .max = '9'},
+};
+const ConstCharset ESCAPE_CHARSETS[] = {
+  {{[CT_NORMAL] = {.n_plains = 0, .plains = nullptr, .n_ranges = 1, .ranges = &ESCAPE_RANGES[1]},
+    [CT_INVERSE] = {.n_plains = 0, .plains = nullptr, .n_ranges = 0, .ranges = nullptr}}},
+  {{[CT_NORMAL] = {.n_plains = 0, .plains = nullptr, .n_ranges = 1, .ranges = &ESCAPE_RANGES[1]},
+    [CT_INVERSE] = {.n_plains = 0, .plains = nullptr, .n_ranges = 0, .ranges = nullptr}}},
+  {{[CT_NORMAL] = {.n_plains = 0, .plains = nullptr, .n_ranges = 1, .ranges = &ESCAPE_RANGES[2]},
+    [CT_INVERSE] = {.n_plains = 0, .plains = nullptr, .n_ranges = 0, .ranges = nullptr}}},
+  {{[CT_NORMAL] = {.n_plains = 0, .plains = nullptr, .n_ranges = 3, .ranges = &ESCAPE_RANGES[0]},
+    [CT_INVERSE] = {.n_plains = 0, .plains = nullptr, .n_ranges = 0, .ranges = nullptr}}},
+};
 
 inline void releaseSequence(Sequence *sequence, const Allocator *) {
   Array_reset(sequence, nullptr);
 }
 
 inline void releaseCharset(Charset *charset, const Allocator *) {
-  Array_reset(charset->parts[0].plains, nullptr);
-  Array_reset(charset->parts[0].ranges, nullptr);
-  Array_reset(charset->parts[1].plains, nullptr);
-  Array_reset(charset->parts[1].ranges, nullptr);
-  Array_destroy(charset->parts[0].plains);
-  Array_destroy(charset->parts[0].ranges);
-  Array_destroy(charset->parts[1].plains);
-  Array_destroy(charset->parts[1].ranges);
+  Set_destroy(charset->parts[0].plains);
+  Set_destroy(charset->parts[0].ranges);
+  Set_destroy(charset->parts[1].plains);
+  Set_destroy(charset->parts[1].ranges);
 }
 
 inline void releaseGroup(Group *group, const Allocator *allocator) {

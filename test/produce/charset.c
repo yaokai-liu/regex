@@ -40,8 +40,8 @@ START_TEST(test_CHARSET_NORMAL) {
 
   Charset *charset = (Charset *) object->target;
   ck_assert_ptr_ne(charset, nullptr);
-  struct charset_part *tap0 = &charset->parts[CT_NORMAL];
-  struct charset_part *tap1 = &charset->parts[CT_INVERSE];
+  struct CharsetPart *tap0 = &charset->parts[CT_NORMAL];
+  struct CharsetPart *tap1 = &charset->parts[CT_INVERSE];
   ck_assert_ptr_ne(tap0->plains, nullptr);
   ck_assert_ptr_ne(tap0->ranges, nullptr);
   ck_assert_ptr_ne(tap1->plains, nullptr);
@@ -96,8 +96,8 @@ START_TEST(test_CHARSET_DUPLICATED) {
 
   Charset *charset = (Charset *) object->target;
   ck_assert_ptr_ne(charset, nullptr);
-  struct charset_part *tap0 = &charset->parts[CT_NORMAL];
-  struct charset_part *tap1 = &charset->parts[CT_INVERSE];
+  struct CharsetPart *tap0 = &charset->parts[CT_NORMAL];
+  struct CharsetPart *tap1 = &charset->parts[CT_INVERSE];
   ck_assert_ptr_ne(tap0->plains, nullptr);
   ck_assert_ptr_ne(tap0->ranges, nullptr);
   ck_assert_ptr_ne(tap1->plains, nullptr);

@@ -14,14 +14,26 @@
 #include "char_t.h"
 #include <stdint.h>
 
-typedef struct {
-  uint8_t type;
-  uint32_t value: 24;
-} Terminal;
-Terminal *tokenize(const char_t *input, uint32_t *cost, uint32_t *n_tokens,
-                   const Allocator *allocator);
-extern const char_t TERMINALS[];
-extern const char_t * const TERMINAL_STRING;
-extern const int32_t N_TERMINAL;
+/// location of a Token in a file
+typedef struct TokenLoc {
+  /// Offset in src string
+  uint32_t offset;
+  /// line number in src file
+  uint32_t lineno;
+  /// column offset in the line in src file
+  uint32_t column;
+  /// length of the token (size in bytes)
+  uint32_t length;
+} TokenLoc;
+
+typedef struct Terminal {
+  TokenLoc location;
+  /// Token Type
+  uint32_t type;
+  /// Version in standard: [0] enable; [1] deprecated.
+  uint16_t mark[2];
+  /// value of the token
+  void *value;
+} Terminal, Token;
 
 #endif  // REGEX_TERMINAL_H

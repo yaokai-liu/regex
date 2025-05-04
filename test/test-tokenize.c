@@ -11,7 +11,7 @@
 #include <check.h>
 
 int main() {
-  SRunner *srunner = srunner_create(nullptr);
+  SRunner *srunner = srunner_create(NULL);
   srunner_add_suite(srunner, single_token_suite());
   srunner_add_suite(srunner, number_suite());
   srunner_add_suite(srunner, char_suite());

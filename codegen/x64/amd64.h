@@ -41,10 +41,10 @@ struct LegacyPrefix {
 };
 
 enum REX_PREFIX : uint8_t {
-  REX_WB = 0b00001000,
-  REX_RB = 0b00000100,
-  REX_XB = 0b00000010,
-  REX_BB = 0b00000001,
+  REX_WB = 0b01001000,
+  REX_RB = 0b01000100,
+  REX_XB = 0b01000010,
+  REX_BB = 0b01000001,
 };
 
 struct RexPrefix {

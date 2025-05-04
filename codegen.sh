@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 
-if [ -d "grammar/json" ]; then
+if [ -d "json/regex" ]; then
   echo ''
 else
-  mkdir grammar/json
+  mkdir -p json/regex
 fi
-python liu-regex/generate.py grammar/json --compact
-python script/codegen.py
+if [ -d "grammar/generated/regex" ]; then
+  echo ''
+else
+  mkdir -p grammar/generated/regex
+fi
+python liu-regex/generate.py json --compact
+python xnf-json2C/codegen.py json template grammar/generated

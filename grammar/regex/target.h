@@ -10,15 +10,19 @@
 #ifndef REGEX_TARGET_H
 #define REGEX_TARGET_H
 
-#include "array.h"
 #include "char_t.h"
+#include "array.h"
+#include "set.h"
 #include <stdint.h>
+#include "terminal.h"
+#include "allocator.h"
 
 typedef Array Sequence;
 
 typedef struct Object {
-  uint8_t type;
-  uint8_t inv;
+  uint32_t type;
+  uint16_t inv;
+  uint16_t ass;
   char_t *regex;
   uint32_t start;
   uint32_t length;
@@ -56,23 +60,26 @@ typedef struct Group {
   Regexp *regexp;
 } Group;
 
-enum TAP_TYPE : bool {
+typedef struct ConstCharset {
+  struct {
+    const uint32_t n_plains;
+    const uint32_t n_ranges;
+    const char_t *plains;
+    const Range *ranges;
+  }parts[2];
+} ConstCharset;
+extern const ConstCharset ESCAPE_CHARSETS[];
+
+enum PART_TYPE : bool {
   CT_NORMAL = false,
   CT_INVERSE = true
 };
 typedef struct Charset {
-  struct charset_part {
-    Array *plains;
-    Array *ranges;
+  struct CharsetPart {
+    Set *plains; // Set<char_t>
+    Set *ranges; // Set<Range>
   } parts[2];
 } Charset;
-
-#include "allocator.h"
-
-typedef void *fn_product(void *argv[], const Allocator *allocator);
-
-extern fn_product * const PRODUCTS[];
-
 void releaseRegexp(Regexp *regexp, const Allocator *allocator);
 void releaseBranch(Branch *branch, const Allocator *allocator);
 void releaseGroup(Group *group, const Allocator *allocator);

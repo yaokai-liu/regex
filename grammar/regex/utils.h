@@ -10,9 +10,9 @@
 #ifndef REGEX_UTILS_H
 #define REGEX_UTILS_H
 
+#include "target.h"
 #include <stdint.h>
-#include <target.h>
 
-void Range_array_update(Array *range_array, Range *range);
+void Range_set_update(Set *range_set, const Range *range);
 
 #endif  // REGEX_UTILS_H

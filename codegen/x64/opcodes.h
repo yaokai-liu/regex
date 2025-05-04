@@ -16,6 +16,6 @@
 
 #include <stdint.h>
 
-uint32_t generateInstruction(uint8_t * dest, uint32_t instr_op, uint32_t instr_form, ...);
+uint32_t generateInstruction(uint8_t *dest, uint32_t instr_op, uint32_t instr_form, ...);
 
 #endif  // REGEX_OPCODES_H

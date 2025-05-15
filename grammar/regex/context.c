@@ -34,7 +34,7 @@ void set_env_quantifier(RegexContext *context, const Token *) {
 }
 
 void set_env_regexp(RegexContext *context, const Token *) {
-  context->env = enum_Regexp;
+  context->env = enum_Regex;
 }
 void set_env_not(RegexContext *context, const Token *) {
   context->env = enum_NOT;

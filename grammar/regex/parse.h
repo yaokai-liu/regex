@@ -32,7 +32,7 @@
 #include "target.h"
 #include "terminal.h"
 
-Regexp *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *errInfo,
+Regex *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *errInfo,
               const Allocator *allocator);
 
 #endif  // REGEX_GRAMMAR_REGEX_PARSE_H

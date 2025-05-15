@@ -17,7 +17,7 @@
 #include "terminal.h"
 #include <stdint.h>
 
-typedef Array Regexp;
+typedef Array Regex;
 typedef Array Branch;
 typedef Array UnitArray;
 typedef Array Sequence;
@@ -46,19 +46,19 @@ typedef struct Unit {
 } Unit;
 
 typedef struct Range {
-  char_t min;
-  char_t max;
+  uint32_t min;
+  uint32_t max;
 } Range;
 
 typedef struct Group {
-  Regexp *regexp;
+  Regex *regexp;
 } Group;
 
 typedef struct ConstCharset {
   struct {
     const uint32_t n_plains;
     const uint32_t n_ranges;
-    const char_t *plains;
+    const char_t * plains;
     const Range *ranges;
   } parts[2];
 } ConstCharset;
@@ -70,16 +70,17 @@ enum PART_ENUM : bool {
 };
 typedef struct Charset {
   struct CharsetPart {
-    Set *plains;  // Set<char_t>
-    Set *ranges;  // Set<Range>
+    Array *plains;  // Array<uint32_t>
+    Array *ranges;  // Array<Range>
   } parts[2];
 } Charset;
 
-#define Range_toUint64(pRange)    (((uint64_t) (pRange)->max) << 32 | (pRange)->min)
-#define Range_getMaxFrom(int_rng) ((uint32_t) ((int_rng) >> 32))
-#define Range_getMinFrom(int_rng) ((uint32_t) ((int_rng) & 0xFFFFFFFF))
-#define Range_fromUint64(int_rng) \
-  {.max = Range_getMaxFrom(int_rng), .min = Range_getMinFrom(int_rng)}
+#define Range_toUint64(R)    (((uint64_t) (R).max) << 32 | (R).min)
+#define Range_getMaxFrom(iR) ((uint32_t) ((iR) >> 32))
+#define Range_getMinFrom(iR) ((uint32_t) ((iR) & 0xFFFFFFFF))
+#define Range_fromUint64(iR) {.max = Range_getMaxFrom(iR), .min = Range_getMinFrom(iR)}
+#define Range_cover(R, chr) ((R).min <= chr && chr <= (R).max)
+#define Range_intersect(R1, R2) (Range_cover(R1, (R2).min) || Range_cover(R1, (R2).max))
 
 void releaseBranch(Branch *branch, const Allocator *allocator);
 void releaseGroup(Group *group, const Allocator *allocator);
@@ -89,5 +90,9 @@ void releaseSequence(Sequence *sequence, const Allocator *allocator);
 void releaseQuantified(Quantified *quantified, const Allocator *allocator);
 void releaseUnitArray(UnitArray *unitArray, const Allocator *);
 void releaseUnit(Unit *unit, const Allocator *allocator);
+
+void Charset_update(Charset *old, const Charset *new, bool inverse);
+void Plain_set_update(Array *plain_array, uint32_t plain);
+void Range_set_update(Array *range_array, Range range);
 
 #endif  // REGEX_GRAMMAR_REGEX_TARGET_H

@@ -22,7 +22,7 @@
 START_TEST(test_ILLEGAL) {
   char_t *string = string_to_test;
   ErrInfo errInfo = {};
-  Regexp *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
   ck_assert_ptr_eq(regexp, nullptr);
 }
 

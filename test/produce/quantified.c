@@ -23,7 +23,7 @@
 START_TEST(test_QUANTIFIED_NURMAL0) {
   char_t *string = string_to_test0;
   ErrInfo errInfo = {};
-  Regexp *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
   Branch *branch = (Branch *) Array_real_addr(regexp, 0);
@@ -59,7 +59,7 @@ END_TEST
 START_TEST(test_QUANTIFIED_NURMAL1) {
   char_t *string = string_to_test1;
   ErrInfo errInfo = {};
-  Regexp *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
   Branch *branch = (Branch *) Array_real_addr(regexp, 0);
@@ -95,7 +95,7 @@ END_TEST
 START_TEST(test_QUANTIFIED_NURMAL2) {
   char_t *string = string_to_test2;
   ErrInfo errInfo = {};
-  Regexp *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
   Branch *branch = (Branch *) Array_real_addr(regexp, 0);
@@ -131,7 +131,7 @@ END_TEST
 START_TEST(test_QUANTIFIED_NURMAL3) {
   char_t *string = string_to_test3;
   ErrInfo errInfo = {};
-  Regexp *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
   Branch *branch = (Branch *) Array_real_addr(regexp, 0);
@@ -167,7 +167,7 @@ END_TEST
 START_TEST(test_QUANTIFIED_NURMAL4) {
   char_t *string = string_to_test4;
   ErrInfo errInfo = {};
-  Regexp *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
   Branch *branch = (Branch *) Array_real_addr(regexp, 0);

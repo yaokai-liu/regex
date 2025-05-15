@@ -13,16 +13,15 @@
 #include "generated/tokens.gen.h"
 #include "regex/parse.h"
 #include "regex/target.h"
-#include "terminal.h"
-#include "tokenize.h"
 #include <check.h>
+#include <stdio.h>
 
 #define string_to_test "[0123456789^3^[21a-z][^4123ghcA-Z]]"
 
 START_TEST(test_CHARSET_NORMAL) {
   char_t *string = string_to_test;
   ErrInfo errInfo = {};
-  Regexp *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
   Branch *branch = (Branch *) Array_real_addr(regexp, 0);
@@ -41,31 +40,29 @@ START_TEST(test_CHARSET_NORMAL) {
   ck_assert_ptr_ne(tap0->ranges, nullptr);
   ck_assert_ptr_ne(tap1->plains, nullptr);
   ck_assert_ptr_ne(tap1->ranges, nullptr);
-  ck_assert_uint_eq(Set_count(tap0->plains), (sizeof "0123456789ghc") - 1);
-  ck_assert_uint_eq(Set_count(tap0->ranges), 1);
-  ck_assert_uint_eq(Set_count(tap1->plains), (sizeof "3214") - 1);
-  ck_assert_uint_eq(Set_count(tap1->ranges), 1);
-  for (uint32_t i = 0; i < Set_count(tap0->plains); i++) {
-    char p_char = ((uint64_t *) Set_data(tap0->plains))[i];
-    ck_assert_uint_eq(p_char, "0123456789ghc"[i]);
+  ck_assert_uint_eq(Array_length(tap0->plains), (sizeof "0123456789ghc") - 1);
+  ck_assert_uint_eq(Array_length(tap0->ranges), 1);
+  ck_assert_uint_eq(Array_length(tap1->plains), (sizeof "3214") - 1);
+  ck_assert_uint_eq(Array_length(tap1->ranges), 1);
+  uint32_t *plains = (uint32_t *) Array_first_real(tap0->plains);
+  for (uint32_t i = 0; i < Array_length(tap0->plains); i++) {
+    ck_assert_uint_eq(plains[i], "0123456789ghc"[i]);
   }
-  ck_assert_uint_eq(Set_count(tap0->ranges), 1);
-  uint64_t *range0 = (uint64_t *) Set_data(tap0->ranges);
-  for (uint32_t i = 0; i < Set_count(tap0->ranges); i++) {
-    Range range = Range_fromUint64(range0[i]);
-    ck_assert_uint_eq(range.min, 'A');
-    ck_assert_uint_eq(range.max, 'Z');
+  ck_assert_uint_eq(Array_length(tap0->ranges), 1);
+  Range *range0 = (Range *) Array_first_real(tap0->ranges);
+  for (uint32_t i = 0; i < Array_length(tap0->ranges); i++) {
+    ck_assert_uint_eq(range0->min, 'A');
+    ck_assert_uint_eq(range0->max, 'Z');
   }
-  for (uint32_t i = 0; i < Set_count(tap1->plains); i++) {
-    char p_char = ((uint64_t *) Set_data(tap1->plains))[i];
-    ck_assert_uint_eq(p_char, "3214"[i]);
+  plains = (uint32_t *) Array_first_real(tap1->plains);
+  for (uint32_t i = 0; i < Array_length(tap1->plains); i++) {
+        ck_assert_uint_eq(plains[i], "3214"[i]);
   }
-  ck_assert_uint_eq(Set_count(tap1->ranges), 1);
-  uint64_t *range1 = (uint64_t *) Set_data(tap1->ranges);
-  for (uint32_t i = 0; i < Set_count(tap1->ranges); i++) {
-    Range range = Range_fromUint64(range1[i]);
-    ck_assert_uint_eq(range.min, 'a');
-    ck_assert_uint_eq(range.max, 'z');
+  ck_assert_uint_eq(Array_length(tap1->ranges), 1);
+  Range *range1 = (Range *) Array_first_real(tap1->ranges);
+  for (uint32_t i = 0; i < Array_length(tap1->ranges); i++) {
+    ck_assert_uint_eq(range1->min, 'a');
+    ck_assert_uint_eq(range1->max, 'z');
   }
 
   Array_destroy(regexp);
@@ -77,7 +74,7 @@ END_TEST
 START_TEST(test_CHARSET_DUPLICATED) {
   char_t *string = string_to_test1;
   ErrInfo errInfo = {};
-  Regexp *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
   Branch *branch = (Branch *) Array_real_addr(regexp, 0);
@@ -96,17 +93,51 @@ START_TEST(test_CHARSET_DUPLICATED) {
   ck_assert_ptr_ne(tap0->ranges, nullptr);
   ck_assert_ptr_ne(tap1->plains, nullptr);
   ck_assert_ptr_ne(tap1->ranges, nullptr);
-  ck_assert_uint_eq(Set_count(tap0->plains), (sizeof "01234") - 1);
-  ck_assert_uint_eq(Set_count(tap0->ranges), 2);
-  ck_assert_uint_eq(Set_count(tap1->plains), 0);
-  ck_assert_uint_eq(Set_count(tap1->ranges), 0);
-  uint64_t *ranges = (uint64_t *) Set_data(tap0->ranges);
-  Range range0 = Range_fromUint64(ranges[0]);
-  Range range1 = Range_fromUint64(ranges[1]);
-  ck_assert_uint_eq(range0.min, 'a');
-  ck_assert_uint_eq(range0.max, 's');
-  ck_assert_uint_eq(range1.min, 'A');
-  ck_assert_uint_eq(range1.max, 'Z');
+  ck_assert_uint_eq(Array_length(tap0->plains), (sizeof "01234") - 1);
+  ck_assert_uint_eq(Array_length(tap0->ranges), 2);
+  ck_assert_uint_eq(Array_length(tap1->plains), 0);
+  ck_assert_uint_eq(Array_length(tap1->ranges), 0);
+  Range *ranges = (Range *) Array_first_real(tap0->ranges);
+  ck_assert_uint_eq(ranges[0].min, 'a');
+  ck_assert_uint_eq(ranges[0].max, 's');
+  ck_assert_uint_eq(ranges[1].min, 'A');
+  ck_assert_uint_eq(ranges[1].max, 'Z');
+
+  Array_destroy(regexp);
+}
+
+END_TEST
+
+#define string_to_test2 "[a-fi-ld-k]"
+START_TEST(test_CHARSET_RANGES_INTERSECT) {
+  char_t *string = string_to_test2;
+  ErrInfo errInfo = {};
+  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  ck_assert_ptr_ne(regexp, nullptr);
+  ck_assert_uint_eq(Array_length(regexp), 1);
+  Branch *branch = (Branch *) Array_real_addr(regexp, 0);
+  ck_assert_ptr_ne(branch, nullptr);
+  ck_assert_uint_eq(Array_length(branch), 1);
+  Object *object = (Object *) Array_real_addr(branch, 0);
+  ck_assert_ptr_ne(object, nullptr);
+  ck_assert_uint_eq(object->type, enum_Charset);
+  ck_assert_uint_eq(object->inverse, false);
+
+  Charset *charset = (Charset *) object->target;
+  ck_assert_ptr_ne(charset, nullptr);
+  struct CharsetPart *tap0 = &charset->parts[CT_NORMAL];
+  struct CharsetPart *tap1 = &charset->parts[CT_INVERSE];
+  ck_assert_ptr_ne(tap0->plains, nullptr);
+  ck_assert_ptr_ne(tap0->ranges, nullptr);
+  ck_assert_ptr_ne(tap1->plains, nullptr);
+  ck_assert_ptr_ne(tap1->ranges, nullptr);
+  ck_assert_uint_eq(Array_length(tap0->plains), 0);
+  ck_assert_uint_eq(Array_length(tap0->ranges), 1);
+  ck_assert_uint_eq(Array_length(tap1->plains), 0);
+  ck_assert_uint_eq(Array_length(tap1->ranges), 0);
+  Range *range0 = (Range *) Array_first_real(tap0->ranges);
+  ck_assert_uint_eq(range0->min, 'a');
+  ck_assert_uint_eq(range0->max, 'l');
 
   Array_destroy(regexp);
 }
@@ -118,6 +149,7 @@ Suite *charset_suite() {
   TCase *t_case = tcase_create("charset");
   tcase_add_test(t_case, test_CHARSET_NORMAL);
   tcase_add_test(t_case, test_CHARSET_DUPLICATED);
+  tcase_add_test(t_case, test_CHARSET_RANGES_INTERSECT);
   suite_add_tcase(suite, t_case);
   return suite;
 }

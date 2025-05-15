@@ -33,14 +33,14 @@ inline void releaseSequence(Sequence *sequence, const Allocator *) {
 }
 
 inline void releaseCharset(Charset *charset, const Allocator *) {
-  Set_destroy(charset->parts[0].plains);
-  Set_destroy(charset->parts[0].ranges);
-  Set_destroy(charset->parts[1].plains);
-  Set_destroy(charset->parts[1].ranges);
+  Array_destroy(charset->parts[0].plains);
+  Array_destroy(charset->parts[0].ranges);
+  Array_destroy(charset->parts[1].plains);
+  Array_destroy(charset->parts[1].ranges);
 }
 
 inline void releaseGroup(Group *group, const Allocator *) {
-  if (((uint64_t) group->regexp) <= enum_Regexp) { return; }
+  if (((uint64_t) group->regexp) <= enum_Regex) { return; }
   Array_destroy(group->regexp);
 }
 
@@ -99,4 +99,62 @@ inline void releaseUnit(Unit *unit, const Allocator *allocator) {
       break;
     }
   }
+}
+
+
+
+#define max(a, b) ((a) >= (b) ? (a) : (b))
+#define min(a, b) ((a) <= (b) ? (a) : (b))
+
+void Charset_update(Charset *old, const Charset *new, bool inverse) {
+  auto normal_part  = &new->parts[ inverse];
+  auto inverse_part = &new->parts[!inverse];
+  uint32_t n_normal_plains = Array_length(normal_part->plains);
+  uint32_t *normal_plains = Array_first_real(normal_part->plains);
+  for (uint32_t i = 0; i < n_normal_plains; i++) {
+    Plain_set_update(old->parts[CT_NORMAL].plains, normal_plains[i]);
+  }
+  uint32_t n_inverse_plains = Array_length(inverse_part->plains);
+  uint32_t *inverse_plains = Array_first_real(inverse_part->plains);
+  for (uint32_t i = 0; i < n_inverse_plains; i++) {
+    Plain_set_update(old->parts[CT_INVERSE].plains, inverse_plains[i]);
+  }
+  uint32_t n_normal_ranges = Array_length(normal_part->ranges);
+  Range *normal_ranges = Array_first_real(normal_part->ranges);
+  for (uint32_t i = 0; i < n_normal_ranges; i++) {
+    Range_set_update(old->parts[CT_NORMAL].ranges, normal_ranges[i]);
+  }
+  uint32_t n_inverse_ranges = Array_length(inverse_part->ranges);
+  Range *inverse_ranges = Array_first_real(inverse_part->ranges);
+  for (uint32_t i = 0; i < n_inverse_ranges; i++) {
+    Range_set_update(old->parts[CT_INVERSE].ranges, inverse_ranges[i]);
+  }
+}
+
+bool regular_range(const Range *range) {
+  return range->min <= range->max;
+}
+
+void Range_set_update(Array *range_array, Range range) {
+  uint32_t n_ranges = Array_length(range_array);
+  Range *ranges = Array_first_real(range_array);
+  for (uint32_t i = 0; i < n_ranges; i++) {
+    if (Range_intersect(range, ranges[i])) {
+      range.min = min(range.min, ranges[i].min);
+      range.max = max(range.max, ranges[i].max);
+      ranges[i].min = UINT32_MAX;
+      ranges[i].max = 0;
+    }
+  }
+  Array_filter(range_array, (bool (*)(const void *)) regular_range);
+  Array_append(range_array, &range, 1);
+}
+
+void Plain_set_update(Array *plain_array, uint32_t plain) {
+  uint32_t n_plains = Array_length(plain_array);
+  uint32_t *plains = Array_first_real(plain_array);
+  for (uint32_t i = 0; i < n_plains; i++) {
+    if (plains[i] == plain) { return; }
+  }
+  Array_append(plain_array, &plain, 1);
 }

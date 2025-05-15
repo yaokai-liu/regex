@@ -93,8 +93,8 @@ inline uint32_t single_tokenize(const char_t * const input, Terminal * const res
   if (idx < str_lit_len(TERMINALS)) {
     result->type = TERMINAL_TYPES[idx];
     result->value = nullptr;
-    if (*env == enum_Regexp && result->type == enum_BEGIN_QUANTIFIER) { *env = enum_Quantifier; }
-    if (*env == enum_Quantifier && result->type == enum_END_QUANTIFIER) { *env = enum_Regexp; }
+    if (*env == enum_Regex && result->type == enum_BEGIN_QUANTIFIER) { *env = enum_Quantifier; }
+    if (*env == enum_Quantifier && result->type == enum_END_QUANTIFIER) { *env = enum_Regex; }
     return 1;
   }
   if (*env == enum_Quantifier && startswithDigital(input)) {
@@ -118,7 +118,7 @@ const Terminal *
   uint32_t c = column ? *column : 0;
   Array *terminals = Array_new(sizeof(Terminal), enum_TERMINATOR, allocator);
   Terminal terminal = {};
-  uint32_t environment = enum_Regexp;
+  uint32_t environment = enum_Regex;
   pText += pass_space(pText, &l, &c);
   while (*pText && pText - input < max_cost) {
     terminal.location.lineno = l;

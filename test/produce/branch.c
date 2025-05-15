@@ -23,7 +23,7 @@
 START_TEST(test_BRANCH_NORMAL) {
   char_t *string = string_to_test;
   ErrInfo errInfo = {};
-  Regexp *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 3);
 
@@ -36,7 +36,7 @@ START_TEST(test_BRANCH_NORMAL) {
   ck_assert_uint_eq(object1->inverse, true);
   Group *group1 = object1->target;
   ck_assert_ptr_ne(group1, nullptr);
-  Regexp *sub_regexp1 = group1->regexp;
+  Regex *sub_regexp1 = group1->regexp;
   ck_assert_uint_eq(Array_length(sub_regexp1), 1);
 
   Branch *branch2 = (Branch *) Array_real_addr(regexp, 1);
@@ -60,7 +60,7 @@ START_TEST(test_BRANCH_NORMAL) {
   ck_assert_uint_eq(object3->inverse, false);
   Group *group2 = object3->target;
   ck_assert_ptr_ne(group2, nullptr);
-  Regexp *sub_regexp = group2->regexp;
+  Regex *sub_regexp = group2->regexp;
   ck_assert_ptr_eq(sub_regexp, nullptr);
 
   Array_destroy(regexp);

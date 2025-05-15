@@ -21,17 +21,17 @@
 #define ALLOC_LEN      32
 #define _sizeof(_type) ((int32_t) sizeof(_type))
 
-Regexp *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *result,
+Regex *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *result,
                                  uint32_t result_type, const Allocator *allocator);
-Regexp *failed_to_parse(Stack *state_stack, Stack *token_stack, Token *, uint32_t,
+Regex *failed_to_parse(Stack *state_stack, Stack *token_stack, Token *, uint32_t,
                         const Allocator *allocator);
-Regexp *failed_to_get_action(Stack *state_stack, Stack *token_stack, const Allocator *allocator);
+Regex *failed_to_get_action(Stack *state_stack, Stack *token_stack, const Allocator *allocator);
 
-Regexp *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *errInfo,
+Regex *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *errInfo,
               const Allocator *allocator) {
   Terminal token = {}, result = {};
   Token args[MAX_ARGC] = {};
-  RegexContext context = {.env = enum_Regexp};
+  RegexContext context = {.env = enum_Regex};
   uint32_t l = lineno ? *lineno : 0;
   uint32_t c = column ? *column : 0;
   Stack *state_stack = Stack_new(allocator);
@@ -83,7 +83,7 @@ Regexp *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *
       Stack_push(state_stack, &state, _sizeof(int32_t));
       fn_ctx_act *ctxAct = getRegexContextAction(state);
       if (ctxAct) { ctxAct(&context, &token); }
-      if (act->offset == enum_Regex_Regexp_EXT) { break; }
+      if (act->offset == enum_Regex_Regex_EXT) { break; }
     } else {
       // never be touched
     }
@@ -92,5 +92,5 @@ Regexp *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *
   Stack_clear(state_stack);
   allocator->free(token_stack);
   allocator->free(state_stack);
-  return result.value;
+  return (enum_Regex == (uint64_t) result.value) ? nullptr : result.value;
 }

@@ -56,20 +56,20 @@ uint32_t Codegen_charset(Charset *charset, const Target *target) {
   Target *normal_target = Target_new(target->allocator),
          *inverse_target = Target_new(target->allocator);
 
-  n_plains = Set_count(charset->parts[CT_NORMAL].plains);
-  n_ranges = Set_count(charset->parts[CT_NORMAL].ranges);
-  plains = Set_data(charset->parts[CT_NORMAL].plains);
-  ranges = Set_data(charset->parts[CT_NORMAL].ranges);
+  n_plains = Array_length(charset->parts[CT_NORMAL].plains);
+  n_ranges = Array_length(charset->parts[CT_NORMAL].ranges);
+  plains = Array_first_real(charset->parts[CT_NORMAL].plains);
+  ranges = Array_first_real(charset->parts[CT_NORMAL].ranges);
   Codegen_plains(plains, n_plains, normal_target);
   Codegen_ranges(ranges, n_ranges, normal_target);
   Target_concat(target, normal_target);
   // TODO: $$failed, jump to failed process program.
   // TODO: if normal part is matched, jump to $inverse_case
   // $inverse_case
-  n_plains = Set_count(charset->parts[CT_INVERSE].plains);
-  n_ranges = Set_count(charset->parts[CT_INVERSE].ranges);
-  plains = Set_data(charset->parts[CT_INVERSE].plains);
-  ranges = Set_data(charset->parts[CT_INVERSE].ranges);
+  n_plains = Array_length(charset->parts[CT_INVERSE].plains);
+  n_ranges = Array_length(charset->parts[CT_INVERSE].ranges);
+  plains = Array_first_real(charset->parts[CT_INVERSE].plains);
+  ranges = Array_first_real(charset->parts[CT_INVERSE].ranges);
   Codegen_plains(plains, n_plains, inverse_target);
   Codegen_ranges(ranges, n_ranges, inverse_target);
   Target_concat(target, inverse_target);

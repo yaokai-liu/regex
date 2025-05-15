@@ -26,7 +26,7 @@
 START_TEST(test_SEQUENCE_NORMAL) {
   char_t *string = string_to_test;
   ErrInfo errInfo = {};
-  Regexp *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
   Branch *branch = (Branch *) Array_real_addr(regexp, 0);

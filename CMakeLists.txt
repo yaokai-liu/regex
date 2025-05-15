@@ -31,12 +31,10 @@ aux_source_directory(meman MEMAN_SRC)
 add_library(meman STATIC ${MEMAN_SRC})
 link_libraries(meman)
 
+include_directories(grammar)
 file(GLOB_RECURSE GRAMMAR_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} grammar/*.c grammar/*.h)
 add_library(grammar ${GRAMMAR_SRC})
-target_include_directories(grammar PRIVATE grammar)
-
-aux_source_directory(automaton AUTOMATON_SRC)
-add_library(automaton STATIC ${AUTOMATON_SRC})
+link_libraries(grammar)
 
 add_compile_definitions("TARGET_X64" "UNIX64")
 aux_source_directory(codegen CODEGEN_SRC)

@@ -25,11 +25,14 @@
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_PARSE_H
-#define REGEX_PARSE_H
+#ifndef REGEX_GRAMMAR_REGEX_PARSE_H
+#define REGEX_GRAMMAR_REGEX_PARSE_H
 
+#include "error.h"
 #include "target.h"
 #include "terminal.h"
 
-Regexp *produce(const char_t *input, uint32_t *lineno, uint32_t *column, const Allocator *allocator);
-#endif  // REGEX_PARSE_H
+Regexp *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *errInfo,
+              const Allocator *allocator);
+
+#endif  // REGEX_GRAMMAR_REGEX_PARSE_H

@@ -1,6 +1,6 @@
 /**
  * Project Name: regex
- * Module Name: test/produce
+ * Module Name: test/parse
  * Filename: single-characters.c
  * Creator: Yaokai Liu
  * Create Date: 2024-7-5
@@ -9,42 +9,43 @@
 
 #include "allocator.h"
 #include "char_t.h"
+#include "generated/tokens.gen.h"
 #include "terminal.h"
-#include "token.h"
-#include "tokens.gen.h"
+#include "tokenize.h"
 #include <check.h>
 #include <stdint.h>
 
 START_TEST(test_TERMINATOR) {
   char_t *string = "";
   uint32_t cost, n_tokens;
-  Terminal *terminals = tokenize(string, &cost, &n_tokens, &STDAllocator);
+  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, 0);
   ck_assert_uint_eq(n_tokens, 1);
   ck_assert_ptr_ne(terminals, nullptr);
   ck_assert_uint_eq(terminals[0].type, enum_TERMINATOR);
-  ck_assert_uint_eq(terminals[0].value, 0);
+  ck_assert_uint_eq((uint64_t) terminals[0].value, 0);
   ck_assert_str_eq(get_name(terminals[0].type), string_t("TERMINATOR"));
-  STDAllocator.free(terminals);
+  STDAllocator.free((void *) terminals);
 }
 END_TEST
 
-#define add_test_for(_name, _value)                                          \
-  START_TEST(test_##_name) {                                                 \
-    char_t *string = _value;                                                 \
-    uint32_t cost, n_tokens;                                                 \
-    Terminal *terminals = tokenize(string, &cost, &n_tokens, &STDAllocator); \
-    ck_assert_uint_eq(cost, 1);                                              \
-    ck_assert_uint_eq(n_tokens, 2);                                          \
-    ck_assert_ptr_ne(terminals, nullptr);                                    \
-    ck_assert_uint_eq(terminals[0].type, enum_##_name);                      \
-    ck_assert_uint_eq(terminals[0].value, 0);                                \
-    ck_assert_str_eq(get_name(terminals[0].type), string_t(#_name));         \
-    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);                   \
-    ck_assert_uint_eq(terminals[1].value, 0);                                \
-    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));   \
-    STDAllocator.free(terminals);                                            \
-  }                                                                          \
+#define add_test_for(_name, _value)                                        \
+  START_TEST(test_##_name) {                                               \
+    char_t *string = _value;                                               \
+    uint32_t cost, n_tokens;                                               \
+    const Terminal *terminals =                                            \
+      tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator); \
+    ck_assert_uint_eq(cost, 1);                                            \
+    ck_assert_uint_eq(n_tokens, 2);                                        \
+    ck_assert_ptr_ne(terminals, nullptr);                                  \
+    ck_assert_uint_eq(terminals[0].type, enum_##_name);                    \
+    ck_assert_uint_eq((uint64_t) terminals[0].value, 0);                   \
+    ck_assert_str_eq(get_name(terminals[0].type), string_t(#_name));       \
+    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);                 \
+    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);                   \
+    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR")); \
+    STDAllocator.free((void *) terminals);                                 \
+  }                                                                        \
   END_TEST
 
 add_test_for(BEGIN_CHARSET, "[")

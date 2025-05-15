@@ -25,13 +25,13 @@
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_ENUM_H
-#define REGEX_ENUM_H
+#ifndef REGEX_GRAMMAR_ENUM_H
+#define REGEX_GRAMMAR_ENUM_H
 
 #include "generated/tokens.gen.h"
 
-enum REGEX_EXTEND_TYPE_ENUM {
+enum REGEX_GRAMMAR_EXTEND_TYPE_ENUM {
   enum_Sequence = MAX_TOTAL_TOKEN + 1,
 };
 
-#endif  // REGEX_ENUM_H
+#endif  // REGEX_GRAMMAR_ENUM_H

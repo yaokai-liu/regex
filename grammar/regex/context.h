@@ -25,9 +25,10 @@
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_CONTEXT_H
-#define REGEX_CONTEXT_H
+#ifndef REGEX_GRAMMAR_REGEX_CONTEXT_H
+#define REGEX_GRAMMAR_REGEX_CONTEXT_H
 
+#include "error.h"
 #include "terminal.h"
 #include <stdint.h>
 
@@ -39,4 +40,4 @@ typedef void fn_ctx_act(RegexContext *context, const Token *token);
 
 fn_ctx_act *getRegexContextAction(uint32_t state);
 
-#endif  // REGEX_CONTEXT_H
+#endif  // REGEX_GRAMMAR_REGEX_CONTEXT_H

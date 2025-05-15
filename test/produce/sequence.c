@@ -1,6 +1,6 @@
 /**
  * Project Name: regex
- * Module Name: test/produce
+ * Module Name: test/parse
  * Filename: sequence.c
  * Creator: Yaokai Liu
  * Create Date: 2024-7-13
@@ -10,9 +10,12 @@
 #include "action.h"
 #include "allocator.h"
 #include "char_t.h"
+#include "enum.h"
+#include "generated/tokens.gen.h"
+#include "regex/parse.h"
+#include "regex/target.h"
 #include "terminal.h"
-#include "token.h"
-#include "tokens.gen.h"
+#include "tokenize.h"
 #include <check.h>
 
 #define string_to_test         \
@@ -22,35 +25,21 @@
 
 START_TEST(test_SEQUENCE_NORMAL) {
   char_t *string = string_to_test;
-  uint32_t cost, n_tokens;
-  Terminal *terminals = tokenize(string, &cost, &n_tokens, &STDAllocator);
-  ck_assert_uint_eq(cost, (sizeof string_to_test) - 1);
-  ck_assert_uint_eq(n_tokens, (sizeof string_to_test));
-  ck_assert_ptr_ne(terminals, nullptr);
-  ck_assert_uint_eq(terminals[n_tokens - 1].type, enum_TERMINATOR);
-  ck_assert_uint_eq(terminals[n_tokens - 1].value, 0);
-  ck_assert_str_eq(get_name(terminals[n_tokens - 1].type), string_t("TERMINATOR"));
-  Regexp *regexp = produce(terminals, &STDAllocator);
+  ErrInfo errInfo = {};
+  Regexp *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
-  Branch *branch = (Branch *) Array_get(regexp, 0);
+  Branch *branch = (Branch *) Array_real_addr(regexp, 0);
   ck_assert_ptr_ne(branch, nullptr);
-  ck_assert_uint_eq(Array_length(branch), 1);
-  Object *object = (Object *) Array_get(branch, 0);
-  ck_assert_ptr_ne(object, nullptr);
-  ck_assert_uint_eq(object->type, enum_Sequence);
-  ck_assert_uint_eq(object->inv, false);
-
-  Sequence *sequence = (Sequence *) object->target;
-  ck_assert_ptr_ne(sequence, nullptr);
-  ck_assert_uint_eq(Array_length(sequence), cost);
-  for (uint32_t i = 0; i < cost; i++) {
-    ck_assert_uint_eq(string[i], *(char *) Array_get(sequence, i));
+  ck_assert_uint_eq(Array_length(branch), sizeof(string_to_test) - 1);
+  Object *objects = (Object *) Array_real_addr(branch, 0);
+  ck_assert_ptr_ne(objects, nullptr);
+  for (uint32_t i = 0; i < Array_length(branch); i++) {
+    ck_assert_uint_eq(objects[i].type, enum_CHAR);
+    ck_assert_uint_eq((uint64_t) objects[i].target, string_to_test[i]);
   }
 
-  releaseRegexp(regexp, &STDAllocator);
   Array_destroy(regexp);
-  STDAllocator.free(terminals);
 }
 END_TEST
 

@@ -16,17 +16,16 @@ void Range_set_update(Set *range_set, const Range *range) {
   uint32_t n_ranges = Set_count(range_set);
   uint64_t *ranges = Set_data(range_set);
   for (uint32_t i = 0; i < n_ranges; i++) {
-    Range _range = {.max = ranges[i] >> 32, .min = ranges[i] & 0xFFFFFFFF};
+    Range _range = Range_fromUint64(ranges[i]);
     if (_range.min <= range->min && range->min <= _range.max) {
       _range.max = max(_range.max, range->max);
-      ranges[i] = (((uint64_t) _range.max) << 32) | ((uint64_t) _range.min);
+      ranges[i] = Range_toUint64(&_range);
       return;
     } else if (range->min <= _range.min && _range.min <= range->max) {
       _range.min = min(_range.min, range->min);
-      ranges[i] = (((uint64_t) _range.max) << 32) | ((uint64_t) _range.min);
+      ranges[i] = Range_toUint64(&_range);
       return;
     }
   }
-  uint64_t val = (((uint64_t) range->max) << 32) | ((uint64_t) range->min);
-  Set_add(range_set, (void *) val);
+  Set_add(range_set, (void *) Range_toUint64(range));
 }

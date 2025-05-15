@@ -12,3 +12,4 @@ __pycache__
 *.gen.h
 *.gen.c
 .cache
+grammar/generated

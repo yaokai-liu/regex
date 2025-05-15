@@ -9,7 +9,7 @@
 
 #include "regex-actions.h"
 #include "mcode.h"
-#include "target/target.h"
+#include "regex/target.h"
 
 uint32_t Codegen_ranges(const Range *ranges, uint32_t n_ranges, const Target *target) {
   Array *inst_array = target->instrBuffer;
@@ -51,7 +51,8 @@ uint32_t Codegen_plains(const char_t *plains, const uint32_t n_plains, const Tar
 
 uint32_t Codegen_charset(Charset *charset, const Target *target) {
   uint32_t n_plains = 0, n_ranges = 0;
-  const char_t *plains; const Range *ranges;
+  const char_t *plains;
+  const Range *ranges;
   Target *normal_target = Target_new(target->allocator),
          *inverse_target = Target_new(target->allocator);
 
@@ -95,7 +96,8 @@ uint32_t Codegen_quantified(Array *obj_inst_array, uint32_t loop_min, uint32_t l
   // $entry
   // TODO: xor REREG_REPEAT, REREG_REPEAT
   // TODO: address fill back in obj_inst_array $internal_failed
-  Array_append(inst_array, Array_real_addr(obj_inst_array, 0), (int32_t) Array_length(obj_inst_array));
+  Array_append(inst_array, Array_real_addr(obj_inst_array, 0),
+               (int32_t) Array_length(obj_inst_array));
   if (loop_max > 0) {
     // TODO: cmp REREG_REPEAT, loop_max
     // TODO: jle $entry

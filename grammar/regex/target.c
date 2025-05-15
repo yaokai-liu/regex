@@ -39,13 +39,9 @@ inline void releaseCharset(Charset *charset, const Allocator *) {
   Set_destroy(charset->parts[1].ranges);
 }
 
-inline void releaseGroup(Group *group, const Allocator *allocator) {
-  releaseRegexp(group->regexp, allocator);
+inline void releaseGroup(Group *group, const Allocator *) {
+  if (((uint64_t) group->regexp) <= enum_Regexp) { return; }
   Array_destroy(group->regexp);
-}
-
-inline void releaseRegexp(Regexp *regexp, const Allocator *) {
-  Array_reset(regexp, (void (*)(void *, const Allocator *)) releaseBranch);
 }
 
 inline void releaseBranch(Branch *branch, const Allocator *) {

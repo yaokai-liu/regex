@@ -18,18 +18,17 @@
  *
  *
  * Project Name: regex
- * Module Name: grammar/regex
- * Filename: reduce.h
+ * Module Name: grammar
+ * Filename: error.h
  * Creator: Yaokai Liu
- * Create Date: 2025-05-04
+ * Create Date: 2025-05-15
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_REDUCE_H
-#define REGEX_REDUCE_H
+#ifndef REGEX_GRAMMAR_ERROR_H
+#define REGEX_GRAMMAR_ERROR_H
 
-#include "generated/regex/reduce.gen.h"
+typedef struct ErrInfo {
+} ErrInfo;
 
-extern fn_reduce * const REGEX_PRODUCTS[];
-
-#endif  // REGEX_REDUCE_H
+#endif  // REGEX_GRAMMAR_ERROR_H

@@ -42,19 +42,20 @@ void set_env_not(RegexContext *context, const Token *) {
 
 fn_ctx_act *getRegexContextAction(uint32_t state) {
   switch (state) {
-    case __NOT: {
+    case Regex_state_NOT: {
       return set_env_not;
     }
-    case __Object: {
+    case Regex_state_Object: {
       return set_env_regexp;
     }
-    case __Object_BEGIN_QUANTIFIER: {
+    case Regex_state_Object_BEGIN_QUANTIFIER: {
       return set_env_quantifier;
     }
-    case __Object_Quantifier: {
+    case Regex_state_Object_Quantifier: {
       return set_env_regexp;
     }
-    default:{}
+    default: {
+    }
   }
   return nullptr;
 }

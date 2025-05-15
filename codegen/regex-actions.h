@@ -7,8 +7,8 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_REGEX_ACTIONS_H
-#define REGEX_REGEX_ACTIONS_H
+#ifndef REGEX_CODEGEN_REGEX_CODEGEN_ACTIONS_H
+#define REGEX_CODEGEN_REGEX_CODEGEN_ACTIONS_H
 
 #include "regex/target.h"
 #include "target/target.h"
@@ -26,7 +26,7 @@ uint32_t Codegen_char(char_t the_char, bool inverse, const Target *target);
 // generate machine code of instruction from a series of characters,
 // which but match only one character.
 // @return: the size of addend machine code.
-uint32_t Codegen_plains(const char_t *plains, const uint32_t n_plains, const Target *target);
+uint32_t Codegen_plains(const char_t *plains, uint32_t n_plains, const Target *target);
 
 // generate machine code of instruction from a charset.
 // @return: the size of addend machine code.
@@ -53,4 +53,4 @@ uint32_t Codegen_branches(const Target *target);
 // @return: size of addend machine code.
 uint32_t Codegen_group(const Target *target, bool inverse);
 
-#endif  // REGEX_REGEX_ACTIONS_H
+#endif  // REGEX_CODEGEN_REGEX_CODEGEN_ACTIONS_H

@@ -14,7 +14,7 @@
 
 int main() {
   const char *string = "^0123456789\\w";
-  Regexp *regexp = produce(string, nullptr, nullptr, &STDAllocator);
+  Regexp *regexp = parse(string, nullptr, nullptr, nullptr, &STDAllocator);
   if (!regexp) { return -1; }
   printf("%u\n", Array_length(regexp));
   Branch *branch = Array_first_real(regexp);

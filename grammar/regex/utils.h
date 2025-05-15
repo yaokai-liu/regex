@@ -7,12 +7,12 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_UTILS_H
-#define REGEX_UTILS_H
+#ifndef REGEX_GRAMMAR_REGEX_UTILS_H
+#define REGEX_GRAMMAR_REGEX_UTILS_H
 
 #include "target.h"
 #include <stdint.h>
 
 void Range_set_update(Set *range_set, const Range *range);
 
-#endif  // REGEX_UTILS_H
+#endif  // REGEX_GRAMMAR_REGEX_UTILS_H

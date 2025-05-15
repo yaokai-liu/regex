@@ -7,8 +7,8 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_TERMINAL_H
-#define REGEX_TERMINAL_H
+#ifndef REGEX_GRAMMAR_TERMINAL_H
+#define REGEX_GRAMMAR_TERMINAL_H
 
 #include "allocator.h"
 #include "char_t.h"
@@ -36,4 +36,4 @@ typedef struct Terminal {
   void *value;
 } Terminal, Token;
 
-#endif  // REGEX_TERMINAL_H
+#endif  // REGEX_GRAMMAR_TERMINAL_H

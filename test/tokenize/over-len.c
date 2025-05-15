@@ -9,8 +9,9 @@
 
 #include "allocator.h"
 #include "char_t.h"
+#include "generated/tokens.gen.h"
 #include "terminal.h"
-#include "token.h"
+#include "tokenize.h"
 #include <check.h>
 #include <stdint.h>
 #include <string.h>
@@ -22,12 +23,12 @@
 START_TEST(test_REALLOC) {
   char_t *string = string_for_test;
   uint32_t cost, n_tokens;
-  Terminal *terminals = tokenize(string, &cost, &n_tokens, &STDAllocator);
+  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, 63);
   ck_assert_uint_eq(n_tokens, 64);
   ck_assert_ptr_ne(terminals, nullptr);
   ck_assert_str_eq(get_name(terminals[n_tokens - 1].type), string_t("TERMINATOR"));
-  STDAllocator.free(terminals);
+  STDAllocator.free((void *) terminals);
 }
 
 END_TEST
@@ -38,13 +39,23 @@ thread_local static char buffer[BUFFER_SIZE] = {};
 
 void *moc_malloc(size_t size) {
   if (allocated + size > BUFFER_SIZE) { return nullptr; }
-  return &buffer[allocated];
+  void *ptr = &buffer[allocated];
+  allocated += size;
+  return ptr;
+}
+
+void *moc_calloc(size_t count, size_t size) {
+  size = count * size;
+  if (allocated + size > BUFFER_SIZE) { return nullptr; }
+  void *ptr = &buffer[allocated];
+  for (uint32_t i = 0; i < size; i++, allocated++) { buffer[allocated] = '\0'; }
+  return ptr;
 }
 
 void *moc_realloc(void *ptr, size_t size) {
   void *new_buffer = moc_malloc(size);
   if (!new_buffer) { return nullptr; }
-  memcpy(new_buffer, ptr, size);
+  if (ptr) { memcpy(new_buffer, ptr, size); }
   return new_buffer;
 }
 
@@ -53,17 +64,29 @@ void moc_free(void *ptr) {
   *(char *) ptr = 'h';
 }
 
-static const Allocator MocAllocator = {
-  .malloc = moc_malloc, .realloc = moc_realloc, .calloc = nullptr, .free = moc_free};
+void *moc_memcpy(void * restrict dest, const void * restrict src, size_t size) {
+  return memcpy(dest, src, size);
+}
 
-#define string_for_test2 "12345678123456781234567812345678"
+void *moc_memset(void *dest, int value, size_t size) {
+  return memset(dest, value, size);
+}
+
+static const Allocator MocAllocator = {.malloc = moc_malloc,
+                                       .realloc = moc_realloc,
+                                       .calloc = moc_calloc,
+                                       .free = moc_free,
+                                       .memcpy = moc_memcpy,
+                                       .memset = moc_memset};
+
+#define string_for_test2 "123456781234567812345678123456"
 
 START_TEST(test_REALLOC_LAST) {
   char_t *string = string_for_test2;
   uint32_t cost, n_tokens;
-  Terminal *terminals = tokenize(string, &cost, &n_tokens, &MocAllocator);
-  ck_assert_uint_eq(cost, 32);
-  ck_assert_uint_eq(n_tokens, 33);
+  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &MocAllocator);
+  ck_assert_uint_eq(cost, 30);
+  ck_assert_uint_eq(n_tokens, 31);
   ck_assert_ptr_ne(terminals, nullptr);
   ck_assert_str_eq(get_name(terminals[n_tokens - 1].type), string_t("TERMINATOR"));
   for (uint32_t i = 0; i < BUFFER_SIZE; i++) { buffer[i] = '\0'; }
@@ -79,10 +102,10 @@ END_TEST
 START_TEST(test_REALLOC_FAILED) {
   char_t *string = string_for_test3;
   uint32_t cost, n_tokens;
-  Terminal *terminals = tokenize(string, &cost, &n_tokens, &MocAllocator);
-  ck_assert_uint_eq(cost, 64);
-  ck_assert_uint_eq(n_tokens, 0);
-  ck_assert_ptr_eq(terminals, nullptr);
+  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &MocAllocator);
+  ck_assert_uint_eq(cost, sizeof(string_for_test3) - 1);
+  ck_assert_uint_lt(n_tokens, sizeof(string_for_test3) - 1);
+  ck_assert_uint_ne(terminals[n_tokens - 1].type, enum_TERMINATOR);
   for (uint32_t i = 0; i < BUFFER_SIZE; i++) { buffer[i] = '\0'; }
   allocated = 0;
 }

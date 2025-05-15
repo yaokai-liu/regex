@@ -7,12 +7,12 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_CHAR_T_H
-#define REGEX_CHAR_T_H
+#ifndef REGEX_GRAMMAR_CHAR_T_H
+#define REGEX_GRAMMAR_CHAR_T_H
 
 // Promise sizeof(char_t) < sizeof(uint64_t).
 typedef char char_t;
 
 #define string_t(_str) _str
 
-#endif  // REGEX_CHAR_T_H
+#endif  // REGEX_GRAMMAR_CHAR_T_H

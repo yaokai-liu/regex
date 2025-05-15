@@ -7,21 +7,21 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_ACTION_H
-#define REGEX_ACTION_H
+#ifndef REGEX_GRAMMAR_ACTION_H
+#define REGEX_GRAMMAR_ACTION_H
 
 #include <stdint.h>
 
 typedef struct state state;
 struct grammar_action {
   enum : uint8_t {
-    reject = 0,
-    stack = 1,
-    reduce = 2
+    Regex_action_reject = 0,
+    Regex_action_stack = 1,
+    Regex_action_reduce = 2
   } action      : 4;
   uint8_t count : 4;
   uint8_t type;
   const uint16_t offset;
 };
 
-#endif  // REGEX_ACTION_H
+#endif  // REGEX_GRAMMAR_ACTION_H

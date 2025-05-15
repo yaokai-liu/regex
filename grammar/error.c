@@ -19,19 +19,10 @@
  *
  * Project Name: regex
  * Module Name: grammar
- * Filename: string_t.h
+ * Filename: error.c
  * Creator: Yaokai Liu
- * Create Date: 2025-05-04
+ * Create Date: 2025-05-15
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_GRAMMAR_STRING_T_H
-#define REGEX_GRAMMAR_STRING_T_H
-
-#include "char_t.h"
-#include <stdint.h>
-
-uint32_t stridx_o(const char_t *string, char_t ch);
-uint32_t stridx_i(const char_t *string, int ch, uint32_t len);
-
-#endif  // REGEX_GRAMMAR_STRING_T_H
+#include "error.h"

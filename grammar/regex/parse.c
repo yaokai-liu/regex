@@ -8,10 +8,10 @@
  **/
 
 #include "action.h"
+#include "error.h"
 #include "generated/regex/action-table.gen.h"
-#include "generated/regex/reduce.gen.h"
+#include "generated/regex/rules.gen.h"
 #include "generated/tokens.gen.h"
-#include "reduce.h"
 #include "stack.h"
 #include "target.h"
 #include "terminal.h"
@@ -23,14 +23,15 @@
 
 Regexp *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *result,
                                  uint32_t result_type, const Allocator *allocator);
-Regexp *failed_to_produce(Stack *state_stack, Stack *token_stack, Token *, uint32_t,
-                          const Allocator *allocator);
+Regexp *failed_to_parse(Stack *state_stack, Stack *token_stack, Token *, uint32_t,
+                        const Allocator *allocator);
 Regexp *failed_to_get_action(Stack *state_stack, Stack *token_stack, const Allocator *allocator);
 
-Regexp *produce(const char_t *input, uint32_t *lineno, uint32_t *column, const Allocator * const allocator) {
+Regexp *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *errInfo,
+              const Allocator *allocator) {
   Terminal token = {}, result = {};
   Token args[MAX_ARGC] = {};
-  RegexContext context = { .env = enum_Regexp };
+  RegexContext context = {.env = enum_Regexp};
   uint32_t l = lineno ? *lineno : 0;
   uint32_t c = column ? *column : 0;
   Stack *state_stack = Stack_new(allocator);
@@ -38,7 +39,7 @@ Regexp *produce(const char_t *input, uint32_t *lineno, uint32_t *column, const A
   int32_t state = 0;
   Stack_push(state_stack, &state, sizeof(int32_t));
   input += pass_space(input, &l, &c);
-  input += single_tokenize(input, &token, context.env, allocator);
+  input += single_tokenize(input, &token, &context.env, allocator);
   while (true) {
     const struct grammar_action *act = getParseAction(state, token.type);
     if (!act) {
@@ -46,30 +47,31 @@ Regexp *produce(const char_t *input, uint32_t *lineno, uint32_t *column, const A
       column ? *column = c : 0;
       return failed_to_get_action(state_stack, token_stack, allocator);
     }
-    if (act->action == stack) {
+    if (act->action == Regex_action_stack) {
       state = act->offset;
       Stack_push(token_stack, &token, sizeof(Token));
       Stack_push(state_stack, &state, sizeof(int32_t));
       input += pass_space(input, &l, &c);
-      input += single_tokenize(input, &token, context.env, allocator);
+      input += single_tokenize(input, &token, &context.env, allocator);
       c += token.location.length;
       fn_ctx_act *ctxAct = getRegexContextAction(state);
       if (ctxAct) { ctxAct(&context, &token); }
-    } else if (act->action == reduce) {
+    } else if (act->action == Regex_action_reduce) {
       Stack_pop(token_stack, args, act->count * _sizeof(Token));
       Stack_pop(state_stack, nullptr, act->count * _sizeof(int32_t));
       Stack_top(state_stack, (int32_t *) &state, _sizeof(int32_t));
-      fn_reduce *func = REGEX_PRODUCTS[act->offset];
+      fn_regex_reduce *func = REGEX_PRODUCTS[act->offset];
       result.type = act->type;
       result.location.offset = args[0].location.offset;
       result.location.lineno = args[0].location.lineno;
       result.location.column = args[0].location.column;
-      result.location.length = args[act->count - 1].location.offset - args[0].location.offset + args[act->count - 1].location.length;
-      result.value = func(args, &context, allocator);
+      result.location.length = args[act->count - 1].location.offset - args[0].location.offset
+                               + args[act->count - 1].location.length;
+      result.value = func(args, &context, errInfo, allocator);
       if (!result.value) {
         lineno ? *lineno = l : 0;
         column ? *column = c : 0;
-        return failed_to_produce(state_stack, token_stack, args, act->count, allocator);
+        return failed_to_parse(state_stack, token_stack, args, act->count, allocator);
       }
       state = parseJumpState(state, act->type);
       if (state < 0) {
@@ -81,7 +83,7 @@ Regexp *produce(const char_t *input, uint32_t *lineno, uint32_t *column, const A
       Stack_push(state_stack, &state, _sizeof(int32_t));
       fn_ctx_act *ctxAct = getRegexContextAction(state);
       if (ctxAct) { ctxAct(&context, &token); }
-      if (act->offset == __EXTEND_RULE__) { break; }
+      if (act->offset == enum_Regex_Regexp_EXT) { break; }
     } else {
       // never be touched
     }

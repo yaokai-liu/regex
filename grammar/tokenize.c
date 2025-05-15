@@ -16,21 +16,20 @@
 #include "terminal.h"
 #include <stdint.h>
 
-#define lenof(a) ((sizeof a) / sizeof(a[0]))
+#define lenof(a)                 ((sizeof a) / sizeof(a[0]))
 #define str_lit_len(str_literal) ((sizeof str_literal) - 1)
-#define max(a, b)          ((a) > (b) ? (a) : (b))
-#define min(a, b)          ((a) < (b) ? (a) : (b))
+#define max(a, b)                ((a) > (b) ? (a) : (b))
+#define min(a, b)                ((a) < (b) ? (a) : (b))
 
 #define startswithDigital(pText) ('0' <= (pText)[0] && (pText)[0] <= '9')
-#define startswithLetter(pText) (('a' <= (pText)[0] && (pText)[0] <= 'z') || ('A' <= (pText)[0] && (pText)[0] <= 'Z'))
+#define startswithLetter(pText) \
+  (('a' <= (pText)[0] && (pText)[0] <= 'z') || ('A' <= (pText)[0] && (pText)[0] <= 'Z'))
 
 uint32_t t_NUMBER_adic10(const char_t *input, Terminal *result, const Allocator *allocator);
 uint32_t t_ESCAPE(const char_t *input, Terminal *result, const Allocator *allocator);
 
-inline uint32_t t_NUMBER_adic10(
-  const char_t * const input, Terminal * const result,
-  const Allocator * const
-) {
+inline uint32_t t_NUMBER_adic10(const char_t * const input, Terminal * const result,
+                                const Allocator * const) {
   const char_t *pText = input;
   uint64_t value = 0;
   while (true) {
@@ -54,12 +53,10 @@ inline uint32_t t_NUMBER_adic10(
   return result->location.length;
 }
 
-#define ESCAPE_LITERALS     "aAdw"
+#define ESCAPE_LITERALS "aAdw"
 
-inline uint32_t t_ESCAPE(
-  const char_t * const input, Terminal * const result,
-  const Allocator * const
-) {
+inline uint32_t t_ESCAPE(const char_t * const input, Terminal * const result,
+                         const Allocator * const) {
   const char_t *sp = input + 1;
   if (!*sp) { return 0; }
   if (startswithLetter(sp)) {
@@ -79,15 +76,13 @@ inline uint32_t t_ESCAPE(
 
 const char_t TERMINALS[] = "[](){}|+-*?!^,";
 enum TOKEN_TYPE_ENUM TERMINAL_TYPES[] = {
-  enum_BEGIN_CHARSET, enum_END_CHARSET,
-  enum_BEGIN_GROUP, enum_END_GROUP,
-  enum_BEGIN_QUANTIFIER, enum_END_QUANTIFIER,
-  enum_SPLIT, enum_PLUS, enum_MINUS, enum_TIMES,
-  enum_QUEST, enum_ASSERT, enum_NOT, enum_COMMA,
+  enum_BEGIN_CHARSET,  enum_END_CHARSET, enum_BEGIN_GROUP, enum_END_GROUP, enum_BEGIN_QUANTIFIER,
+  enum_END_QUANTIFIER, enum_SPLIT,       enum_PLUS,        enum_MINUS,     enum_TIMES,
+  enum_QUEST,          enum_ASSERT,      enum_NOT,         enum_COMMA,
 };
 
 inline uint32_t single_tokenize(const char_t * const input, Terminal * const result,
-                                const uint32_t env, const Allocator * const allocator) {
+                                uint32_t * const env, const Allocator * const allocator) {
   if (!*input) {
     result->type = enum_TERMINATOR;
     result->location.length = 0;
@@ -98,24 +93,24 @@ inline uint32_t single_tokenize(const char_t * const input, Terminal * const res
   if (idx < str_lit_len(TERMINALS)) {
     result->type = TERMINAL_TYPES[idx];
     result->value = nullptr;
+    if (*env == enum_Regexp && result->type == enum_BEGIN_QUANTIFIER) { *env = enum_Quantifier; }
+    if (*env == enum_Quantifier && result->type == enum_END_QUANTIFIER) { *env = enum_Regexp; }
     return 1;
   }
-  if (env == enum_Quantifier && startswithDigital(input)) {
+  if (*env == enum_Quantifier && startswithDigital(input)) {
     return t_NUMBER_adic10(input, result, allocator);
   }
-  if (*input == '\\') {
-    return t_ESCAPE(input, result, allocator);
-  }
+  if (*input == '\\') { return t_ESCAPE(input, result, allocator); }
   result->type = enum_CHAR;
   result->value = (void *) (uint64_t) *input;
   result->location.length = 1;
   return 1;
 }
 
-const Terminal *tokenize(
-  const char_t * const input, uint32_t *cost, uint32_t *n_tokens, uint32_t * const lineno,
-  uint32_t * const column, const Allocator * const allocator
-) {  // NOLINT(*-easily-swappable-parameters)
+const Terminal *
+  tokenize(const char_t * const input, uint32_t *cost, uint32_t *n_tokens, uint32_t * const lineno,
+           uint32_t * const column,
+           const Allocator * const allocator) {  // NOLINT(*-easily-swappable-parameters)
   const char_t *pText = input;
   const uint32_t max_cost = (*cost) > 0 ? *cost : UINT32_MAX;
   *cost = 0;
@@ -128,17 +123,12 @@ const Terminal *tokenize(
   while (*pText && pText - input < max_cost) {
     terminal.location.lineno = l;
     terminal.location.column = c;
-    *cost = single_tokenize(pText, &terminal, environment, allocator);
+    *cost = single_tokenize(pText, &terminal, &environment, allocator);
     c += terminal.location.length;
     if (0 == *cost) { break; }
     pText += *cost;
     pText += pass_space(pText, &l, &c);
     Array_append(terminals, &terminal, 1);
-    if (terminal.type == enum_BEGIN_QUANTIFIER) {
-      environment = enum_Quantifier;
-    } else if (terminal.type == enum_END_QUANTIFIER) {
-      environment = enum_Regexp;
-    }
   }
   if ('\0' == *pText) {
     terminal.type = enum_TERMINATOR;

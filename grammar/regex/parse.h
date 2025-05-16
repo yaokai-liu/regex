@@ -30,7 +30,6 @@
 
 #include "error.h"
 #include "target.h"
-#include "terminal.h"
 
 Regex *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *errInfo,
               const Allocator *allocator);

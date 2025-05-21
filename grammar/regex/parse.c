@@ -31,7 +31,7 @@ Regex *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *e
               const Allocator *allocator) {
   Terminal token = {}, result = {};
   Token args[MAX_ARGC] = {};
-  RegexContext context = {.env = enum_Regex};
+  RegexContext context = {};
   uint32_t l = lineno ? *lineno : 0;
   uint32_t c = column ? *column : 0;
   Stack *state_stack = Stack_new(allocator);
@@ -39,7 +39,7 @@ Regex *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *e
   int32_t state = 0;
   Stack_push(state_stack, &state, sizeof(int32_t));
   input += pass_space(input, &l, &c);
-  input += single_tokenize(input, &token, &context.env, allocator);
+  input += single_tokenize(input, &token, allocator);
   while (true) {
     const struct grammar_action *act = getParseAction(state, token.type);
     if (!act) {
@@ -52,7 +52,7 @@ Regex *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *e
       Stack_push(token_stack, &token, sizeof(Token));
       Stack_push(state_stack, &state, sizeof(int32_t));
       input += pass_space(input, &l, &c);
-      input += single_tokenize(input, &token, &context.env, allocator);
+      input += single_tokenize(input, &token, allocator);
       c += token.location.length;
       fn_ctx_act *ctxAct = getRegexContextAction(state);
       if (ctxAct) { ctxAct(&context, &token); }

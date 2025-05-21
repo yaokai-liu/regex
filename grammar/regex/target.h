@@ -30,8 +30,8 @@ typedef struct Object {
 } Object;
 
 typedef struct Quantifier {
-  uint16_t min;
-  uint16_t max;
+  uint32_t min;
+  uint32_t max;
 } Quantifier;
 
 typedef struct Quantified {
@@ -74,6 +74,11 @@ typedef struct Charset {
     Array *ranges;  // Array<Range>
   } parts[2];
 } Charset;
+
+#define Quantifier_toUint64(Q) (((uint64_t) (Q).max) << 32 | (Q).min)
+#define Quantifier_getMaxFrom(iQ) ((uint32_t) ((iQ) >> 32))
+#define Quantifier_getMinFrom(iQ) ((uint32_t) ((iQ) & 0xFFFFFFFF))
+#define Quantifier_fromUint64(iQ) {.max = Range_getMaxFrom(iQ), .min = Range_getMinFrom(iQ)}
 
 #define Range_toUint64(R)    (((uint64_t) (R).max) << 32 | (R).min)
 #define Range_getMaxFrom(iR) ((uint32_t) ((iR) >> 32))

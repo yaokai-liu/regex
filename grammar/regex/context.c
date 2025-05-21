@@ -29,33 +29,6 @@
 #include "generated/regex/action-table.gen.h"
 #include "generated/tokens.gen.h"
 
-void set_env_quantifier(RegexContext *context, const Token *) {
-  context->env = enum_Quantifier;
-}
-
-void set_env_regexp(RegexContext *context, const Token *) {
-  context->env = enum_Regex;
-}
-void set_env_not(RegexContext *context, const Token *) {
-  context->env = enum_NOT;
-}
-
-fn_ctx_act *getRegexContextAction(uint32_t state) {
-  switch (state) {
-    case Regex_state_NOT: {
-      return set_env_not;
-    }
-    case Regex_state_Object: {
-      return set_env_regexp;
-    }
-    case Regex_state_Object_BEGIN_QUANTIFIER: {
-      return set_env_quantifier;
-    }
-    case Regex_state_Object_Quantifier: {
-      return set_env_regexp;
-    }
-    default: {
-    }
-  }
+fn_ctx_act *getRegexContextAction(uint32_t) {
   return nullptr;
 }

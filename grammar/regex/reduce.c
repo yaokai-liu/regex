@@ -249,74 +249,12 @@ Object *Regex_Object_7(Token argv[], RegexContext *, ErrInfo *, const Allocator 
 Quantified *Regex_Quantified_0(Token argv[], RegexContext *, ErrInfo *,
                                const Allocator * const allocator) {
   Object *_arg0 = argv[0].value;
-  Quantifier *_arg1 = argv[1].value;
+  Quantifier quant = Quantifier_fromUint64((uint64_t) argv[1].value);
   Quantified *quantified = allocator->calloc(1, sizeof(Quantified));
-  memcpy(&quantified->quant, _arg1, sizeof(Quantifier));
-  memcpy(&quantified->object, _arg0, sizeof(Object));
+  quantified->quant = quant;
+  quantified->object = *_arg0;
   allocator->free(_arg0);
-  allocator->free(_arg1);
   return quantified;
-}
-
-Quantifier *Regex_Quantifier_0(Token[], RegexContext *, ErrInfo *,
-                               const Allocator * const allocator) {
-  Quantifier *quant = allocator->calloc(1, sizeof(Quantifier));
-  quant->min = 0;
-  quant->max = 1;
-  return quant;
-}
-
-Quantifier *Regex_Quantifier_1(Token[], RegexContext *, ErrInfo *,
-                               const Allocator * const allocator) {
-  Quantifier *quant = allocator->calloc(1, sizeof(Quantifier));
-  quant->min = 1;
-  quant->max = 0;
-  return quant;
-}
-
-Quantifier *Regex_Quantifier_2(Token[], RegexContext *, ErrInfo *,
-                               const Allocator * const allocator) {
-  Quantifier *quant = allocator->calloc(1, sizeof(Quantifier));
-  quant->min = 0;
-  quant->max = 0;
-  return quant;
-}
-
-Quantifier *Regex_Quantifier_3(Token argv[], RegexContext *, ErrInfo *,
-                               const Allocator * const allocator) {
-  uint64_t _arg1 = (uint64_t) argv[1].value;
-  uint64_t _arg3 = (uint64_t) argv[3].value;
-  Quantifier *quant = allocator->calloc(1, sizeof(Quantifier));
-  quant->min = _arg1;
-  quant->max = _arg3;
-  return quant;
-}
-
-Quantifier *Regex_Quantifier_4(Token argv[], RegexContext *, ErrInfo *,
-                               const Allocator * const allocator) {
-  uint64_t _arg1 = (uint64_t) argv[1].value;
-  Quantifier *quant = allocator->calloc(1, sizeof(Quantifier));
-  quant->min = _arg1;
-  quant->max = 0ULL;
-  return quant;
-}
-
-Quantifier *Regex_Quantifier_5(Token argv[], RegexContext *, ErrInfo *,
-                               const Allocator * const allocator) {
-  uint64_t _arg2 = (uint64_t) argv[2].value;
-  Quantifier *quant = allocator->calloc(1, sizeof(Quantifier));
-  quant->min = 0ULL;
-  quant->max = _arg2;
-  return quant;
-}
-
-Quantifier *Regex_Quantifier_6(Token argv[], RegexContext *, ErrInfo *,
-                               const Allocator * const allocator) {
-  uint64_t _arg1 = (uint64_t) argv[1].value;
-  Quantifier *quant = allocator->calloc(1, sizeof(Quantifier));
-  quant->min = _arg1;
-  quant->max = _arg1;
-  return quant;
 }
 
 Range *Regex_Range_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {

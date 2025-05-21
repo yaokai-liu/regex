@@ -33,7 +33,6 @@
 #include <stdint.h>
 
 typedef struct RegexContext {
-  uint32_t env;
 } RegexContext;
 
 typedef void fn_ctx_act(RegexContext *context, const Token *token);

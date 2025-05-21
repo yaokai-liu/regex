@@ -26,7 +26,9 @@
   (('a' <= (pText)[0] && (pText)[0] <= 'z') || ('A' <= (pText)[0] && (pText)[0] <= 'Z'))
 
 uint32_t t_NUMBER_adic10(const char_t *input, Terminal *result, const Allocator *allocator);
+uint32_t try_tokenize_QUANTIFIER_EXPR(const char_t *input, Terminal *result, const Allocator *allocator);
 uint32_t t_ESCAPE(const char_t *input, Terminal *result, const Allocator *allocator);
+uint32_t pass_whitespace(const char_t * input);
 
 inline uint32_t t_NUMBER_adic10(const char_t * const input, Terminal * const result,
                                 const Allocator * const) {
@@ -47,10 +49,45 @@ inline uint32_t t_NUMBER_adic10(const char_t * const input, Terminal * const res
       break;
     }
   }
-  result->type = enum_NUMBER;
   result->value = (void *) value;
   result->location.length = pText - input;
   return result->location.length;
+}
+
+uint32_t try_tokenize_QUANTIFIER_EXPR(const char_t *input, Terminal *result, const Allocator *allocator) {
+  const char_t *pText = input + 1;
+  Quantifier quant = { .min = 0, .max = 0 };
+
+  pText += pass_whitespace(pText);
+  uint32_t length = t_NUMBER_adic10(pText, result, allocator);
+  if (length) { quant.min = (uint32_t) (uint64_t) result->value; pText += length; }
+
+  pText += pass_whitespace(pText);
+  if (*pText == ',') { pText++; }
+  else if (*pText == '}') { quant.max = quant.min; pText ++; goto __compose_and_return; }
+  else { goto __failed_fall_through; }
+
+  pText += pass_whitespace(pText);
+  if (*pText == '}') { pText ++; goto __compose_and_return; }
+  length = t_NUMBER_adic10(pText, result, allocator);
+  quant.max = length == 0 ? 0 : (uint64_t) result->value;
+  pText += length;
+
+  pText += pass_whitespace(pText);
+  if (*pText != '}') { goto __failed_fall_through; }
+  pText++;
+
+__compose_and_return:
+  result->type = enum_QUANTIFIER;
+  result->value = (void *) Quantifier_toUint64(quant);
+  result->location.length = pText - input;
+  return result->location.length;
+
+__failed_fall_through:
+  result->type = enum_CHAR;
+  result->value = (void *) (uint64_t) '{';
+  result->location.length = 1;
+  return 1;
 }
 
 #define ESCAPE_LITERALS "aAdw"
@@ -74,15 +111,14 @@ inline uint32_t t_ESCAPE(const char_t * const input, Terminal * const result,
   return result->location.length;
 }
 
-const char_t TERMINALS[] = "[](){}|+-*?!^,";
+const char_t TERMINALS[] = "[]()|-!^";
 enum TOKEN_TYPE_ENUM TERMINAL_TYPES[] = {
-  enum_BEGIN_CHARSET,  enum_END_CHARSET, enum_BEGIN_GROUP, enum_END_GROUP, enum_BEGIN_QUANTIFIER,
-  enum_END_QUANTIFIER, enum_SPLIT,       enum_PLUS,        enum_MINUS,     enum_TIMES,
-  enum_QUEST,          enum_ASSERT,      enum_NOT,         enum_COMMA,
+    enum_LEFT_SQUARE_BRACKET, enum_RIGHT_SQUARE_BRACKET,
+    enum_LEFT_PARENTHESIS, enum_RIGHT_PARENTHESIS,
+    enum_SPLIT, enum_MINUS, enum_EXCLAIMA, enum_INVERSE,
 };
 
-inline uint32_t single_tokenize(const char_t * const input, Terminal * const result,
-                                uint32_t * const env, const Allocator * const allocator) {
+inline uint32_t single_tokenize(const char_t * const input, Terminal * const result, const Allocator * const allocator) {
   if (!*input) {
     result->type = enum_TERMINATOR;
     result->location.length = 0;
@@ -93,14 +129,38 @@ inline uint32_t single_tokenize(const char_t * const input, Terminal * const res
   if (idx < str_lit_len(TERMINALS)) {
     result->type = TERMINAL_TYPES[idx];
     result->value = nullptr;
-    if (*env == enum_Regex && result->type == enum_BEGIN_QUANTIFIER) { *env = enum_Quantifier; }
-    if (*env == enum_Quantifier && result->type == enum_END_QUANTIFIER) { *env = enum_Regex; }
     return 1;
   }
-  if (*env == enum_Quantifier && startswithDigital(input)) {
-    return t_NUMBER_adic10(input, result, allocator);
+  if (*input == '\\') {
+    return t_ESCAPE(input, result, allocator);
   }
-  if (*input == '\\') { return t_ESCAPE(input, result, allocator); }
+  switch (*input) {
+    case '*': {
+      Quantifier quant = { .min = 0, .max = 0 };
+      result->type = enum_QUANTIFIER;
+      result->value = (void *) Quantifier_toUint64(quant);
+      result->location.length = 1;
+      return result->location.length;
+    }
+    case '+': {
+      Quantifier quant = { .min = 1, .max = 0 };
+      result->type = enum_QUANTIFIER;
+      result->value = (void *) Quantifier_toUint64(quant);
+      result->location.length = 1;
+      return result->location.length;
+    }
+    case '?': {
+      Quantifier quant = { .min = 0, .max = 1 };
+      result->type = enum_QUANTIFIER;
+      result->value = (void *) Quantifier_toUint64(quant);
+      result->location.length = 1;
+      return result->location.length;
+    }
+    case '{': {
+      return try_tokenize_QUANTIFIER_EXPR(input, result, allocator);
+    }
+    default: {}
+  }
   result->type = enum_CHAR;
   result->value = (void *) (uint64_t) *input;
   result->location.length = 1;
@@ -118,12 +178,11 @@ const Terminal *
   uint32_t c = column ? *column : 0;
   Array *terminals = Array_new(sizeof(Terminal), enum_TERMINATOR, allocator);
   Terminal terminal = {};
-  uint32_t environment = enum_Regex;
   pText += pass_space(pText, &l, &c);
   while (*pText && pText - input < max_cost) {
     terminal.location.lineno = l;
     terminal.location.column = c;
-    *cost = single_tokenize(pText, &terminal, &environment, allocator);
+    *cost = single_tokenize(pText, &terminal, allocator);
     c += terminal.location.length;
     if (0 == *cost) { break; }
     pText += *cost;
@@ -147,9 +206,10 @@ const Terminal *
   return pTerminals;
 }
 
+#define WHITESPACES " \t\n\f\v\r"
 uint32_t pass_whitespace(const char_t * const input) {
   const char_t *pText = input;
-  while (*pText && stridx_o(" \t\n\f\v\r", *pText) < lenof(" \t\n\f\v\r")) { pText++; }
+  while (*pText && stridx_o(WHITESPACES, *pText) < str_lit_len(WHITESPACES)) { pText++; }
   return pText - input;
 }
 

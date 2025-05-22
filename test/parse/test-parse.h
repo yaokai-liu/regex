@@ -18,18 +18,24 @@
  *
  *
  * Project Name: regex
- * Module Name: grammar
- * Filename: string_t.c
+ * Module Name: test/parse
+ * Filename: test-parse.h
  * Creator: Yaokai Liu
- * Create Date: 2025-05-04
- * Copyright (c) 2025 Yaokai Liu. All rights reserved.
+ * Create Date: 24-7-13
+ * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#include "string_t.h"
+#ifndef REGEX_TEST_PARSE_H
+#define REGEX_TEST_PARSE_H
 
-inline uint32_t stridx_o(const char_t *string, char_t ch) {
-  if (!string) { return -1; }
-  int len = 0;
-  while (ch != string[len] && string[len]) { len++; }
-  return len;
-}
+#include <check.h>
+
+Suite *sequence_suite();
+Suite *charset_suite();
+Suite *quantified_suite();
+Suite *group_suite();
+Suite *branch_suite();
+
+Suite *illegal_suite();
+
+#endif  // REGEX_TEST_PARSE_H

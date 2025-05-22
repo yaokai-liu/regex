@@ -34,4 +34,19 @@ enum REGEX_GRAMMAR_EXTEND_TYPE_ENUM {
   enum_Sequence = MAX_TOTAL_TOKEN + 1,
 };
 
+enum ESCAPED_CHARSET_ENUM {
+  // decimal number digital: [0-9]
+  CHARSET_DEC_DIGITAL,
+  // hexadecimal number digital: [0-9a-fA-F]
+  CHARSET_HEX_DIGITAL,
+  // identifier character: [a-zA-Z_]
+  CHARSET_IDENT,
+  // letter: [a-zA-Z]
+  CHARSET_LETTER,
+  // lower letter: [a-z]
+  CHARSET_LOWER_LETTER,
+  // upper letter: [A-Z]
+  CHARSET_UPPER_LETTER,
+};
+
 #endif  // REGEX_GRAMMAR_ENUM_H

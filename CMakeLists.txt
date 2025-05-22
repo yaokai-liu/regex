@@ -50,10 +50,10 @@ target_link_libraries(debug PRIVATE grammar)
 
 # for tests
 
-aux_source_directory(test/produce TEST_PRODUCE_SRC)
+aux_source_directory(test/parse TEST_PRODUCE_SRC)
 aux_source_directory(test/tokenize TEST_TOKENIZE_SRC)
 add_executable(test-tokenize test/test-tokenize.c ${TEST_TOKENIZE_SRC})
-add_executable(test-produce test/test-produce.c ${TEST_PRODUCE_SRC})
+add_executable(test-produce test/test-parse.c ${TEST_PRODUCE_SRC})
 add_executable(test-all test/test-all.c ${TEST_TOKENIZE_SRC} ${TEST_PRODUCE_SRC})
 target_link_libraries(test-tokenize PRIVATE check)
 target_link_libraries(test-produce PRIVATE check)

@@ -1,4 +1,22 @@
-/**
+/* License
+ *
+ * xRegex - a Kind of Regular Expression
+ * Copyright (C) 2025 Yaokai Liu
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
  * Project Name: regex
  * Module Name: grammar
  * Filename: target.c
@@ -11,22 +29,6 @@
 #include "allocator.h"
 #include "enum.h"
 #include "generated/tokens.gen.h"
-
-const Range ESCAPE_RANGES[] = {
-  {.min = 'a', .max = 'z'},
-  {.min = 'A', .max = 'Z'},
-  {.min = '0', .max = '9'},
-};
-const ConstCharset ESCAPE_CHARSETS[] = {
-  {{[CT_NORMAL] = {.n_plains = 0, .plains = nullptr, .n_ranges = 1, .ranges = &ESCAPE_RANGES[1]},
-    [CT_INVERSE] = {.n_plains = 0, .plains = nullptr, .n_ranges = 0, .ranges = nullptr}}},
-  {{[CT_NORMAL] = {.n_plains = 0, .plains = nullptr, .n_ranges = 1, .ranges = &ESCAPE_RANGES[1]},
-    [CT_INVERSE] = {.n_plains = 0, .plains = nullptr, .n_ranges = 0, .ranges = nullptr}}},
-  {{[CT_NORMAL] = {.n_plains = 0, .plains = nullptr, .n_ranges = 1, .ranges = &ESCAPE_RANGES[2]},
-    [CT_INVERSE] = {.n_plains = 0, .plains = nullptr, .n_ranges = 0, .ranges = nullptr}}},
-  {{[CT_NORMAL] = {.n_plains = 0, .plains = nullptr, .n_ranges = 3, .ranges = &ESCAPE_RANGES[0]},
-    [CT_INVERSE] = {.n_plains = 0, .plains = nullptr, .n_ranges = 0, .ranges = nullptr}}},
-};
 
 inline void releaseSequence(Sequence *sequence, const Allocator *) {
   Array_reset(sequence, nullptr);

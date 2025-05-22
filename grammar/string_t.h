@@ -32,6 +32,5 @@
 #include <stdint.h>
 
 uint32_t stridx_o(const char_t *string, char_t ch);
-uint32_t stridx_i(const char_t *string, int ch, uint32_t len);
 
 #endif  // REGEX_GRAMMAR_STRING_T_H

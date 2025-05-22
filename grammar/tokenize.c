@@ -1,4 +1,22 @@
-/**
+/* License
+ *
+ * xRegex - a Kind of Regular Expression
+ * Copyright (C) 2025 Yaokai Liu
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
  * Project Name: regex
  * Module Name:
  * Filename: token.c
@@ -14,9 +32,9 @@
 #include "regex/target.h"
 #include "string_t.h"
 #include "terminal.h"
+#include "enum.h"
 #include <stdint.h>
 
-#define lenof(a)                 ((sizeof a) / sizeof(a[0]))
 #define str_lit_len(str_literal) ((sizeof str_literal) - 1)
 #define max(a, b)                ((a) > (b) ? (a) : (b))
 #define min(a, b)                ((a) < (b) ? (a) : (b))
@@ -90,23 +108,31 @@ __failed_fall_through:
   return 1;
 }
 
-#define ESCAPE_LITERALS "aAdw"
+const char_t ESCAPE_LITERALS[] = {
+    [CHARSET_DEC_DIGITAL] = 'd',
+    [CHARSET_HEX_DIGITAL] = 'D',
+    [CHARSET_LETTER] = 'w',
+    [CHARSET_IDENT] = 'W',
+    [CHARSET_LOWER_LETTER] = 'a',
+    [CHARSET_UPPER_LETTER] = 'A',
+    0
+};
 
 inline uint32_t t_ESCAPE(const char_t * const input, Terminal * const result,
                          const Allocator * const) {
-  const char_t *sp = input + 1;
-  if (!*sp) { return 0; }
-  if (startswithLetter(sp)) {
-    uint32_t idx = stridx_o(ESCAPE_LITERALS, *sp);
+  const char_t *pText = input + 1;
+  if (!*pText) { return 0; }
+  if (startswithLetter(pText)) {
+    uint32_t idx = stridx_o(ESCAPE_LITERALS, *pText);
     if (idx >= str_lit_len(ESCAPE_LITERALS)) { return 0; }
-    result->type = enum_SET_ESCAPE;
+    result->type = enum_CHARSET_ESCAPE;
     result->location.length = 2;
     result->mark[0] = false;
     result->value = (void *) (uint64_t) idx;
   } else {
     result->type = enum_CHAR;
     result->location.length = 2;
-    result->value = (void *) (uint64_t) *sp;
+    result->value = (void *) (uint64_t) *pText;
   }
   return result->location.length;
 }

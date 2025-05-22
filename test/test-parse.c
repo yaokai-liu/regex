@@ -18,24 +18,23 @@
  *
  *
  * Project Name: regex
- * Module Name: test/tokenize
- * Filename: test-tokenize.c
+ * Module Name: test
+ * Filename: test-parse.c
  * Creator: Yaokai Liu
- * Create Date: 2024-6-29
+ * Create Date: 2024-6-27
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
-
-#include "tokenize/test-tokenize.h"
+#include "parse/test-parse.h"
 #include <check.h>
 
 int main() {
-  SRunner *srunner = srunner_create(NULL);
-  srunner_add_suite(srunner, single_token_suite());
-  srunner_add_suite(srunner, number_suite());
-  srunner_add_suite(srunner, char_suite());
-  srunner_add_suite(srunner, over_len_suite());
-  srunner_add_suite(srunner, quantifier_suite());
-  srunner_add_suite(srunner, escape_suite());
+  SRunner *srunner = srunner_create(nullptr);
+  srunner_add_suite(srunner, sequence_suite());
+  srunner_add_suite(srunner, charset_suite());
+  srunner_add_suite(srunner, quantified_suite());
+  srunner_add_suite(srunner, group_suite());
+  srunner_add_suite(srunner, branch_suite());
+  srunner_add_suite(srunner, illegal_suite());
   srunner_set_fork_status(srunner, CK_NOFORK);
   srunner_run_all(srunner, CK_NORMAL);
   int n = srunner_ntests_failed(srunner);

@@ -1,4 +1,22 @@
-/**
+/* License
+ *
+ * xRegex - a Kind of Regular Expression
+ * Copyright (C) 2025 Yaokai Liu
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
  * Project Name: regex
  * Module Name: grammar
  * Filename: reduce.c
@@ -80,7 +98,7 @@ Charset *Regex_Charset_0(Token argv[], RegexContext *, ErrInfo *,
 
 Charset *Regex_Charset_1(Token argv[], RegexContext *, ErrInfo *,
                          const Allocator * const allocator) {
-  uint32_t _arg1 = (uint32_t) (uint64_t) argv[0].value;
+  uint32_t escape_id = (uint32_t) (uint64_t) argv[0].value;
 
   Charset *charset = allocator->calloc(1, sizeof(Charset));
   // create parts
@@ -89,21 +107,43 @@ Charset *Regex_Charset_1(Token argv[], RegexContext *, ErrInfo *,
   charset->parts[CT_INVERSE].plains = Array_new(sizeof(uint32_t), enum_CHAR, allocator);
   charset->parts[CT_INVERSE].ranges = Array_new(sizeof(Range), enum_Range, allocator);
 
-  auto normal_part = ESCAPE_CHARSETS[_arg1].parts[CT_NORMAL];
-  auto inverse_part = ESCAPE_CHARSETS[_arg1].parts[CT_INVERSE];
-  for (uint32_t i = 0; i < normal_part.n_plains; i++) {
-    Plain_set_update(charset->parts[CT_NORMAL].plains,  (uint32_t) normal_part.plains[i]);
+  switch (escape_id) {
+    case CHARSET_HEX_DIGITAL: {
+      Range hex_ranges[3] = {
+          { .min = '0', .max = '9' }, { .min = 'a', .max = 'f' }, { .min = 'A', .max = 'F' }
+      };
+      Array_append(charset->parts[CT_NORMAL].ranges, hex_ranges, 3);
+      break;
+    }
+    case CHARSET_DEC_DIGITAL: {
+      Range dec_range = {.min = '0', .max = '9'};
+      Array_append(charset->parts[CT_NORMAL].ranges, &dec_range, 1);
+      break;
+    }
+    case CHARSET_IDENT: {
+      char_t *ident_plains = "_";
+      Array_append(charset->parts[CT_NORMAL].plains, ident_plains, 1);
+      Range ident_ranges[2] = { { .min = 'a', .max = 'z' }, { .min = 'A', .max = 'Z' } };
+      Array_append(charset->parts[CT_NORMAL].ranges, ident_ranges, 2);
+      break;
+    }
+    case CHARSET_LETTER: {
+      Range ident_ranges[2] = { { .min = 'a', .max = 'z' }, { .min = 'A', .max = 'Z' } };
+      Array_append(charset->parts[CT_NORMAL].ranges, ident_ranges, 2);
+      break;
+    }
+    case CHARSET_LOWER_LETTER: {
+      Range ident_ranges[1] = { { .min = 'a', .max = 'z' }};
+      Array_append(charset->parts[CT_NORMAL].ranges, ident_ranges, 1);
+      break;
+    }
+    case CHARSET_UPPER_LETTER: {
+      Range ident_ranges[1] = { { .min = 'A', .max = 'Z' } };
+      Array_append(charset->parts[CT_NORMAL].ranges, ident_ranges, 1);
+      break;
+    }
+    default: { releaseCharset(charset, allocator); return nullptr; }
   }
-  for (uint32_t i = 0; i < inverse_part.n_plains; i++) {
-    Plain_set_update(charset->parts[CT_NORMAL].plains, (uint32_t) inverse_part.plains[i]);
-  }
-  for (uint32_t i = 0; i < normal_part.n_ranges; i++) {
-    Range_set_update(charset->parts[CT_NORMAL].ranges, normal_part.ranges[i]);
-  }
-  for (uint32_t i = 0; i < inverse_part.n_ranges; i++) {
-    Range_set_update(charset->parts[CT_NORMAL].ranges, inverse_part.ranges[i]);
-  }
-
   return charset;
 }
 

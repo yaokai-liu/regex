@@ -1,4 +1,22 @@
-/**
+/* License
+ *
+ * xRegex - a Kind of Regular Expression
+ * Copyright (C) 2025 Yaokai Liu
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
  * Project Name: regex
  * Module Name: test/tokenize
  * Filename: char.c
@@ -73,11 +91,11 @@ START_TEST(test_CHAR_UPPER) {
 END_TEST
 
 START_TEST(test_CHAR_SYMBOL) {
-  char_t *string = "~@#$%&:;\"'<>./";
+  char_t *string = "~@#$%&:;\"'<>./{";
   uint32_t cost, n_tokens;
   const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
-  ck_assert_uint_eq(cost, (sizeof "~@#$%&:;\"'<>./") - 1);
-  ck_assert_uint_eq(n_tokens, (sizeof "~@#$%&:;\"'<>./"));
+  ck_assert_uint_eq(cost, (sizeof "~@#$%&:;\"'<>./{") - 1);
+  ck_assert_uint_eq(n_tokens, (sizeof "~@#$%&:;\"'<>./{"));
   ck_assert_ptr_ne(terminals, nullptr);
   for (uint32_t i = 0; i < n_tokens - 1; i++) {
     ck_assert_uint_eq(terminals[i].type, enum_CHAR);

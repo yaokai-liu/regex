@@ -36,7 +36,6 @@
 #include "tokenize.h"
 
 #define MAX_ARGC       16
-#define ALLOC_LEN      32
 #define _sizeof(_type) ((int32_t) sizeof(_type))
 
 Regex *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *result,

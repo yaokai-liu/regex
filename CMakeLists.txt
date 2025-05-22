@@ -36,6 +36,12 @@ file(GLOB_RECURSE GRAMMAR_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} grammar/*.c g
 add_library(grammar ${GRAMMAR_SRC})
 link_libraries(grammar)
 
+add_subdirectory(automaton/xLR)
+aux_source_directory(automaton AUTOMATON_SRC)
+add_library(automaton ${AUTOMATON_SRC})
+target_include_directories(automaton PRIVATE automaton)
+target_link_libraries(automaton PRIVATE xLR)
+
 add_compile_definitions("TARGET_X64" "UNIX64")
 aux_source_directory(codegen CODEGEN_SRC)
 aux_source_directory(codegen/x64 MCODE_SRC)

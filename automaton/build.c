@@ -1,0 +1,34 @@
+/* License
+ *
+ * xRegex - a Kind of Regular Expression
+ * Copyright (C) 2025 Yaokai Liu
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ * Project Name: regex
+ * Module Name: automaton
+ * Filename: build.c
+ * Creator: Yaokai Liu
+ * Create Date: 2025-05-22
+ * Copyright (c) 2025 Yaokai Liu. All rights reserved.
+ **/
+
+#include "build.h"
+#include "regex/target.h"
+#include "xLR/LRContext.h"
+
+void LRRule_from_regex(LRContext *context, Regex *regex, Array *rule_array) {
+
+}

@@ -39,6 +39,30 @@
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 
+Affixed *Regex_Affixed_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const) {
+  Object *_arg1 = argv[1].value;
+  _arg1->inverse = true;
+  return _arg1;
+}
+
+Assertion *Regex_Assertion_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const) {
+  Quantified *_arg1 = argv[1].value;
+  _arg1->assertion = true;
+  return _arg1;
+}
+
+Assertion *Regex_Assertion_1(Token argv[], RegexContext *, ErrInfo *, const Allocator * const) {
+  Affixed *_arg1 = argv[1].value;
+  _arg1->assertion = true;
+  return _arg1;
+}
+
+Assertion *Regex_Assertion_2(Token argv[], RegexContext *, ErrInfo *, const Allocator * const) {
+  Element *_arg1 = argv[1].value;
+  _arg1->assertion = true;
+  return _arg1;
+}
+
 Branch *Regex_Branch_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   Branch *_arg0 = argv[0].value;
   Object *_arg1 = argv[1].value;
@@ -217,84 +241,72 @@ Group *Regex_Group_0(Token argv[], RegexContext *, ErrInfo *, const Allocator *a
   return group;
 }
 
-Object *Regex_Object_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
+Element *Regex_Element_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   void *chr = argv[0].value;
-  Object *obj = allocator->calloc(1, sizeof(Object));
-  obj->type = enum_CHAR;
-  obj->inverse = false;
-  obj->target = chr;
-  return obj;
+  Element *ele = allocator->calloc(1, sizeof(Element));
+  ele->type = enum_CHAR;
+  ele->assertion = false;
+  ele->inverse = false;
+  ele->min_times = 1;
+  ele->max_times = 1;
+  ele->target = chr;
+  return ele;
 }
 
-Object *Regex_Object_1(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
+Object *Regex_Element_1(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   Charset *_arg0 = argv[0].value;
-  Object *obj = allocator->calloc(1, sizeof(Object));
-  obj->type = enum_Charset;
-  obj->inverse = false;
-  obj->target = (void *) _arg0;
-  return obj;
+  Element *ele = allocator->calloc(1, sizeof(Element));
+  ele->type = enum_Charset;
+  ele->assertion = false;
+  ele->inverse = false;
+  ele->min_times = 1;
+  ele->max_times = 1;
+  ele->target = (void *) _arg0;
+  return ele;
 }
 
-Object *Regex_Object_2(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
+Object *Regex_Element_2(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   Group *_arg0 = argv[0].value;
-  Object *obj = allocator->calloc(1, sizeof(Object));
-  obj->type = enum_Group;
-  obj->inverse = false;
-  obj->target = (void *) _arg0;
-  return obj;
+  Element *ele = allocator->calloc(1, sizeof(Element));
+  ele->type = enum_Group;
+  ele->assertion = false;
+  ele->inverse = false;
+  ele->min_times = 1;
+  ele->max_times = 1;
+  ele->target = (void *) _arg0;
+  return ele;
 }
 
-Object *Regex_Object_3(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
-  Quantified *_arg0 = argv[0].value;
-  Object *obj = allocator->calloc(1, sizeof(Object));
-  obj->type = enum_Quantified;
-  obj->inverse = false;
-  obj->target = (void *) _arg0;
-  return obj;
+Object *Regex_Object_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const) {
+  return (Object *) argv[0].value;
 }
 
-Object *Regex_Object_4(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
-  void *chr = argv[1].value;
-  Object *obj = allocator->calloc(1, sizeof(Object));
-  obj->type = enum_CHAR;
-  obj->inverse = true;
-  obj->target = chr;
-  return obj;
+Object *Regex_Object_1(Token argv[], RegexContext *, ErrInfo *, const Allocator * const) {
+  return (Object *) argv[0].value;
 }
 
-Object *Regex_Object_5(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
-  Charset *_arg1 = argv[1].value;
-  Object *obj = allocator->calloc(1, sizeof(Object));
-  obj->type = enum_Charset;
-  obj->inverse = true;
-  obj->target = _arg1;
-  return obj;
+Object *Regex_Object_2(Token argv[], RegexContext *, ErrInfo *, const Allocator * const) {
+  return (Object *) argv[0].value;
 }
 
-Object *Regex_Object_6(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
-  Group *_arg1 = argv[1].value;
-  Object *obj = allocator->calloc(1, sizeof(Object));
-  obj->type = enum_Group;
-  obj->inverse = true;
-  obj->target = _arg1;
-  return obj;
+Object *Regex_Object_3(Token argv[], RegexContext *, ErrInfo *, const Allocator * const) {
+  return (Object *) argv[0].value;
 }
 
-Object *Regex_Object_7(Token argv[], RegexContext *, ErrInfo *, const Allocator * const) {
-  Object *_arg1 = argv[1].value;
-  _arg1->assertion = true;
+Quantified *Regex_Quantified_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const) {
+  Affixed *_arg1 = argv[0].value;
+  Quantifier quant = Quantifier_fromUint64((uint64_t) argv[1].value);
+  _arg1->min_times = quant.min;
+  _arg1->max_times = quant.max;
   return _arg1;
 }
 
-Quantified *Regex_Quantified_0(Token argv[], RegexContext *, ErrInfo *,
-                               const Allocator * const allocator) {
-  Object *_arg0 = argv[0].value;
+Quantified *Regex_Quantified_1(Token argv[], RegexContext *, ErrInfo *, const Allocator * const) {
+  Element *_arg1 = argv[0].value;
   Quantifier quant = Quantifier_fromUint64((uint64_t) argv[1].value);
-  Quantified *quantified = allocator->calloc(1, sizeof(Quantified));
-  quantified->quant = quant;
-  quantified->object = *_arg0;
-  allocator->free(_arg0);
-  return quantified;
+  _arg1->min_times = quant.min;
+  _arg1->max_times = quant.max;
+  return _arg1;
 }
 
 Range *Regex_Range_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
@@ -356,10 +368,6 @@ Regex *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *re
     }
     case enum_Object: {
       releaseObject(result, allocator);
-      break;
-    }
-    case enum_Quantified: {
-      releaseQuantified(result, allocator);
       break;
     }
     case enum_Charset: {

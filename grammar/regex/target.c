@@ -50,10 +50,6 @@ inline void releaseBranch(Branch *branch, const Allocator *) {
   Array_reset(branch, (void (*)(void *, const Allocator *)) releaseObject);
 }
 
-inline void releaseQuantified(Quantified *quantified, const Allocator *allocator) {
-  releaseObject(&quantified->object, allocator);
-}
-
 inline void releaseObject(Object *object, const Allocator *allocator) {
   switch (object->type) {
     case enum_CHAR: {
@@ -71,11 +67,6 @@ inline void releaseObject(Object *object, const Allocator *allocator) {
     }
     case enum_Group: {
       releaseGroup(object->target, allocator);
-      allocator->free(object->target);
-      break;
-    }
-    case enum_Quantified: {
-      releaseQuantified(object->target, allocator);
       allocator->free(object->target);
       break;
     }

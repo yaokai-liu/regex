@@ -55,17 +55,13 @@ START_TEST(test_QUANTIFIED_NURMAL0) {
   ck_assert_uint_eq(objects[1].type, enum_CHAR);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_Quantified);
+  ck_assert_uint_eq(objects[2].type, enum_CHAR);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
-  Quantified *quantified = (Quantified *) objects[2].target;
-  ck_assert_uint_eq(quantified->object.type, enum_CHAR);
-  ck_assert_uint_eq(quantified->object.inverse, false);
-  ck_assert_uint_eq(quantified->object.assertion, false);
-  char_t chr = (uint64_t) quantified->object.target;
+  char_t chr = (uint64_t) objects[2].target;
   ck_assert_uint_eq(chr, '3');
-  ck_assert_uint_eq(quantified->quant.min, 0);
-  ck_assert_uint_eq(quantified->quant.max, 1);
+  ck_assert_uint_eq(objects[2].min_times, 0);
+  ck_assert_uint_eq(objects[2].max_times, 1);
 
   Array_destroy(regexp);
 }
@@ -91,17 +87,13 @@ START_TEST(test_QUANTIFIED_NURMAL1) {
   ck_assert_uint_eq(objects[1].type, enum_CHAR);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_Quantified);
+  ck_assert_uint_eq(objects[2].type, enum_CHAR);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
-  Quantified *quantified = (Quantified *) objects[2].target;
-  ck_assert_uint_eq(quantified->object.type, enum_CHAR);
-  ck_assert_uint_eq(quantified->object.inverse, false);
-  ck_assert_uint_eq(quantified->object.assertion, false);
-  char_t chr = (uint64_t) quantified->object.target;
+  char_t chr = (uint64_t) objects[2].target;
   ck_assert_uint_eq(chr, '3');
-  ck_assert_uint_eq(quantified->quant.min, 1);
-  ck_assert_uint_eq(quantified->quant.max, 0);
+  ck_assert_uint_eq(objects[2].min_times, 1);
+  ck_assert_uint_eq(objects[2].max_times, 0);
 
   Array_destroy(regexp);
 }
@@ -127,17 +119,13 @@ START_TEST(test_QUANTIFIED_NURMAL2) {
   ck_assert_uint_eq(objects[1].type, enum_CHAR);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_Quantified);
+  ck_assert_uint_eq(objects[2].type, enum_CHAR);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
-  Quantified *quantified = (Quantified *) objects[2].target;
-  ck_assert_uint_eq(quantified->object.type, enum_CHAR);
-  ck_assert_uint_eq(quantified->object.inverse, false);
-  ck_assert_uint_eq(quantified->object.assertion, false);
-  char_t chr = (uint64_t) quantified->object.target;
+  char_t chr = (uint64_t) objects[2].target;
   ck_assert_uint_eq(chr, '3');
-  ck_assert_uint_eq(quantified->quant.min, 0);
-  ck_assert_uint_eq(quantified->quant.max, 0);
+  ck_assert_uint_eq(objects[2].min_times, 0);
+  ck_assert_uint_eq(objects[2].max_times, 0);
 
   Array_destroy(regexp);
 }
@@ -163,17 +151,13 @@ START_TEST(test_QUANTIFIED_NURMAL3) {
   ck_assert_uint_eq(objects[1].type, enum_CHAR);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_Quantified);
+  ck_assert_uint_eq(objects[2].type, enum_CHAR);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
-  Quantified *quantified = (Quantified *) objects[2].target;
-  ck_assert_uint_eq(quantified->object.type, enum_CHAR);
-  ck_assert_uint_eq(quantified->object.inverse, false);
-  ck_assert_uint_eq(quantified->object.assertion, false);
-  char_t chr = (uint64_t) quantified->object.target;
+  char_t chr = (uint64_t) objects[2].target;
   ck_assert_uint_eq(chr, '3');
-  ck_assert_uint_eq(quantified->quant.min, 3);
-  ck_assert_uint_eq(quantified->quant.max, 3);
+  ck_assert_uint_eq(objects[2].min_times, 3);
+  ck_assert_uint_eq(objects[2].max_times, 3);
 
   Array_destroy(regexp);
 }
@@ -199,17 +183,13 @@ START_TEST(test_QUANTIFIED_NURMAL4) {
   ck_assert_uint_eq(objects[1].type, enum_CHAR);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_Quantified);
+  ck_assert_uint_eq(objects[2].type, enum_CHAR);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
-  Quantified *quantified = (Quantified *) objects[2].target;
-  ck_assert_uint_eq(quantified->object.type, enum_CHAR);
-  ck_assert_uint_eq(quantified->object.inverse, false);
-  ck_assert_uint_eq(quantified->object.assertion, false);
-  char_t chr = (uint64_t) quantified->object.target;
+  char_t chr = (uint64_t) objects[2].target;
   ck_assert_uint_eq(chr, '3');
-  ck_assert_uint_eq(quantified->quant.min, 3);
-  ck_assert_uint_eq(quantified->quant.max, 7);
+  ck_assert_uint_eq(objects[2].min_times, 3);
+  ck_assert_uint_eq(objects[2].max_times, 7);
 
   Array_destroy(regexp);
 }
@@ -235,17 +215,13 @@ START_TEST(test_QUANTIFIED_NURMAL5) {
   ck_assert_uint_eq(objects[1].type, enum_CHAR);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_Quantified);
+  ck_assert_uint_eq(objects[2].type, enum_CHAR);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
-  Quantified *quantified = (Quantified *) objects[2].target;
-  ck_assert_uint_eq(quantified->object.type, enum_CHAR);
-  ck_assert_uint_eq(quantified->object.inverse, false);
-  ck_assert_uint_eq(quantified->object.assertion, false);
-  char_t chr = (uint64_t) quantified->object.target;
+  char_t chr = (uint64_t) objects[2].target;
   ck_assert_uint_eq(chr, '3');
-  ck_assert_uint_eq(quantified->quant.min, 6);
-  ck_assert_uint_eq(quantified->quant.max, 0);
+  ck_assert_uint_eq(objects[2].min_times, 6);
+  ck_assert_uint_eq(objects[2].max_times, 0);
 
   Array_destroy(regexp);
 }
@@ -271,17 +247,13 @@ START_TEST(test_QUANTIFIED_NURMAL6) {
   ck_assert_uint_eq(objects[1].type, enum_CHAR);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_Quantified);
+  ck_assert_uint_eq(objects[2].type, enum_CHAR);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
-  Quantified *quantified = (Quantified *) objects[2].target;
-  ck_assert_uint_eq(quantified->object.type, enum_CHAR);
-  ck_assert_uint_eq(quantified->object.inverse, false);
-  ck_assert_uint_eq(quantified->object.assertion, false);
-  char_t chr = (uint64_t) quantified->object.target;
+  char_t chr = (uint64_t) objects[2].target;
   ck_assert_uint_eq(chr, '3');
-  ck_assert_uint_eq(quantified->quant.min, 0);
-  ck_assert_uint_eq(quantified->quant.max, 7);
+  ck_assert_uint_eq(objects[2].min_times, 0);
+  ck_assert_uint_eq(objects[2].max_times, 7);
 
   Array_destroy(regexp);
 }
@@ -307,17 +279,13 @@ START_TEST(test_QUANTIFIED_NURMAL7) {
   ck_assert_uint_eq(objects[1].type, enum_CHAR);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_Quantified);
+  ck_assert_uint_eq(objects[2].type, enum_CHAR);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
-  Quantified *quantified = (Quantified *) objects[2].target;
-  ck_assert_uint_eq(quantified->object.type, enum_CHAR);
-  ck_assert_uint_eq(quantified->object.inverse, false);
-  ck_assert_uint_eq(quantified->object.assertion, false);
-  char_t chr = (uint64_t) quantified->object.target;
+  char_t chr = (uint64_t) objects[2].target;
   ck_assert_uint_eq(chr, '3');
-  ck_assert_uint_eq(quantified->quant.min, 0);
-  ck_assert_uint_eq(quantified->quant.max, 0);
+  ck_assert_uint_eq(objects[2].min_times, 0);
+  ck_assert_uint_eq(objects[2].max_times, 0);
 
   Array_destroy(regexp);
 }
@@ -343,17 +311,13 @@ START_TEST(test_QUANTIFIED_NURMAL8) {
   ck_assert_uint_eq(objects[1].type, enum_CHAR);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_Quantified);
+  ck_assert_uint_eq(objects[2].type, enum_CHAR);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
-  Quantified *quantified = (Quantified *) objects[2].target;
-  ck_assert_uint_eq(quantified->object.type, enum_CHAR);
-  ck_assert_uint_eq(quantified->object.inverse, false);
-  ck_assert_uint_eq(quantified->object.assertion, false);
-  char_t chr = (uint64_t) quantified->object.target;
+  char_t chr = (uint64_t) objects[2].target;
   ck_assert_uint_eq(chr, '3');
-  ck_assert_uint_eq(quantified->quant.min, 0);
-  ck_assert_uint_eq(quantified->quant.max, 0);
+  ck_assert_uint_eq(objects[2].min_times, 0);
+  ck_assert_uint_eq(objects[2].max_times, 0);
 
   Array_destroy(regexp);
 }
@@ -379,17 +343,13 @@ START_TEST(test_QUANTIFIED_NURMAL9) {
   ck_assert_uint_eq(objects[1].type, enum_CHAR);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_Quantified);
+  ck_assert_uint_eq(objects[2].type, enum_CHAR);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
-  Quantified *quantified = (Quantified *) objects[2].target;
-  ck_assert_uint_eq(quantified->object.type, enum_CHAR);
-  ck_assert_uint_eq(quantified->object.inverse, false);
-  ck_assert_uint_eq(quantified->object.assertion, false);
-  char_t chr = (uint64_t) quantified->object.target;
+  char_t chr = (uint64_t) objects[2].target;
   ck_assert_uint_eq(chr, '3');
-  ck_assert_uint_eq(quantified->quant.min, 1);
-  ck_assert_uint_eq(quantified->quant.max, 0);
+  ck_assert_uint_eq(objects[2].min_times, 1);
+  ck_assert_uint_eq(objects[2].max_times, 0);
 
   Array_destroy(regexp);
 }

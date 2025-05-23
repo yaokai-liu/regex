@@ -44,18 +44,15 @@ typedef struct Object {
   uint32_t type;
   uint16_t inverse;
   uint16_t assertion;
+  uint32_t min_times;
+  uint32_t max_times;
   void *target;
-} Object;
+} Object, Assertion, Quantified, Affixed, Element;
 
 typedef struct Quantifier {
   uint32_t min;
   uint32_t max;
 } Quantifier;
-
-typedef struct Quantified {
-  struct Quantifier quant;
-  struct Object object;
-} Quantified;
 
 typedef struct Unit {
   uint8_t type;
@@ -100,7 +97,6 @@ void releaseGroup(Group *group, const Allocator *allocator);
 void releaseObject(Object *object, const Allocator *allocator);
 void releaseCharset(Charset *charset, const Allocator *allocator);
 void releaseSequence(Sequence *sequence, const Allocator *allocator);
-void releaseQuantified(Quantified *quantified, const Allocator *allocator);
 void releaseUnitArray(UnitArray *unitArray, const Allocator *);
 void releaseUnit(Unit *unit, const Allocator *allocator);
 

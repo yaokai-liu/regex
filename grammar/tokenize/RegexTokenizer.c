@@ -58,10 +58,7 @@ inline uint32_t regex_t_NUMBER_adic10(const char_t *const input, Terminal *const
       value = (value * 10) + (*pText++ - '0');  // NOLINT(*-magic-numbers)
       continue;
     }
-    if (startswithLetter(pText)) {
-      result->location.length = pText - input;
-      return 0;
-    }
+    if (startswithLetter(pText)) { return 0; }
     if (*pText == '\'') {
       pText++;
     } else {
@@ -236,21 +233,18 @@ inline void RegexTokenizer_init(RegexTokenizer *tokenizer, const char_t *src, co
   tokenizer->src = src;
   tokenizer->lineno = 1;
   tokenizer->column = 1;
-  tokenizer->cost = 0;
+  tokenizer->offset = 0;
   tokenizer->next = RegexTokenizer_next;
 }
 
 
 uint32_t RegexTokenizer_next(RegexTokenizer *tokenizer, Token *token, ErrInfo *, const Allocator *allocator) {
-  const char_t *const input = tokenizer->src + tokenizer->cost;
-  const char_t *pText = input;
-  pText += pass_space(pText, &tokenizer->lineno, &tokenizer->column);
+  tokenizer->offset += pass_space(tokenizer->src + tokenizer->offset, &tokenizer->lineno, &tokenizer->column);
   token->location.lineno = tokenizer->lineno;
   token->location.column = tokenizer->column;
-  token->location.offset = pText - tokenizer->src;
-  uint32_t length = regex_single_tokenize(input, token, allocator);
+  token->location.offset = tokenizer->offset;
+  uint32_t length = regex_single_tokenize(tokenizer->src, token, allocator);
   tokenizer->column += length;
-  token->location.length = length;
-  tokenizer->cost += pText - input + length;
-  return pText - input + length;
+  tokenizer->offset += length;
+  return SUCCESS;
 }

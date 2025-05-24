@@ -36,19 +36,16 @@
   (('a' <= (pText)[0] && (pText)[0] <= 'z') || ('A' <= (pText)[0] && (pText)[0] <= 'Z'))
 
 uint32_t t_IDENTIFIER(XLRTokenizer *tokenizer, Terminal *result, const Allocator *allocator);
+uint32_t xlr_single_tokenize(XLRTokenizer *tokenizer, Terminal *result, const Allocator *allocator);
 uint32_t XLRTokenizer_next(Tokenizer *tokenizer, Token *token, ErrInfo *, const Allocator *allocator);
 uint64_t get_char(const void *key);
 
 inline uint32_t t_IDENTIFIER(XLRTokenizer *tokenizer, Terminal *const result, const Allocator *allocator) {
-  const char_t *input = tokenizer->SUPER.src + tokenizer->SUPER.cost;
+  const char_t *input = tokenizer->SUPER.src + tokenizer->SUPER.offset;
   const char_t *pText = input;
-  if (startswithLetter(pText) || (*pText == '-')) { pText++; }
-  else {
-    result->location.length = pText - input;
-    return 0;
-  }
+  if (startswithLetter(pText) || (*pText == '_')) { pText++; } else { return 0; }
   while (true) {
-    if (startswithLetter(pText) || startswithDigital(pText) || (*pText == '-')) { pText++; }
+    if (startswithLetter(pText) || startswithDigital(pText) || (*pText == '_')) { pText++; }
     else { break; }
   }
   const uint32_t length = pText - input;
@@ -63,97 +60,97 @@ inline uint32_t t_IDENTIFIER(XLRTokenizer *tokenizer, Terminal *const result, co
     Trie_set(tokenizer->ident_trie, result->value, v_ident);
   }
   allocator->free(result->value);
+  result->value = v_ident;
   result->location.length = pText - input;
   return result->location.length;
 }
 
-const char_t XLR_TERMINALS[] = "()|^";
+const char_t XLR_TERMINALS[] = "()|^=";
 enum TOKEN_TYPE_ENUM XLR_TERMINAL_TYPES[] = {
     enum_LEFT_PARENTHESIS, enum_RIGHT_PARENTHESIS,
-    enum_SPLIT, enum_INVERSE,
+    enum_SPLIT, enum_INVERSE, enum_ASSIGNER,
 };
 
 inline uint32_t
 xlr_single_tokenize(XLRTokenizer *tokenizer, Terminal *result, const Allocator *allocator) {
-  const char_t *input = tokenizer->SUPER.src + tokenizer->SUPER.cost;
+  const char_t *input = tokenizer->SUPER.src + tokenizer->SUPER.offset;
   const char_t *pText = input;
   if (!*pText) {
     result->type = enum_TERMINATOR;
     result->location.length = 0;
     result->value = nullptr;
-    return 0;
+    return SUCCESS;
   }
   uint32_t idx = stridx_o(XLR_TERMINALS, *pText);
   if (idx < str_lit_len(XLR_TERMINALS)) {
     result->type = XLR_TERMINAL_TYPES[idx];
     result->value = nullptr;
-    return 1;
+    result->location.length  = 1;
+    tokenizer->SUPER.column += 1;
+    tokenizer->SUPER.offset += 1;
+    return SUCCESS;
   }
   switch (*pText) {
     case '*': {
       Quantifier quant = { .min = 0, .max = 0 };
       result->type = enum_QUANTIFIER;
       result->value = (void *) Quantifier_toUint64(quant);
-      result->location.length = 1;
-      return result->location.length;
+      result->location.length  = 1;
+      tokenizer->SUPER.column += 1;
+      tokenizer->SUPER.offset += 1;
+      return SUCCESS;
     }
     case '+': {
       Quantifier quant = { .min = 1, .max = 0 };
       result->type = enum_QUANTIFIER;
       result->value = (void *) Quantifier_toUint64(quant);
-      result->location.length = 1;
-      return result->location.length;
+      result->location.length  = 1;
+      tokenizer->SUPER.column += 1;
+      tokenizer->SUPER.offset += 1;
+      return SUCCESS;
     }
     case '?': {
       Quantifier quant = { .min = 0, .max = 1 };
       result->type = enum_QUANTIFIER;
       result->value = (void *) Quantifier_toUint64(quant);
-      result->location.length = 1;
-      return result->location.length;
+      result->location.length  = 1;
+      tokenizer->SUPER.column += 1;
+      tokenizer->SUPER.offset += 1;
+      return SUCCESS;
     }
     default: {}
   }
   uint32_t length = t_IDENTIFIER(tokenizer, result, allocator);
-  return length;
+  if (!length) { return ERROR_UNRECOGNIZED_SYMBOL; }
+  tokenizer->SUPER.column += length;
+  tokenizer->SUPER.offset += length;
+  return SUCCESS;
 }
 
 const Terminal *
 xlr_tokenize(const char_t *input, uint32_t *cost, Array *ident_array, uint32_t *n_tokens, uint32_t *lineno,
              uint32_t *column, const Allocator *allocator) {  // NOLINT(*-easily-swappable-parameters)
-  const char_t *pText = input;
-  const uint32_t max_cost = (*cost) > 0 ? *cost : UINT32_MAX;
-  *cost = 0;
-  uint32_t l = lineno ? *lineno : 0;
-  uint32_t c = column ? *column : 0;
   XLRTokenizer *tokenizer = XLRTokenizer_new(input, ident_array, allocator);
-  Array *terminals = Array_new(sizeof(Terminal), enum_TERMINATOR, allocator);
+  Array *terminals = Array_new(sizeof(Terminal), enum_TOKEN, allocator);
+  const uint32_t max_cost = (*cost) > 0 ? *cost : UINT32_MAX;
+  tokenizer->SUPER.lineno = lineno ? *lineno : 0;
+  tokenizer->SUPER.column = column ? *column : 0;
   Terminal terminal = {};
-  pText += pass_space(pText, &l, &c);
-  while (*pText && pText - input < max_cost) {
-    terminal.location.lineno = l;
-    terminal.location.column = c;
-    *cost = xlr_single_tokenize(tokenizer, &terminal, allocator);
-    c += terminal.location.length;
-    if (0 == *cost) { break; }
-    pText += *cost;
-    pText += pass_space(pText, &l, &c);
-    Array_append(terminals, &terminal, 1);
-  }
-  if ('\0' == *pText) {
-    terminal.type = enum_TERMINATOR;
-    terminal.value = nullptr;
-    terminal.location.lineno = l;
-    terminal.location.column = c;
-    terminal.location.length = 0;
-    Array_append(terminals, &terminal, 1);
-  }
-  *cost = (uint32_t) (pText - input);
+  ErrInfo errInfo = {};
+
+  do {
+    *cost = XLRTokenizer_next((Tokenizer *) tokenizer, &terminal, &errInfo, allocator);
+    if (*cost == SUCCESS) { Array_append(terminals, &terminal, 1); } else { break; }
+  } while (tokenizer->SUPER.offset < max_cost);
+  if (terminal.type == enum_TERMINATOR) { Array_append(terminals, &terminal, 1); }
+
+  *cost = tokenizer->SUPER.offset;
+  lineno ? *lineno = tokenizer->SUPER.lineno : 0;
+  column ? *column = tokenizer->SUPER.column : 0;
   *n_tokens = Array_length(terminals);
   XLRTokenizer_destroy(tokenizer);
   const Terminal *pTerminals = (*n_tokens == 0) ? nullptr : Array_real_addr(terminals, 0);
-  Array_destroy(terminals);
-  lineno ? *lineno = l : 0;
-  column ? *column = c : 0;
+  if (*n_tokens == 0) { releasePrimeArray(terminals); } else { Array_destroy(terminals); }
   return pTerminals;
 }
 
@@ -167,7 +164,7 @@ XLRTokenizer *XLRTokenizer_new(const char_t *src, Array *ident_array, const Allo
   tokenizer->SUPER.lineno = 1;
   tokenizer->SUPER.column = 1;
   tokenizer->SUPER.src = src;
-  tokenizer->SUPER.cost = 0;
+  tokenizer->SUPER.offset = 0;
   return tokenizer;
 }
 
@@ -177,23 +174,19 @@ void XLRTokenizer_destroy(XLRTokenizer *tokenizer) {
 }
 
 uint32_t XLRTokenizer_next(Tokenizer *tokenizer, Token *token, ErrInfo *errInfo, const Allocator *allocator) {
-  const char_t *const input = tokenizer->src + tokenizer->cost;
-  const char_t *pText = input;
-  pText += pass_space(pText, &tokenizer->lineno, &tokenizer->column);
+  tokenizer->offset += pass_space(tokenizer->src + tokenizer->offset, &tokenizer->lineno, &tokenizer->column);
   token->location.lineno = tokenizer->lineno;
   token->location.column = tokenizer->column;
-  token->location.offset = pText - tokenizer->src;
-  uint32_t length = xlr_single_tokenize((XLRTokenizer *) tokenizer, token, allocator);
-  if (!length) {
+  token->location.offset = tokenizer->offset;
+  uint32_t result = xlr_single_tokenize((XLRTokenizer *) tokenizer, token, allocator);
+  if (result != SUCCESS) {
     errInfo->pos.lineno = tokenizer->lineno;
     errInfo->pos.column = tokenizer->column;
-    errInfo->pos.offset = pText - tokenizer->src;
+    errInfo->pos.offset = tokenizer->offset;
     errInfo->code = ERROR_UNRECOGNIZED_SYMBOL;
+    return errInfo->code;
   }
-  tokenizer->column += length;
-  token->location.length = length;
-  tokenizer->cost += pText - input + length;
-  return pText - input + length;
+  return SUCCESS;
 }
 
 uint64_t get_char(const void *key) {

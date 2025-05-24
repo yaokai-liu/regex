@@ -39,7 +39,7 @@ typedef uint32_t tokenizer_next_t(Tokenizer *tokenizer, Token *token, ErrInfo *e
 typedef struct Tokenizer {
   const Allocator *allocator;
   const char_t *src;
-  uint32_t cost;
+  uint32_t offset;
   uint32_t lineno;
   uint32_t column;
   tokenizer_next_t *next;

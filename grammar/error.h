@@ -31,6 +31,7 @@
 #include "token.h"
 
 enum ERROR_TYPE_ENUM {
+  SUCCESS = 0,
   ERROR_UNRECOGNIZED_SYMBOL,
 };
 

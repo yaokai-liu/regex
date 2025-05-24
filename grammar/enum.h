@@ -32,6 +32,7 @@
 
 enum REGEX_GRAMMAR_EXTEND_TYPE_ENUM {
   enum_Sequence = MAX_TOTAL_TOKEN + 1,
+  enum_TOKEN
 };
 
 enum ESCAPED_CHARSET_ENUM {

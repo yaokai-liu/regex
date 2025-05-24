@@ -31,6 +31,7 @@
 #include "regex/target.h"
 #include "token.h"
 #include "tokenize/RegexTokenizer.h"
+#include "tokenize/XLRTokenizer.h"
 #include <check.h>
 #include <stdint.h>
 
@@ -48,43 +49,45 @@ START_TEST(test_TERMINATOR) {
 }
 END_TEST
 
-#define add_test_for(_name, _value)                                                                  \
-  START_TEST(test_##_name) {                                                                         \
-    char_t *string = _value;                                                                         \
-    uint32_t cost, n_tokens;                                                                         \
-    const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator); \
-    ck_assert_uint_eq(cost, 1);                                                                      \
-    ck_assert_uint_eq(n_tokens, 2);                                                                  \
-    ck_assert_ptr_ne(terminals, nullptr);                                                            \
-    ck_assert_uint_eq(terminals[0].type, enum_##_name);                                              \
-    ck_assert_uint_eq((uint64_t) terminals[0].value, 0);                                             \
-    ck_assert_str_eq(get_name(terminals[0].type), string_t(#_name));                                 \
-    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);                                           \
-    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);                                             \
-    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));                           \
-    STDAllocator.free((void *) terminals);                                                           \
-  }                                                                                                  \
+#define add_test_for(_name, _value)                                               \
+  START_TEST(test_##_name) {                                                      \
+    char_t *string = _value;                                                      \
+    uint32_t cost, n_tokens;                                                      \
+    const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens,          \
+                                               nullptr, nullptr, &STDAllocator);  \
+    ck_assert_uint_eq(cost, 1);                                                   \
+    ck_assert_uint_eq(n_tokens, 2);                                               \
+    ck_assert_ptr_ne(terminals, nullptr);                                         \
+    ck_assert_uint_eq(terminals[0].type, enum_##_name);                           \
+    ck_assert_uint_eq((uint64_t) terminals[0].value, 0);                          \
+    ck_assert_str_eq(get_name(terminals[0].type), string_t(#_name));              \
+    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);                        \
+    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);                          \
+    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));        \
+    STDAllocator.free((void *) terminals);                                        \
+  }                                                                               \
   END_TEST
 
-#define add_test_for_QUANTIFIER(_name, _pattern, _min, _max)                                         \
-  START_TEST(test_QUANTIFIER_##_name) {                                                              \
-    char_t *string = _pattern;                                                                       \
-    uint32_t cost, n_tokens;                                                                         \
-    const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator); \
-    ck_assert_uint_eq(cost, 1);                                                                      \
-    ck_assert_uint_eq(n_tokens, 2);                                                                  \
-    ck_assert_ptr_ne(terminals, nullptr);                                                            \
-    ck_assert_str_eq(get_name(terminals[0].type), string_t("QUANTIFIER"));                           \
-    Quantifier quant = {_min, _max};                                                                 \
-    ck_assert_uint_eq((uint64_t) terminals[0].value, Quantifier_toUint64(quant));                    \
-    Quantifier quant2 = Quantifier_fromUint64((uint64_t) terminals[0].value);                        \
-    ck_assert_uint_eq(quant2.max, quant.max);                                                        \
-    ck_assert_uint_eq(quant2.min, quant.min);                                                        \
-    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);                                           \
-    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);                                             \
-    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));                           \
-    STDAllocator.free((void *) terminals);                                                           \
-  }                                                                                                  \
+#define add_test_for_QUANTIFIER(_name, _pattern, _min, _max)                      \
+  START_TEST(test_QUANTIFIER_##_name) {                                           \
+    char_t *string = _pattern;                                                    \
+    uint32_t cost, n_tokens;                                                      \
+    const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens,          \
+                                               nullptr, nullptr, &STDAllocator);  \
+    ck_assert_uint_eq(cost, 1);                                                   \
+    ck_assert_uint_eq(n_tokens, 2);                                               \
+    ck_assert_ptr_ne(terminals, nullptr);                                         \
+    ck_assert_str_eq(get_name(terminals[0].type), string_t("QUANTIFIER"));        \
+    Quantifier quant = {_min, _max};                                              \
+    ck_assert_uint_eq((uint64_t) terminals[0].value, Quantifier_toUint64(quant)); \
+    Quantifier quant2 = Quantifier_fromUint64((uint64_t) terminals[0].value);     \
+    ck_assert_uint_eq(quant2.max, quant.max);                                     \
+    ck_assert_uint_eq(quant2.min, quant.min);                                     \
+    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);                        \
+    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);                          \
+    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));        \
+    STDAllocator.free((void *) terminals);                                        \
+  }                                                                               \
   END_TEST
 
 add_test_for(LEFT_SQUARE_BRACKET, "[")
@@ -112,6 +115,152 @@ START_TEST(test_EMPTY_STRING) {
 }
 END_TEST
 
+START_TEST(test_xLR_LEFT_PARENTHESIS) {
+    char_t *string = "(";
+    uint32_t cost, n_tokens;
+    Array *ident_array = Array_new(sizeof(char_t), enum_SYMBOL, &STDAllocator);
+    Array_append(ident_array, "", 1);
+    const Terminal *terminals = xlr_tokenize(string, &cost, ident_array, &n_tokens,
+                                             nullptr, nullptr, &STDAllocator);
+    ck_assert_uint_eq(cost, 1);
+    ck_assert_uint_eq(n_tokens, 2);
+    ck_assert_ptr_ne(terminals, nullptr);
+    ck_assert_str_eq(get_name(terminals[0].type), string_t("LEFT_PARENTHESIS"));
+    ck_assert_uint_eq((uint64_t) terminals[0].value, 0);
+    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
+    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
+    STDAllocator.free((void *) terminals);
+  }
+END_TEST
+
+START_TEST(test_xLR_RIGHT_PARENTHESIS) {
+    char_t *string = ")";
+    uint32_t cost, n_tokens;
+    Array *ident_array = Array_new(sizeof(char_t), enum_SYMBOL, &STDAllocator);
+    Array_append(ident_array, "", 1);
+    const Terminal *terminals = xlr_tokenize(string, &cost, ident_array, &n_tokens,
+                                             nullptr, nullptr, &STDAllocator);
+    ck_assert_uint_eq(cost, 1);
+    ck_assert_uint_eq(n_tokens, 2);
+    ck_assert_ptr_ne(terminals, nullptr);
+    ck_assert_str_eq(get_name(terminals[0].type), string_t("RIGHT_PARENTHESIS"));
+    ck_assert_uint_eq((uint64_t) terminals[0].value, 0);
+    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
+    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
+    STDAllocator.free((void *) terminals);
+  }
+END_TEST
+
+START_TEST(test_xLR_SPLIT) {
+    char_t *string = "|";
+    uint32_t cost, n_tokens;
+    Array *ident_array = Array_new(sizeof(char_t), enum_SYMBOL, &STDAllocator);
+    Array_append(ident_array, "", 1);
+    const Terminal *terminals = xlr_tokenize(string, &cost, ident_array, &n_tokens,
+                                             nullptr, nullptr, &STDAllocator);
+    ck_assert_uint_eq(cost, 1);
+    ck_assert_uint_eq(n_tokens, 2);
+    ck_assert_ptr_ne(terminals, nullptr);
+    ck_assert_str_eq(get_name(terminals[0].type), string_t("SPLIT"));
+    ck_assert_uint_eq((uint64_t) terminals[0].value, 0);
+    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
+    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
+    STDAllocator.free((void *) terminals);
+  }
+END_TEST
+
+START_TEST(test_xLR_INVERSE) {
+    char_t *string = "^";
+    uint32_t cost, n_tokens;
+    Array *ident_array = Array_new(sizeof(char_t), enum_SYMBOL, &STDAllocator);
+    Array_append(ident_array, "", 1);
+    const Terminal *terminals = xlr_tokenize(string, &cost, ident_array, &n_tokens,
+                                             nullptr, nullptr, &STDAllocator);
+    ck_assert_uint_eq(cost, 1);
+    ck_assert_uint_eq(n_tokens, 2);
+    ck_assert_ptr_ne(terminals, nullptr);
+    ck_assert_str_eq(get_name(terminals[0].type), string_t("INVERSE"));
+    ck_assert_uint_eq((uint64_t) terminals[0].value, 0);
+    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
+    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
+    STDAllocator.free((void *) terminals);
+  }
+END_TEST
+
+START_TEST(test_xLR_QUANTIFIER_1) {
+    char_t *string = "+";
+    uint32_t cost, n_tokens;
+    Array *ident_array = Array_new(sizeof(char_t), enum_SYMBOL, &STDAllocator);
+    Array_append(ident_array, "", 1);
+    const Terminal *terminals = xlr_tokenize(string, &cost, ident_array, &n_tokens,
+                                             nullptr, nullptr, &STDAllocator);
+    ck_assert_uint_eq(cost, 1);
+    ck_assert_uint_eq(n_tokens, 2);
+    ck_assert_ptr_ne(terminals, nullptr);
+    ck_assert_str_eq(get_name(terminals[0].type), string_t("QUANTIFIER"));
+    Quantifier quant = {1, 0};
+    ck_assert_uint_eq((uint64_t) terminals[0].value, Quantifier_toUint64(quant));
+    Quantifier quant2 = Quantifier_fromUint64((uint64_t) terminals[0].value);
+    ck_assert_uint_eq(quant2.max, quant.max);
+    ck_assert_uint_eq(quant2.min, quant.min);
+    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
+    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
+    STDAllocator.free((void *) terminals);
+  }
+END_TEST
+
+START_TEST(test_xLR_QUANTIFIER_2) {
+    char_t *string = "*";
+    uint32_t cost, n_tokens;
+    Array *ident_array = Array_new(sizeof(char_t), enum_SYMBOL, &STDAllocator);
+    Array_append(ident_array, "", 1);
+    const Terminal *terminals = xlr_tokenize(string, &cost, ident_array, &n_tokens,
+                                             nullptr, nullptr, &STDAllocator);
+    ck_assert_uint_eq(cost, 1);
+    ck_assert_uint_eq(n_tokens, 2);
+    ck_assert_ptr_ne(terminals, nullptr);
+    ck_assert_str_eq(get_name(terminals[0].type), string_t("QUANTIFIER"));
+    Quantifier quant = {0, 0};
+    ck_assert_uint_eq((uint64_t) terminals[0].value, Quantifier_toUint64(quant));
+    Quantifier quant2 = Quantifier_fromUint64((uint64_t) terminals[0].value);
+    ck_assert_uint_eq(quant2.max, quant.max);
+    ck_assert_uint_eq(quant2.min, quant.min);
+    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
+    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
+    STDAllocator.free((void *) terminals);
+  }
+END_TEST
+
+START_TEST(test_xLR_QUANTIFIER_3) {
+    char_t *string = "?";
+    uint32_t cost, n_tokens;
+    Array *ident_array = Array_new(sizeof(char_t), enum_SYMBOL, &STDAllocator);
+    Array_append(ident_array, "", 1);
+    const Terminal *terminals = xlr_tokenize(string, &cost, ident_array, &n_tokens,
+                                             nullptr, nullptr, &STDAllocator);
+    ck_assert_uint_eq(cost, 1);
+    ck_assert_uint_eq(n_tokens, 2);
+    ck_assert_ptr_ne(terminals, nullptr);
+    ck_assert_str_eq(get_name(terminals[0].type), string_t("QUANTIFIER"));
+    Quantifier quant = {0, 1};
+    ck_assert_uint_eq((uint64_t) terminals[0].value, Quantifier_toUint64(quant));
+    Quantifier quant2 = Quantifier_fromUint64((uint64_t) terminals[0].value);
+    ck_assert_uint_eq(quant2.max, quant.max);
+    ck_assert_uint_eq(quant2.min, quant.min);
+    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
+    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
+    STDAllocator.free((void *) terminals);
+  }
+END_TEST
+
+
 Suite *single_token_suite() {
   Suite *suite = suite_create("Single Token");
   TCase *tc_single_char = tcase_create("single-character");
@@ -127,6 +276,13 @@ Suite *single_token_suite() {
   tcase_add_test(tc_single_char, test_QUANTIFIER_Q2);
   tcase_add_test(tc_single_char, test_QUANTIFIER_Q3);
   tcase_add_test(tc_single_char, test_EMPTY_STRING);
+  tcase_add_test(tc_single_char, test_xLR_LEFT_PARENTHESIS);
+  tcase_add_test(tc_single_char, test_xLR_RIGHT_PARENTHESIS);
+  tcase_add_test(tc_single_char, test_xLR_SPLIT);
+  tcase_add_test(tc_single_char, test_xLR_INVERSE);
+  tcase_add_test(tc_single_char, test_xLR_QUANTIFIER_1);
+  tcase_add_test(tc_single_char, test_xLR_QUANTIFIER_2);
+  tcase_add_test(tc_single_char, test_xLR_QUANTIFIER_3);
   suite_add_tcase(suite, tc_single_char);
   return suite;
 }

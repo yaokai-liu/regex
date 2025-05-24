@@ -52,7 +52,8 @@ Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator)
   Stack *token_stack = Stack_new(allocator);
   int32_t state = 0;
   Stack_push(state_stack, &state, sizeof(int32_t));
-  tokenizer->next(tokenizer, &token, errInfo, allocator);
+  uint32_t status = tokenizer->next(tokenizer, &token, errInfo, allocator);
+  if (status != SUCCESS) { return nullptr; }
   while (true) {
     const struct grammar_action *act = getParseAction(state, token.type);
     if (!act) {
@@ -62,7 +63,8 @@ Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator)
       state = act->offset;
       Stack_push(token_stack, &token, sizeof(Token));
       Stack_push(state_stack, &state, sizeof(int32_t));
-      tokenizer->next(tokenizer, &token, errInfo, allocator);
+      status = tokenizer->next(tokenizer, &token, errInfo, allocator);
+      if (status != SUCCESS) { return failed_to_get_action(state_stack, token_stack, allocator); }
       fn_ctx_act *ctxAct = getRegexContextAction(state);
       if (ctxAct) { ctxAct(&context, &token); }
     } else if (act->action == Regex_action_reduce) {

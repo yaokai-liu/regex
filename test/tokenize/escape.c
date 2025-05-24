@@ -29,8 +29,8 @@
 #include "char_t.h"
 #include "enum.h"
 #include "generated/tokens.gen.h"
-#include "terminal.h"
-#include "tokenize.h"
+#include "token.h"
+#include "tokenize/RegexTokenizer.h"
 #include <check.h>
 #include <stdint.h>
 
@@ -38,7 +38,7 @@
   START_TEST(test_ESCAPE_##_name) {                                                                  \
     char_t *string = _pattern;                                                                       \
     uint32_t cost, n_tokens;                                                                         \
-    const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator); \
+    const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator); \
     ck_assert_uint_eq(cost, (sizeof _pattern) - 1);                                                  \
     ck_assert_uint_eq(n_tokens, 2);                                                                  \
     ck_assert_ptr_ne(terminals, nullptr);                                                            \
@@ -62,11 +62,11 @@ add_test_for(CHARSET_UPPER_LETTER, "\\A", CHARSET_UPPER_LETTER);
 START_TEST(test_ESCAPE_FALL_THROUGH) {
   char_t *string = "\\[";
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, (sizeof "\\[") - 1);
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);
-  ck_assert_uint_eq(terminals[0].type, enum_CHAR);
+  ck_assert_uint_eq(terminals[0].type, enum_SYMBOL);
   ck_assert_str_eq(get_name(terminals[0].type), string_t("CHAR"));
   ck_assert_uint_eq((uint64_t) terminals[0].value, '[');
   ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);

@@ -18,17 +18,34 @@
  *
  *
  * Project Name: regex
- * Module Name: automaton
- * Filename: build.c
+ * Module Name: grammar/tokenize
+ * Filename: XLRTokenizer.h
  * Creator: Yaokai Liu
- * Create Date: 2025-05-22
+ * Create Date: 2025-05-24
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#include "build.h"
-#include "regex/target.h"
-#include "xLR/LRContext.h"
+#ifndef REGEX_GRAMMAR_XLR_TOKENIZER_H
+#define REGEX_GRAMMAR_XLR_TOKENIZER_H
 
-void LRRule_from_regex(LRContext *context, Regex *regex, Array *rule_array) {
 
-}
+#include "char_t.h"
+#include "token.h"
+#include "Tokenizer.h"
+#include "trie.h"
+#include <stdint.h>
+
+typedef struct XLRTokenizer {
+  Tokenizer SUPER;
+  Array *   ident_array;  // Array<Identifier>
+  Trie *    ident_trie;   // Trie<char_t, Identifier>
+} XLRTokenizer;
+
+const Terminal *
+xlr_tokenize(const char_t *input, uint32_t *cost, Array *ident_array, uint32_t *n_tokens, uint32_t *lineno,
+             uint32_t *column, const Allocator *allocator);
+
+XLRTokenizer *XLRTokenizer_new(const char_t *src, Array *ident_array, const Allocator *allocator);
+void XLRTokenizer_destroy(XLRTokenizer *tokenizer);
+
+#endif //REGEX_GRAMMAR_XLR_TOKENIZER_H

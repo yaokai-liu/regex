@@ -1,6 +1,6 @@
 ${license}
 
-#include "terminal.h"
+#include "token.h"
 #include "generated/tokens.gen.h"
 const char_t REGEX_TERMINALS[] = {
   ${terminals}

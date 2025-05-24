@@ -30,8 +30,8 @@
 #include "enum.h"
 #include "generated/tokens.gen.h"
 #include "regex/target.h"
-#include "terminal.h"
-#include "tokenize.h"
+#include "token.h"
+#include "tokenize/RegexTokenizer.h"
 #include <check.h>
 #include <stdint.h>
 
@@ -39,7 +39,7 @@
   START_TEST(test_QUANTIFIER_##_name) {                                                              \
     char_t *string = _pattern;                                                                       \
     uint32_t cost, n_tokens;                                                                         \
-    const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator); \
+    const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator); \
     ck_assert_uint_eq(cost, (sizeof _pattern) - 1);                                                  \
     ck_assert_uint_eq(n_tokens, 2);                                                                  \
     ck_assert_ptr_ne(terminals, nullptr);                                                            \

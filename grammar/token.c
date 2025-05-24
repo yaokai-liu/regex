@@ -18,14 +18,16 @@
  *
  *
  * Project Name: regex
- * Module Name: automaton
- * Filename: build.h
+ * Module Name: grammar
+ * Filename: terminal.c
  * Creator: Yaokai Liu
- * Create Date: 2025-05-22
+ * Create Date: 2025-05-04
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_AUTOMATON_BUILD_H
-#define REGEX_AUTOMATON_BUILD_H
+#include "token.h"
+#include "generated/tokens.gen.h"
 
-#endif //REGEX_AUTOMATON_BUILD_H
+const char_t *get_name(uint16_t type) {
+  return TOKEN_NAMES[type];
+}

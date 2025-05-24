@@ -28,8 +28,8 @@
 #include "allocator.h"
 #include "char_t.h"
 #include "generated/tokens.gen.h"
-#include "terminal.h"
-#include "tokenize.h"
+#include "token.h"
+#include "tokenize/RegexTokenizer.h"
 #include <check.h>
 #include <stdint.h>
 #include <string.h>
@@ -41,7 +41,7 @@
 START_TEST(test_REALLOC) {
   char_t *string = string_for_test;
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, 63);
   ck_assert_uint_eq(n_tokens, 64);
   ck_assert_ptr_ne(terminals, nullptr);
@@ -102,7 +102,7 @@ static const Allocator MocAllocator = {.malloc = moc_malloc,
 START_TEST(test_REALLOC_LAST) {
   char_t *string = string_for_test2;
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &MocAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &MocAllocator);
   ck_assert_uint_eq(cost, 30);
   ck_assert_uint_eq(n_tokens, 31);
   ck_assert_ptr_ne(terminals, nullptr);
@@ -120,7 +120,7 @@ END_TEST
 START_TEST(test_REALLOC_FAILED) {
   char_t *string = string_for_test3;
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &MocAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &MocAllocator);
   ck_assert_uint_eq(cost, sizeof(string_for_test3) - 1);
   ck_assert_uint_lt(n_tokens, sizeof(string_for_test3) - 1);
   ck_assert_uint_ne(terminals[n_tokens - 1].type, enum_TERMINATOR);

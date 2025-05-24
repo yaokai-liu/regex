@@ -18,22 +18,35 @@
  *
  *
  * Project Name: regex
- * Module Name: codegen/x64
- * Filename: mcode.h
+ * Module Name: grammar
+ * Filename: Tokenizer.h
  * Creator: Yaokai Liu
- * Create Date: 2024-07-27
- * Copyright (c) 2024 Yaokai Liu. All rights reserved.
+ * Create Date: 2025-05-24
+ * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_CODEGEN_MCODE_H
-#define REGEX_CODEGEN_MCODE_H
+#ifndef REGEX_GRAMMAR_TOKENIZER_H
+#define REGEX_GRAMMAR_TOKENIZER_H
 
 #include "array.h"
 #include "char_t.h"
+#include "error.h"
+#include "token.h"
 
-uint32_t mcode_ranges(uint32_t lower_bounds, uint32_t upper_bounds, uint32_t n_ranges);
-Array *mcode_char(char_t the_char);
-Array *mcode_plains(const char_t *plains, uint32_t n_plains);
-Array *mcode_sequence(const char_t *plains, uint32_t n_plains);
+typedef struct Tokenizer Tokenizer;
+typedef uint32_t tokenizer_next_t(Tokenizer *tokenizer, Token *token, ErrInfo *err_info, const Allocator *allocator);
 
-#endif  // REGEX_CODEGEN_MCODE_H
+typedef struct Tokenizer {
+  const Allocator *allocator;
+  const char_t *src;
+  uint32_t cost;
+  uint32_t lineno;
+  uint32_t column;
+  tokenizer_next_t *next;
+} Tokenizer;
+
+uint32_t pass_whitespace(const char_t * input);
+uint32_t pass_space(const char *input, uint32_t *lineno, uint32_t *column);
+
+
+#endif //REGEX_GRAMMAR_TOKENIZER_H

@@ -52,7 +52,7 @@ inline void releaseBranch(Branch *branch, const Allocator *) {
 
 inline void releaseObject(Object *object, const Allocator *allocator) {
   switch (object->type) {
-    case enum_CHAR: {
+    case enum_SYMBOL: {
       return;
     }
     case enum_Sequence: {
@@ -79,7 +79,7 @@ inline void releaseUnitArray(UnitArray *unitArray, const Allocator *) {
 
 inline void releaseUnit(Unit *unit, const Allocator *allocator) {
   switch (unit->type) {
-    case enum_CHAR: {
+    case enum_SYMBOL: {
       break;
     }
     case enum_Range: {

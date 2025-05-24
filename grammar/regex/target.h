@@ -32,7 +32,7 @@
 #include "array.h"
 #include "char_t.h"
 #include "set.h"
-#include "terminal.h"
+#include "token.h"
 #include <stdint.h>
 
 typedef Array Regex;

@@ -28,7 +28,17 @@
 #ifndef REGEX_GRAMMAR_ERROR_H
 #define REGEX_GRAMMAR_ERROR_H
 
+#include "token.h"
+
+enum ERROR_TYPE_ENUM {
+  ERROR_UNRECOGNIZED_SYMBOL,
+};
+
 typedef struct ErrInfo {
+  TokenLoc pos;
+  uint32_t code;
+  int32_t  state;
+  uint32_t token;
 } ErrInfo;
 
 #endif  // REGEX_GRAMMAR_ERROR_H

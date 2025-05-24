@@ -28,12 +28,10 @@
 #include "action.h"
 #include "allocator.h"
 #include "char_t.h"
-#include "enum.h"
 #include "generated/tokens.gen.h"
+#include "tokenize/RegexTokenizer.h"
 #include "regex/parse.h"
 #include "regex/target.h"
-#include "terminal.h"
-#include "tokenize.h"
 #include <check.h>
 
 #define string_to_test "^(abcd)|efg|()"
@@ -41,7 +39,9 @@
 START_TEST(test_BRANCH_NORMAL) {
   char_t *string = string_to_test;
   ErrInfo errInfo = {};
-  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Tokenizer tokenizer = {};
+  RegexTokenizer_init(&tokenizer, string, &STDAllocator);
+  Regex *regexp = parse(&tokenizer, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 3);
 
@@ -62,11 +62,11 @@ START_TEST(test_BRANCH_NORMAL) {
   ck_assert_uint_eq(Array_length(branch2), 3);
   Object *objects2 = (Object *) Array_real_addr(branch2, 0);
   ck_assert_ptr_ne(objects2, nullptr);
-  ck_assert_uint_eq(objects2[0].type, enum_CHAR);
+  ck_assert_uint_eq(objects2[0].type, enum_SYMBOL);
   ck_assert_uint_eq(objects2[0].inverse, false);
-  ck_assert_uint_eq(objects2[1].type, enum_CHAR);
+  ck_assert_uint_eq(objects2[1].type, enum_SYMBOL);
   ck_assert_uint_eq(objects2[1].inverse, false);
-  ck_assert_uint_eq(objects2[2].type, enum_CHAR);
+  ck_assert_uint_eq(objects2[2].type, enum_SYMBOL);
   ck_assert_uint_eq(objects2[2].inverse, false);
 
   Branch *branch3 = (Branch *) Array_real_addr(regexp, 2);

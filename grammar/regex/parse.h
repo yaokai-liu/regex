@@ -30,8 +30,8 @@
 
 #include "error.h"
 #include "target.h"
+#include "tokenize/Tokenizer.h"
 
-Regex *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *errInfo,
-              const Allocator *allocator);
+Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator);
 
 #endif  // REGEX_GRAMMAR_REGEX_PARSE_H

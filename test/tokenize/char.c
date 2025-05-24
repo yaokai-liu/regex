@@ -28,20 +28,20 @@
 #include "allocator.h"
 #include "char_t.h"
 #include "generated/tokens.gen.h"
-#include "terminal.h"
-#include "tokenize.h"
+#include "token.h"
+#include "tokenize/RegexTokenizer.h"
 #include <check.h>
 #include <stdint.h>
 
 START_TEST(test_CHAR_DIGITAL) {
   char_t *string = "0123456789";
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, (sizeof "0123456789") - 1);
   ck_assert_uint_eq(n_tokens, (sizeof "0123456789"));
   ck_assert_ptr_ne(terminals, nullptr);
   for (uint32_t i = 0; i < n_tokens - 1; i++) {
-    ck_assert_uint_eq(terminals[i].type, enum_CHAR);
+    ck_assert_uint_eq(terminals[i].type, enum_SYMBOL);
     ck_assert_uint_eq((uint64_t) terminals[i].value, string[i]);
     ck_assert_str_eq(get_name(terminals[i].type), string_t("CHAR"));
   }
@@ -55,12 +55,12 @@ END_TEST
 START_TEST(test_CHAR_LOWER) {
   char_t *string = "abcdefghijklmnopqrstuvwxyz";
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, (sizeof "abcdefghijklmnopqrstuvwxyz") - 1);
   ck_assert_uint_eq(n_tokens, (sizeof "abcdefghijklmnopqrstuvwxyz"));
   ck_assert_ptr_ne(terminals, nullptr);
   for (uint32_t i = 0; i < n_tokens - 1; i++) {
-    ck_assert_uint_eq(terminals[i].type, enum_CHAR);
+    ck_assert_uint_eq(terminals[i].type, enum_SYMBOL);
     ck_assert_uint_eq((uint64_t) terminals[i].value, string[i]);
     ck_assert_str_eq(get_name(terminals[i].type), string_t("CHAR"));
   }
@@ -74,12 +74,12 @@ END_TEST
 START_TEST(test_CHAR_UPPER) {
   char_t *string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, (sizeof "ABCDEFGHIJKLMNOPQRSTUVWXYZ") - 1);
   ck_assert_uint_eq(n_tokens, (sizeof "ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
   ck_assert_ptr_ne(terminals, nullptr);
   for (uint32_t i = 0; i < n_tokens - 1; i++) {
-    ck_assert_uint_eq(terminals[i].type, enum_CHAR);
+    ck_assert_uint_eq(terminals[i].type, enum_SYMBOL);
     ck_assert_uint_eq((uint64_t) terminals[i].value, string[i]);
     ck_assert_str_eq(get_name(terminals[i].type), string_t("CHAR"));
   }
@@ -93,12 +93,12 @@ END_TEST
 START_TEST(test_CHAR_SYMBOL) {
   char_t *string = "~@#$%&:;\"'<>./{";
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, (sizeof "~@#$%&:;\"'<>./{") - 1);
   ck_assert_uint_eq(n_tokens, (sizeof "~@#$%&:;\"'<>./{"));
   ck_assert_ptr_ne(terminals, nullptr);
   for (uint32_t i = 0; i < n_tokens - 1; i++) {
-    ck_assert_uint_eq(terminals[i].type, enum_CHAR);
+    ck_assert_uint_eq(terminals[i].type, enum_SYMBOL);
     ck_assert_uint_eq((uint64_t) terminals[i].value, string[i]);
     ck_assert_str_eq(get_name(terminals[i].type), string_t("CHAR"));
   }

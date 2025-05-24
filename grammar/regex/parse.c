@@ -27,13 +27,13 @@
 
 #include "action.h"
 #include "error.h"
+#include "stack.h"
+#include "target.h"
+#include "token.h"
 #include "generated/regex/action-table.gen.h"
 #include "generated/regex/rules.gen.h"
 #include "generated/tokens.gen.h"
-#include "stack.h"
-#include "target.h"
-#include "terminal.h"
-#include "tokenize.h"
+#include "tokenize/Tokenizer.h"
 
 #define MAX_ARGC       16
 #define _sizeof(_type) ((int32_t) sizeof(_type))
@@ -44,33 +44,25 @@ Regex *failed_to_parse(Stack *state_stack, Stack *token_stack, Token *, uint32_t
                         const Allocator *allocator);
 Regex *failed_to_get_action(Stack *state_stack, Stack *token_stack, const Allocator *allocator);
 
-Regex *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *errInfo,
-              const Allocator *allocator) {
+Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator) {
   Terminal token = {}, result = {};
   Token args[MAX_ARGC] = {};
   RegexContext context = {};
-  uint32_t l = lineno ? *lineno : 0;
-  uint32_t c = column ? *column : 0;
   Stack *state_stack = Stack_new(allocator);
   Stack *token_stack = Stack_new(allocator);
   int32_t state = 0;
   Stack_push(state_stack, &state, sizeof(int32_t));
-  input += pass_space(input, &l, &c);
-  input += single_tokenize(input, &token, allocator);
+  tokenizer->next(tokenizer, &token, errInfo, allocator);
   while (true) {
     const struct grammar_action *act = getParseAction(state, token.type);
     if (!act) {
-      lineno ? *lineno = l : 0;
-      column ? *column = c : 0;
       return failed_to_get_action(state_stack, token_stack, allocator);
     }
     if (act->action == Regex_action_stack) {
       state = act->offset;
       Stack_push(token_stack, &token, sizeof(Token));
       Stack_push(state_stack, &state, sizeof(int32_t));
-      input += pass_space(input, &l, &c);
-      input += single_tokenize(input, &token, allocator);
-      c += token.location.length;
+      tokenizer->next(tokenizer, &token, errInfo, allocator);
       fn_ctx_act *ctxAct = getRegexContextAction(state);
       if (ctxAct) { ctxAct(&context, &token); }
     } else if (act->action == Regex_action_reduce) {
@@ -86,14 +78,10 @@ Regex *parse(const char_t *input, uint32_t *lineno, uint32_t *column, ErrInfo *e
                                + args[act->count - 1].location.length;
       result.value = func(args, &context, errInfo, allocator);
       if (!result.value) {
-        lineno ? *lineno = l : 0;
-        column ? *column = c : 0;
         return failed_to_parse(state_stack, token_stack, args, act->count, allocator);
       }
       state = parseJumpState(state, act->type);
       if (state < 0) {
-        lineno ? *lineno = l : 0;
-        column ? *column = c : 0;
         return failed_to_get_next_state(state_stack, token_stack, &result, act->type, allocator);
       }
       Stack_push(token_stack, &result, sizeof(Token));

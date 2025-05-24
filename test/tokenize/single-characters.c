@@ -29,15 +29,15 @@
 #include "char_t.h"
 #include "generated/tokens.gen.h"
 #include "regex/target.h"
-#include "terminal.h"
-#include "tokenize.h"
+#include "token.h"
+#include "tokenize/RegexTokenizer.h"
 #include <check.h>
 #include <stdint.h>
 
 START_TEST(test_TERMINATOR) {
   char_t *string = "";
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, 0);
   ck_assert_uint_eq(n_tokens, 1);
   ck_assert_ptr_ne(terminals, nullptr);
@@ -52,7 +52,7 @@ END_TEST
   START_TEST(test_##_name) {                                                                         \
     char_t *string = _value;                                                                         \
     uint32_t cost, n_tokens;                                                                         \
-    const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator); \
+    const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator); \
     ck_assert_uint_eq(cost, 1);                                                                      \
     ck_assert_uint_eq(n_tokens, 2);                                                                  \
     ck_assert_ptr_ne(terminals, nullptr);                                                            \
@@ -70,7 +70,7 @@ END_TEST
   START_TEST(test_QUANTIFIER_##_name) {                                                              \
     char_t *string = _pattern;                                                                       \
     uint32_t cost, n_tokens;                                                                         \
-    const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator); \
+    const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator); \
     ck_assert_uint_eq(cost, 1);                                                                      \
     ck_assert_uint_eq(n_tokens, 2);                                                                  \
     ck_assert_ptr_ne(terminals, nullptr);                                                            \
@@ -101,7 +101,7 @@ add_test_for_QUANTIFIER(Q3, "?", 0, 1)
 START_TEST(test_EMPTY_STRING) {
   char_t *string = "";
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, 0);
   ck_assert_uint_eq(n_tokens, 1);
   ck_assert_ptr_ne(terminals, nullptr);

@@ -28,12 +28,10 @@
 #include "action.h"
 #include "allocator.h"
 #include "char_t.h"
-#include "enum.h"
+#include "tokenize/RegexTokenizer.h"
 #include "generated/tokens.gen.h"
-#include "regex/parse.h"
 #include "regex/target.h"
-#include "terminal.h"
-#include "tokenize.h"
+#include "regex/parse.h"
 #include <check.h>
 
 #define string_to_test "(1234[5678]^[4321]^abcd{4})"
@@ -41,7 +39,9 @@
 START_TEST(test_GROUP_NORMAL) {
   char_t *string = string_to_test;
   ErrInfo errInfo = {};
-  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Tokenizer tokenizer = {};
+  RegexTokenizer_init(&tokenizer, string, &STDAllocator);
+  Regex *regexp = parse(&tokenizer, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
   Branch *branch = (Branch *) Array_real_addr(regexp, 0);

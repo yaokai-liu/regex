@@ -28,18 +28,20 @@
 #include "action.h"
 #include "allocator.h"
 #include "char_t.h"
+#include "tokenize/RegexTokenizer.h"
 #include "generated/tokens.gen.h"
-#include "regex/parse.h"
 #include "regex/target.h"
+#include "regex/parse.h"
 #include <check.h>
-#include <stdio.h>
 
 #define string_to_test "[0123456789^3^[21a-z][^4123ghcA-Z]]"
 
 START_TEST(test_CHARSET_NORMAL) {
   char_t *string = string_to_test;
   ErrInfo errInfo = {};
-  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Tokenizer tokenizer = {};
+  RegexTokenizer_init(&tokenizer, string, &STDAllocator);
+  Regex *regexp = parse(&tokenizer, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
   Branch *branch = (Branch *) Array_real_addr(regexp, 0);
@@ -88,7 +90,9 @@ END_TEST
 START_TEST(test_CHARSET_DUPLICATED) {
   char_t *string = string_to_test1;
   ErrInfo errInfo = {};
-  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Tokenizer tokenizer = {};
+  RegexTokenizer_init(&tokenizer, string, &STDAllocator);
+  Regex *regexp = parse(&tokenizer, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
   Branch *branch = (Branch *) Array_real_addr(regexp, 0);
@@ -126,7 +130,9 @@ END_TEST
 START_TEST(test_CHARSET_RANGES_INTERSECT) {
   char_t *string = string_to_test2;
   ErrInfo errInfo = {};
-  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Tokenizer tokenizer = {};
+  RegexTokenizer_init(&tokenizer, string, &STDAllocator);
+  Regex *regexp = parse(&tokenizer, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
   Branch *branch = (Branch *) Array_real_addr(regexp, 0);
@@ -162,7 +168,9 @@ END_TEST
 START_TEST(test_CHARSET_ESCAPE) {
   char_t *string = string_to_test3;
   ErrInfo errInfo = {};
-  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Tokenizer tokenizer = {};
+  RegexTokenizer_init(&tokenizer, string, &STDAllocator);
+  Regex *regexp = parse(&tokenizer, &errInfo, &STDAllocator);
   ck_assert_ptr_ne(regexp, nullptr);
   ck_assert_uint_eq(Array_length(regexp), 1);
   Branch *branch = (Branch *) Array_real_addr(regexp, 0);

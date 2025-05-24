@@ -31,7 +31,7 @@
 #include "generated/tokens.gen.h"
 #include "stack.h"
 #include "target.h"
-#include "terminal.h"
+#include "token.h"
 #include <stdint.h>
 #include <string.h>
 
@@ -85,9 +85,9 @@ Charset *Regex_Charset_0(Token argv[], RegexContext *, ErrInfo *,
 
   Charset *charset = allocator->calloc(1, sizeof(Charset));
   // create parts
-  charset->parts[CT_NORMAL ].plains = Array_new(sizeof(uint32_t), enum_CHAR, allocator);
+  charset->parts[CT_NORMAL ].plains = Array_new(sizeof(uint32_t), enum_SYMBOL, allocator);
   charset->parts[CT_NORMAL ].ranges = Array_new(sizeof(Range), enum_Range, allocator);
-  charset->parts[CT_INVERSE].plains = Array_new(sizeof(uint32_t), enum_CHAR, allocator);
+  charset->parts[CT_INVERSE].plains = Array_new(sizeof(uint32_t), enum_SYMBOL, allocator);
   charset->parts[CT_INVERSE].ranges = Array_new(sizeof(Range), enum_Range, allocator);
 
   uint32_t length = Array_length(_arg1);
@@ -99,7 +99,7 @@ Charset *Regex_Charset_0(Token argv[], RegexContext *, ErrInfo *,
       // copy without duplicate
       Charset *target = unit->target;
       Charset_update(charset, target, unit->inverse);
-    } else if (unit->type == enum_CHAR) {
+    } else if (unit->type == enum_SYMBOL) {
       // select part
       struct CharsetPart *part = &charset->parts[unit->inverse];
       // update plains
@@ -126,9 +126,9 @@ Charset *Regex_Charset_1(Token argv[], RegexContext *, ErrInfo *,
 
   Charset *charset = allocator->calloc(1, sizeof(Charset));
   // create parts
-  charset->parts[CT_NORMAL ].plains = Array_new(sizeof(uint32_t), enum_CHAR, allocator);
+  charset->parts[CT_NORMAL ].plains = Array_new(sizeof(uint32_t), enum_SYMBOL, allocator);
   charset->parts[CT_NORMAL ].ranges = Array_new(sizeof(Range), enum_Range, allocator);
-  charset->parts[CT_INVERSE].plains = Array_new(sizeof(uint32_t), enum_CHAR, allocator);
+  charset->parts[CT_INVERSE].plains = Array_new(sizeof(uint32_t), enum_SYMBOL, allocator);
   charset->parts[CT_INVERSE].ranges = Array_new(sizeof(Range), enum_Range, allocator);
 
   switch (escape_id) {
@@ -174,7 +174,7 @@ Charset *Regex_Charset_1(Token argv[], RegexContext *, ErrInfo *,
 Unit *Regex_Unit_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   void *chr = argv[0].value;
   Unit *unit = allocator->calloc(1, sizeof(Unit));
-  unit->type = enum_CHAR;
+  unit->type = enum_SYMBOL;
   unit->inverse = false;
   unit->target = chr;
   return unit;
@@ -201,7 +201,7 @@ Unit *Regex_Unit_2(Token argv[], RegexContext *, ErrInfo *, const Allocator * co
 Unit *Regex_Unit_3(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   void *chr = argv[1].value;
   Unit *unit = allocator->calloc(1, sizeof(Unit));
-  unit->type = enum_CHAR;
+  unit->type = enum_SYMBOL;
   unit->inverse = true;
   unit->target = chr;
   return unit;
@@ -244,7 +244,7 @@ Group *Regex_Group_0(Token argv[], RegexContext *, ErrInfo *, const Allocator *a
 Element *Regex_Element_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   void *chr = argv[0].value;
   Element *ele = allocator->calloc(1, sizeof(Element));
-  ele->type = enum_CHAR;
+  ele->type = enum_SYMBOL;
   ele->assertion = false;
   ele->inverse = false;
   ele->min_times = 1;

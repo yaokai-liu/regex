@@ -25,14 +25,11 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#include "action.h"
 #include "allocator.h"
 #include "char_t.h"
-#include "generated/tokens.gen.h"
-#include "regex/parse.h"
+#include "tokenize/RegexTokenizer.h"
 #include "regex/target.h"
-#include "terminal.h"
-#include "tokenize.h"
+#include "regex/parse.h"
 #include <check.h>
 
 #define string_to_test "(abcd[(sdcc)])"
@@ -40,7 +37,9 @@
 START_TEST(test_ILLEGAL) {
   char_t *string = string_to_test;
   ErrInfo errInfo = {};
-  Regex *regexp = parse(string, nullptr, nullptr, &errInfo, &STDAllocator);
+  Tokenizer tokenizer = {};
+  RegexTokenizer_init(&tokenizer, string, &STDAllocator);
+  Regex *regexp = parse(&tokenizer, &errInfo, &STDAllocator);
   ck_assert_ptr_eq(regexp, nullptr);
 }
 

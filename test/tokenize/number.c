@@ -29,15 +29,15 @@
 #include "char_t.h"
 #include "generated/tokens.gen.h"
 #include "regex/target.h"
-#include "terminal.h"
-#include "tokenize.h"
+#include "token.h"
+#include "tokenize/RegexTokenizer.h"
 #include <check.h>
 #include <stdint.h>
 
 START_TEST(test_NUMBER) {
   char_t *string = "{255}";
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, (sizeof "{255}") - 1);
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);
@@ -58,7 +58,7 @@ END_TEST
 START_TEST(test_NUMBER2) {
   char_t *string = "{256}";
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, (sizeof "{256}") - 1);
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);
@@ -79,7 +79,7 @@ END_TEST
 START_TEST(test_NUMBER3) {
   char_t *string = "{65536}";
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, (sizeof "{65536}") - 1);
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);
@@ -100,7 +100,7 @@ END_TEST
 START_TEST(test_NUMBER4) {
   char_t *string = "{4294967295}";
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, (sizeof "{4294967295}") - 1);
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);
@@ -121,7 +121,7 @@ END_TEST
 START_TEST(test_NUMBER_overflow) {
   char_t *string = "{4294967296}";
   uint32_t cost, n_tokens;
-  const Terminal *terminals = tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
+  const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, (sizeof "{4294967296}") - 1);
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);

@@ -29,7 +29,7 @@
 #define REGEX_GRAMMAR_REGEX_CONTEXT_H
 
 #include "error.h"
-#include "terminal.h"
+#include "token.h"
 #include <stdint.h>
 
 typedef struct RegexContext {

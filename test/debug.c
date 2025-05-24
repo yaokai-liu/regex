@@ -27,12 +27,12 @@
 
 #include "regex/parse.h"
 #include "regex/target.h"
-#include "terminal.h"
+#include "token.h"
 #include <stdio.h>
 
 int main() {
   const char *string = "^0123456789\\w";
-  Regex *regexp = parse(string, nullptr, nullptr, nullptr, &STDAllocator);
+  Regex *regexp = parse(nullptr, nullptr, &STDAllocator);
   if (!regexp) { return -1; }
   printf("%u\n", Array_length(regexp));
   Branch *branch = Array_first_real(regexp);

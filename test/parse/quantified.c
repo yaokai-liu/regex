@@ -170,7 +170,7 @@ START_TEST(test_QUANTIFIED_NURMAL3) {
 
 END_TEST
 
-#define string_to_test4 "123{3,7}"
+#define string_to_test4 "123{3,765'211}"
 
 START_TEST(test_QUANTIFIED_NURMAL4) {
   char_t *string = string_to_test4;
@@ -197,7 +197,7 @@ START_TEST(test_QUANTIFIED_NURMAL4) {
   char_t chr = (uint64_t) objects[2].target;
   ck_assert_uint_eq(chr, '3');
   ck_assert_uint_eq(objects[2].min_times, 3);
-  ck_assert_uint_eq(objects[2].max_times, 7);
+  ck_assert_uint_eq(objects[2].max_times, 765211);
 
   Array_destroy(regexp);
 }

@@ -118,7 +118,6 @@ const char_t ESCAPE_LITERALS[] = {
 
 inline uint32_t regex_t_ESCAPE(const char_t *input, Terminal *result, const Allocator *) {
   const char_t *pText = input + 1;
-  if (!*pText) { return 0; }
   if (startswithLetter(pText)) {
     uint32_t idx = stridx_o(ESCAPE_LITERALS, *pText);
     if (idx >= str_lit_len(ESCAPE_LITERALS)) { return 0; }

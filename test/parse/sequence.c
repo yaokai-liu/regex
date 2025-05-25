@@ -85,11 +85,36 @@ START_TEST(test_SEQUENCE_FALL_THROUGH) {
 }
 END_TEST
 
+#define string_to_test3 "{123\nab}"
+
+START_TEST(test_SEQUENCE_FALL_THROUGH_2) {
+  char_t *string = string_to_test3;
+  ErrInfo errInfo = {};
+  Tokenizer tokenizer = {};
+  RegexTokenizer_init(&tokenizer, string, &STDAllocator);
+  Regex *regexp = parse(&tokenizer, &errInfo, &STDAllocator);
+  ck_assert_ptr_ne(regexp, nullptr);
+  ck_assert_uint_eq(Array_length(regexp), 1);
+  Branch *branch = (Branch *) Array_real_addr(regexp, 0);
+  ck_assert_ptr_ne(branch, nullptr);
+  ck_assert_uint_eq(Array_length(branch), sizeof(string_to_test2) - 1);
+  Object *objects = (Object *) Array_real_addr(branch, 0);
+  ck_assert_ptr_ne(objects, nullptr);
+  for (uint32_t i = 0; i < Array_length(branch); i++) {
+    ck_assert_uint_eq(objects[i].type, enum_SYMBOL);
+    ck_assert_uint_eq((uint64_t) objects[i].target, string_to_test2[i]);
+  }
+  Array_reset(regexp, (destruct_t *) releaseBranch);
+  Array_destroy(regexp);
+}
+END_TEST
+
 Suite *sequence_suite() {
   Suite *suite = suite_create("Sequence");
   TCase *t_case = tcase_create("sequence");
   tcase_add_test(t_case, test_SEQUENCE_NORMAL);
   tcase_add_test(t_case, test_SEQUENCE_FALL_THROUGH);
+  tcase_add_test(t_case, test_SEQUENCE_FALL_THROUGH_2);
   suite_add_tcase(suite, t_case);
   return suite;
 }

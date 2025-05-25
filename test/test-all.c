@@ -25,7 +25,7 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#include "test/test-test.h"
+#include "parse/test-parse.h"
 #include "tokenize/test-tokenize.h"
 
 int main() {
@@ -34,6 +34,8 @@ int main() {
   srunner_add_suite(srunner, number_suite());
   srunner_add_suite(srunner, char_suite());
   srunner_add_suite(srunner, over_len_suite());
+  srunner_add_suite(srunner, quantifier_suite());
+  srunner_add_suite(srunner, escape_suite());
   srunner_add_suite(srunner, sequence_suite());
   srunner_add_suite(srunner, charset_suite());
   srunner_add_suite(srunner, quantified_suite());

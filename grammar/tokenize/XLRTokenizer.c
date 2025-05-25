@@ -141,8 +141,7 @@ xlr_tokenize(const char_t *input, uint32_t *cost, Array *ident_array, uint32_t *
   do {
     *cost = XLRTokenizer_next((Tokenizer *) tokenizer, &terminal, &errInfo, allocator);
     if (*cost == SUCCESS) { Array_append(terminals, &terminal, 1); } else { break; }
-  } while (tokenizer->SUPER.offset < max_cost);
-  if (terminal.type == enum_TERMINATOR) { Array_append(terminals, &terminal, 1); }
+  } while (terminal.type != enum_TERMINATOR && tokenizer->SUPER.offset < max_cost);
 
   *cost = tokenizer->SUPER.offset;
   lineno ? *lineno = tokenizer->SUPER.lineno : 0;
@@ -183,8 +182,8 @@ uint32_t XLRTokenizer_next(Tokenizer *tokenizer, Token *token, ErrInfo *errInfo,
     errInfo->pos.lineno = tokenizer->lineno;
     errInfo->pos.column = tokenizer->column;
     errInfo->pos.offset = tokenizer->offset;
-    errInfo->code = ERROR_UNRECOGNIZED_SYMBOL;
-    return errInfo->code;
+    errInfo->code = result;
+    return result;
   }
   return SUCCESS;
 }

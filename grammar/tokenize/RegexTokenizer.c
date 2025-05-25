@@ -237,13 +237,13 @@ inline void RegexTokenizer_init(RegexTokenizer *tokenizer, const char_t *src, co
   tokenizer->next = RegexTokenizer_next;
 }
 
-
+#define pText (tokenizer->src + tokenizer->offset)
 uint32_t RegexTokenizer_next(RegexTokenizer *tokenizer, Token *token, ErrInfo *, const Allocator *allocator) {
-  tokenizer->offset += pass_space(tokenizer->src + tokenizer->offset, &tokenizer->lineno, &tokenizer->column);
+  tokenizer->offset += pass_space(pText, &tokenizer->lineno, &tokenizer->column);
   token->location.lineno = tokenizer->lineno;
   token->location.column = tokenizer->column;
   token->location.offset = tokenizer->offset;
-  uint32_t length = regex_single_tokenize(tokenizer->src, token, allocator);
+  uint32_t length = regex_single_tokenize(pText, token, allocator);
   tokenizer->column += length;
   tokenizer->offset += length;
   return SUCCESS;

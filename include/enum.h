@@ -35,7 +35,7 @@ enum REGEX_GRAMMAR_EXTEND_TYPE_ENUM {
   enum_TOKEN
 };
 
-enum ESCAPED_CHARSET_ENUM {
+enum REGEX_ESCAPED_CHARSET_ENUM {
   // decimal number digital: [0-9]
   CHARSET_DEC_DIGITAL,
   // hexadecimal number digital: [0-9a-fA-F]

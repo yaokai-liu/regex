@@ -38,8 +38,8 @@ typedef Array Sequence;
 
 typedef struct Object {
   uint32_t type;
-  uint16_t inverse;
-  uint16_t assertion;
+  bool     inverse;
+  bool     assertion;
   uint32_t min_times;
   uint32_t max_times;
   void *target;

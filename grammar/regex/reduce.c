@@ -28,7 +28,7 @@
 #include "array.h"
 #include "enum.h"
 #include "generated/regex/rules.gen.h"
-#include "generated/tokens.gen.h"
+#include "tokens.h"
 #include "stack.h"
 #include "target.h"
 #include "token.h"

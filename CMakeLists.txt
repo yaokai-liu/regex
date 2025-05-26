@@ -26,12 +26,20 @@ else()
     message(STATUS "${GENERATED_DIR} exists, skip to generate grammar action table.")
 endif()
 
+set(GEN_TOKEN_ENUM_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/grammar/generated/tokens.gen.h")
+if (EXISTS ${GEN_TOKEN_ENUM_HEADER})
+    set(TOKEN_ENUM_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/include/tokens.h")
+    file(RENAME ${GEN_TOKEN_ENUM_HEADER} ${TOKEN_ENUM_HEADER})
+endif ()
+
 if (NOT TARGET meman)
     include_directories(meman)
     aux_source_directory(meman MEMAN_SRC)
     add_library(meman STATIC ${MEMAN_SRC})
     link_libraries(meman)
 endif ()
+
+include_directories(include)
 
 include_directories(grammar)
 file(GLOB_RECURSE GRAMMAR_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} grammar/*.c grammar/*.h)

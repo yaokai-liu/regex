@@ -18,17 +18,35 @@
  *
  *
  * Project Name: regex
- * Module Name: grammar/regex
- * Filename: context.c
+ * Module Name: grammar
+ * Filename: Tokenizer.h
  * Creator: Yaokai Liu
- * Create Date: 2025-05-04
+ * Create Date: 2025-05-24
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#include "context.h"
-#include "generated/regex/action-table.gen.h"
-#include "tokens.h"
+#ifndef REGEX_TOKENIZER_H
+#define REGEX_TOKENIZER_H
 
-fn_ctx_act *getRegexContextAction(uint32_t) {
-  return nullptr;
-}
+#include "array.h"
+#include "char_t.h"
+#include "error.h"
+#include "token.h"
+
+typedef struct Tokenizer Tokenizer;
+typedef uint32_t tokenizer_next_t(Tokenizer *tokenizer, Token *token, ErrInfo *err_info, const Allocator *allocator);
+
+typedef struct Tokenizer {
+  const Allocator *allocator;
+  const char_t *src;
+  uint32_t offset;
+  uint32_t lineno;
+  uint32_t column;
+  tokenizer_next_t *next;
+} Tokenizer;
+
+uint32_t pass_whitespace(const char_t * input);
+uint32_t pass_space(const char *input, uint32_t *lineno, uint32_t *column);
+
+
+#endif //REGEX_TOKENIZER_H

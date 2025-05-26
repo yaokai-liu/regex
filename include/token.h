@@ -18,22 +18,22 @@
  *
  *
  * Project Name: regex
- * Module Name: grammar
- * Filename: terminal.h
+ * Module Name:
+ * Filename: token.h
  * Creator: Yaokai Liu
  * Create Date: 24-6-29
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_GRAMMAR_TOKEN_H
-#define REGEX_GRAMMAR_TOKEN_H
+#ifndef REGEX_TOKEN_H
+#define REGEX_TOKEN_H
 
 #include "allocator.h"
 #include "char_t.h"
 #include <stdint.h>
 
 /// location of a Token in a file
-typedef struct TokenLoc {
+typedef struct Location {
   /// Offset in src string
   uint32_t offset;
   /// line number in src file
@@ -42,10 +42,10 @@ typedef struct TokenLoc {
   uint32_t column;
   /// length of the token (size in bytes)
   uint32_t length;
-} TokenLoc;
+} Location;
 
 typedef struct Terminal {
-  TokenLoc location;
+  Location location;
   /// Token Type
   uint32_t type;
   /// Version in standard: [0] enable; [1] deprecated.
@@ -54,8 +54,6 @@ typedef struct Terminal {
   void *value;
 } Terminal, Token;
 
-
 const char_t *get_name(uint16_t type);
 
-
-#endif  // REGEX_GRAMMAR_TOKEN_H
+#endif  // REGEX_TOKEN_H

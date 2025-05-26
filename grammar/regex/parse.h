@@ -30,7 +30,7 @@
 
 #include "error.h"
 #include "target.h"
-#include "tokenize/Tokenizer.h"
+#include "tokenizer.h"
 
 Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator);
 

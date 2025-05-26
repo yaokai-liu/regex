@@ -28,8 +28,8 @@
 #include "action.h"
 #include "allocator.h"
 #include "char_t.h"
-#include "generated/tokens.gen.h"
-#include "tokenize/RegexTokenizer.h"
+#include "tokens.h"
+#include "regex.h"
 #include "regex/parse.h"
 #include "regex/target.h"
 #include <check.h>

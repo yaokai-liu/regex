@@ -28,7 +28,7 @@
 #include "target.h"
 #include "allocator.h"
 #include "enum.h"
-#include "generated/tokens.gen.h"
+#include "tokens.h"
 
 inline void releaseSequence(Sequence *sequence, const Allocator *) {
   Array_reset(sequence, nullptr);

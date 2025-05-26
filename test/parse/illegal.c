@@ -27,7 +27,7 @@
 
 #include "allocator.h"
 #include "char_t.h"
-#include "tokenize/RegexTokenizer.h"
+#include "regex.h"
 #include "regex/target.h"
 #include "regex/parse.h"
 #include <check.h>

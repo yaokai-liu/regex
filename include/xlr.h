@@ -18,22 +18,20 @@
  *
  *
  * Project Name: regex
- * Module Name: grammar/tokenize
- * Filename: XLRTokenizer.h
+ * Module Name:
+ * Filename: xLR.h
  * Creator: Yaokai Liu
- * Create Date: 2025-05-24
+ * Create Date: 2025-05-26
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_GRAMMAR_XLR_TOKENIZER_H
-#define REGEX_GRAMMAR_XLR_TOKENIZER_H
+#ifndef REGEX_XLR_H
+#define REGEX_XLR_H
 
-
-#include "char_t.h"
+#include "types.h"
 #include "token.h"
-#include "Tokenizer.h"
+#include "tokenizer.h"
 #include "trie.h"
-#include <stdint.h>
 
 typedef struct XLRTokenizer {
   Tokenizer SUPER;
@@ -48,4 +46,4 @@ xlr_tokenize(const char_t *input, uint32_t *cost, Array *ident_array, uint32_t *
 XLRTokenizer *XLRTokenizer_new(const char_t *src, Array *ident_array, const Allocator *allocator);
 void XLRTokenizer_destroy(XLRTokenizer *tokenizer);
 
-#endif //REGEX_GRAMMAR_XLR_TOKENIZER_H
+#endif //REGEX_XLR_H

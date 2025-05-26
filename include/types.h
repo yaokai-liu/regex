@@ -1,6 +1,6 @@
 /* License
  *
- * xRegex - a Kind of Regular Expression
+ * ${PROJ_DESCRIPTION}
  * Copyright (C) 2025 Yaokai Liu
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,35 +18,51 @@
  *
  *
  * Project Name: regex
- * Module Name: grammar
- * Filename: Tokenizer.h
+ * Module Name:
+ * Filename: common.h
  * Creator: Yaokai Liu
- * Create Date: 2025-05-24
+ * Create Date: 2025-05-26
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_GRAMMAR_TOKENIZER_H
-#define REGEX_GRAMMAR_TOKENIZER_H
+#ifndef REGEX_COMMON_H
+#define REGEX_COMMON_H
 
+#include "allocator.h"
 #include "array.h"
-#include "char_t.h"
-#include "error.h"
-#include "token.h"
+#include <stdint.h>
 
-typedef struct Tokenizer Tokenizer;
-typedef uint32_t tokenizer_next_t(Tokenizer *tokenizer, Token *token, ErrInfo *err_info, const Allocator *allocator);
+typedef Array Regex;
+typedef Array Branch;
+typedef Array Sequence;
 
-typedef struct Tokenizer {
-  const Allocator *allocator;
-  const char_t *src;
-  uint32_t offset;
-  uint32_t lineno;
-  uint32_t column;
-  tokenizer_next_t *next;
-} Tokenizer;
+typedef struct Object {
+  uint32_t type;
+  uint16_t inverse;
+  uint16_t assertion;
+  uint32_t min_times;
+  uint32_t max_times;
+  void *target;
+} Object;
 
-uint32_t pass_whitespace(const char_t * input);
-uint32_t pass_space(const char *input, uint32_t *lineno, uint32_t *column);
+typedef struct Range {
+  uint32_t min;
+  uint32_t max;
+} Range;
 
+typedef struct Group {
+  Regex *regexp;
+} Group;
 
-#endif //REGEX_GRAMMAR_TOKENIZER_H
+enum PART_ENUM : bool {
+  CT_NORMAL = false,
+  CT_INVERSE = true
+};
+typedef struct Charset {
+  struct CharsetPart {
+    Array *plains;  // Array<uint32_t>
+    Array *ranges;  // Array<Range>
+  } parts[2];
+} Charset;
+
+#endif //REGEX_COMMON_H

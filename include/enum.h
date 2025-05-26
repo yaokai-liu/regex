@@ -18,28 +18,36 @@
  *
  *
  * Project Name: regex
- * Module Name: grammar
- * Filename: error.h
+ * Module Name:
+ * Filename: enum.h
  * Creator: Yaokai Liu
- * Create Date: 2025-05-15
+ * Create Date: 2025-05-04
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_GRAMMAR_ERROR_H
-#define REGEX_GRAMMAR_ERROR_H
+#ifndef REGEX_ENUM_H
+#define REGEX_ENUM_H
 
-#include "token.h"
+#include "tokens.h"
 
-enum ERROR_TYPE_ENUM {
-  SUCCESS = 0,
-  ERROR_UNRECOGNIZED_SYMBOL,
+enum REGEX_GRAMMAR_EXTEND_TYPE_ENUM {
+  enum_Sequence = MAX_TOTAL_TOKEN + 1,
+  enum_TOKEN
 };
 
-typedef struct ErrInfo {
-  TokenLoc pos;
-  uint32_t code;
-  int32_t  state;
-  uint32_t token;
-} ErrInfo;
+enum ESCAPED_CHARSET_ENUM {
+  // decimal number digital: [0-9]
+  CHARSET_DEC_DIGITAL,
+  // hexadecimal number digital: [0-9a-fA-F]
+  CHARSET_HEX_DIGITAL,
+  // identifier character: [a-zA-Z_]
+  CHARSET_IDENT,
+  // letter: [a-zA-Z]
+  CHARSET_LETTER,
+  // lower letter: [a-z]
+  CHARSET_LOWER_LETTER,
+  // upper letter: [A-Z]
+  CHARSET_UPPER_LETTER,
+};
 
-#endif  // REGEX_GRAMMAR_ERROR_H
+#endif  // REGEX_ENUM_H

@@ -26,7 +26,7 @@
  **/
 
 #include "token.h"
-#include "generated/tokens.gen.h"
+#include "tokens.h"
 
 const char_t *get_name(uint16_t type) {
   return TOKEN_NAMES[type];

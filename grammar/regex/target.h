@@ -28,26 +28,14 @@
 #ifndef REGEX_GRAMMAR_REGEX_TARGET_H
 #define REGEX_GRAMMAR_REGEX_TARGET_H
 
-#include "allocator.h"
-#include "array.h"
-#include "char_t.h"
-#include "set.h"
-#include "token.h"
-#include <stdint.h>
+#include "types.h"
 
 typedef Array Regex;
 typedef Array Branch;
 typedef Array UnitArray;
 typedef Array Sequence;
 
-typedef struct Object {
-  uint32_t type;
-  uint16_t inverse;
-  uint16_t assertion;
-  uint32_t min_times;
-  uint32_t max_times;
-  void *target;
-} Object, Assertion, Quantified, Affixed, Element;
+typedef struct Object Assertion, Quantified, Affixed, Element;
 
 typedef struct Quantifier {
   uint32_t min;
@@ -59,26 +47,6 @@ typedef struct Unit {
   bool inverse;
   void *target;
 } Unit;
-
-typedef struct Range {
-  uint32_t min;
-  uint32_t max;
-} Range;
-
-typedef struct Group {
-  Regex *regexp;
-} Group;
-
-enum PART_ENUM : bool {
-  CT_NORMAL = false,
-  CT_INVERSE = true
-};
-typedef struct Charset {
-  struct CharsetPart {
-    Array *plains;  // Array<uint32_t>
-    Array *ranges;  // Array<Range>
-  } parts[2];
-} Charset;
 
 #define Quantifier_toUint64(Q) (((uint64_t) (Q).max) << 32 | (Q).min)
 #define Quantifier_getMaxFrom(iQ) ((uint32_t) ((iQ) >> 32))

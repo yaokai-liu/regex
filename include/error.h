@@ -18,11 +18,28 @@
  *
  *
  * Project Name: regex
- * Module Name: grammar
- * Filename: error.c
+ * Module Name:
+ * Filename: error.h
  * Creator: Yaokai Liu
  * Create Date: 2025-05-15
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#include "error.h"
+#ifndef REGEX_ERROR_H
+#define REGEX_ERROR_H
+
+#include "token.h"
+
+enum ERROR_TYPE_ENUM {
+  SUCCESS = 0,
+  ERROR_UNRECOGNIZED_SYMBOL,
+};
+
+typedef struct ErrInfo {
+  Location pos;
+  uint32_t code;
+  int32_t  state;
+  uint32_t token;
+} ErrInfo;
+
+#endif  // REGEX_ERROR_H

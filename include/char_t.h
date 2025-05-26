@@ -18,27 +18,19 @@
  *
  *
  * Project Name: regex
- * Module Name: grammar
- * Filename: RegexTokenizer.h
+ * Module Name:
+ * Filename: char_t.h
  * Creator: Yaokai Liu
- * Create Date: 24-6-25
+ * Create Date: 24-7-4
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_GRAMMAR_REGEX_TOKENIZER_H
-#define REGEX_GRAMMAR_REGEX_TOKENIZER_H
+#ifndef REGEX_CHAR_T_H
+#define REGEX_CHAR_T_H
 
-#include "char_t.h"
-#include "token.h"
-#include "Tokenizer.h"
-#include <stdint.h>
+// Promise sizeof(char_t) < sizeof(uint64_t).
+typedef char char_t;
 
-typedef Tokenizer RegexTokenizer;
+#define string_t(_str) _str
 
-const Terminal *regex_tokenize(const char_t *input, uint32_t *cost, uint32_t *n_tokens, uint32_t *lineno,
-                               uint32_t *column, const Allocator *allocator);
-
-void RegexTokenizer_init(RegexTokenizer *tokenizer, const char_t *src, const Allocator *allocator);
-
-
-#endif  // REGEX_GRAMMAR_REGEX_TOKENIZER_H
+#endif  // REGEX_CHAR_T_H

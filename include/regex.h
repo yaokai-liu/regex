@@ -18,36 +18,27 @@
  *
  *
  * Project Name: regex
- * Module Name: grammar
- * Filename: enum.h
+ * Module Name:
+ * Filename: regex.h
  * Creator: Yaokai Liu
- * Create Date: 2025-05-04
+ * Create Date: 2025-05-26
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_GRAMMAR_ENUM_H
-#define REGEX_GRAMMAR_ENUM_H
+#ifndef REGEX_REGEX_H
+#define REGEX_REGEX_H
 
-#include "generated/tokens.gen.h"
+#include "tokenizer.h"
+#include "char_t.h"
+#include "token.h"
+#include "types.h"
 
-enum REGEX_GRAMMAR_EXTEND_TYPE_ENUM {
-  enum_Sequence = MAX_TOTAL_TOKEN + 1,
-  enum_TOKEN
-};
+typedef Tokenizer RegexTokenizer;
 
-enum ESCAPED_CHARSET_ENUM {
-  // decimal number digital: [0-9]
-  CHARSET_DEC_DIGITAL,
-  // hexadecimal number digital: [0-9a-fA-F]
-  CHARSET_HEX_DIGITAL,
-  // identifier character: [a-zA-Z_]
-  CHARSET_IDENT,
-  // letter: [a-zA-Z]
-  CHARSET_LETTER,
-  // lower letter: [a-z]
-  CHARSET_LOWER_LETTER,
-  // upper letter: [A-Z]
-  CHARSET_UPPER_LETTER,
-};
+const Terminal *regex_tokenize(const char_t *input, uint32_t *cost, uint32_t *n_tokens, uint32_t *lineno,
+                               uint32_t *column, const Allocator *allocator);
 
-#endif  // REGEX_GRAMMAR_ENUM_H
+void RegexTokenizer_init(RegexTokenizer *tokenizer, const char_t *src, const Allocator *allocator);
+
+
+#endif //REGEX_REGEX_H

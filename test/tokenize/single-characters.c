@@ -27,11 +27,11 @@
 
 #include "allocator.h"
 #include "char_t.h"
-#include "generated/tokens.gen.h"
+#include "tokens.h"
 #include "regex/target.h"
 #include "token.h"
-#include "tokenize/RegexTokenizer.h"
-#include "tokenize/XLRTokenizer.h"
+#include "regex.h"
+#include "xlr.h"
 #include <check.h>
 #include <stdint.h>
 

@@ -32,8 +32,8 @@
 #include "token.h"
 #include "generated/regex/action-table.gen.h"
 #include "generated/regex/rules.gen.h"
-#include "generated/tokens.gen.h"
-#include "tokenize/Tokenizer.h"
+#include "tokens.h"
+#include "tokenizer.h"
 
 #define MAX_ARGC       16
 #define _sizeof(_type) ((int32_t) sizeof(_type))

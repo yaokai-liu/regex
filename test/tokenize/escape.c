@@ -28,9 +28,9 @@
 #include "allocator.h"
 #include "char_t.h"
 #include "enum.h"
-#include "generated/tokens.gen.h"
+#include "tokens.h"
 #include "token.h"
-#include "tokenize/RegexTokenizer.h"
+#include "regex.h"
 #include <check.h>
 #include <stdint.h>
 

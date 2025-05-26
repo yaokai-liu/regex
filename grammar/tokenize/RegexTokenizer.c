@@ -25,7 +25,7 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#include "RegexTokenizer.h"
+#include "regex.h"
 #include "allocator.h"
 #include "array.h"
 #include "regex/target.h"

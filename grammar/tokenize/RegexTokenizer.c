@@ -245,5 +245,5 @@ uint32_t RegexTokenizer_next(RegexTokenizer *tokenizer, Token *token, ErrInfo *,
   uint32_t length = regex_single_tokenize(pText, token, allocator);
   tokenizer->column += length;
   tokenizer->offset += length;
-  return SUCCESS;
+  return REGEX_SUCCESS;
 }

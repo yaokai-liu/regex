@@ -18,20 +18,19 @@
  *
  *
  * Project Name: regex
- * Module Name: grammar/regex
+ * Module Name:
  * Filename: parse.h
  * Creator: Yaokai Liu
  * Create Date: 2025-05-04
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#ifndef REGEX_GRAMMAR_REGEX_PARSE_H
-#define REGEX_GRAMMAR_REGEX_PARSE_H
+#ifndef REGEX_PARSE_H
+#define REGEX_PARSE_H
 
 #include "regex/error.h"
-#include "target.h"
 #include "regex/tokenizer.h"
 
 Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator);
 
-#endif  // REGEX_GRAMMAR_REGEX_PARSE_H
+#endif  // REGEX_PARSE_H

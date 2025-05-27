@@ -28,7 +28,7 @@
 #ifndef REGEX_GRAMMAR_STRING_T_H
 #define REGEX_GRAMMAR_STRING_T_H
 
-#include "char_t.h"
+#include "regex/char_t.h"
 #include <stdint.h>
 
 uint32_t stridx_o(const char_t *string, char_t ch);

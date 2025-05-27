@@ -28,7 +28,7 @@
 #ifndef REGEX_GRAMMAR_REGEX_TARGET_H
 #define REGEX_GRAMMAR_REGEX_TARGET_H
 
-#include "types.h"
+#include "regex/types.h"
 
 typedef Array Regex;
 typedef Array Branch;

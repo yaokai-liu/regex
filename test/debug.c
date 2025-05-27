@@ -27,7 +27,7 @@
 
 #include "regex/parse.h"
 #include "regex/target.h"
-#include "token.h"
+#include "regex/token.h"
 #include <stdio.h>
 
 int main() {

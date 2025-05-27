@@ -1,7 +1,7 @@
 ${license}
 
-#include "token.h"
-#include "tokens.h"
+#include "regex/token.h"
+#include "regex/tokens.h"
 const char_t REGEX_TERMINALS[] = {
   ${terminals}
 };

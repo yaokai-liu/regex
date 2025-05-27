@@ -27,8 +27,8 @@
 
 #include "target.h"
 #include "allocator.h"
-#include "enum.h"
-#include "tokens.h"
+#include "regex/enum.h"
+#include "regex/tokens.h"
 
 inline void releaseSequence(Sequence *sequence, const Allocator *) {
   Array_reset(sequence, nullptr);

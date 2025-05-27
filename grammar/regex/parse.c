@@ -26,14 +26,14 @@
  **/
 
 #include "action.h"
-#include "error.h"
+#include "regex/error.h"
 #include "stack.h"
 #include "target.h"
-#include "token.h"
+#include "regex/token.h"
 #include "generated/regex/action-table.gen.h"
 #include "generated/regex/rules.gen.h"
-#include "tokens.h"
-#include "tokenizer.h"
+#include "regex/tokens.h"
+#include "regex/tokenizer.h"
 
 #define MAX_ARGC       16
 #define _sizeof(_type) ((int32_t) sizeof(_type))

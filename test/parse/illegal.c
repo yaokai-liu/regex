@@ -26,8 +26,8 @@
  **/
 
 #include "allocator.h"
-#include "char_t.h"
-#include "regex.h"
+#include "regex/char_t.h"
+#include "regex/regex.h"
 #include "regex/target.h"
 #include "regex/parse.h"
 #include <check.h>

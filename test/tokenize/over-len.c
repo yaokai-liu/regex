@@ -26,10 +26,10 @@
  **/
 
 #include "allocator.h"
-#include "char_t.h"
-#include "tokens.h"
-#include "token.h"
-#include "regex.h"
+#include "regex/char_t.h"
+#include "regex/tokens.h"
+#include "regex/token.h"
+#include "regex/regex.h"
 #include <check.h>
 #include <stdint.h>
 #include <string.h>

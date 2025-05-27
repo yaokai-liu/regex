@@ -3,7 +3,7 @@ ${license}
 #ifndef REGEX_TOKENS_H
 #define REGEX_TOKENS_H
 
-#include "char_t.h"
+#include "regex/char_t.h"
 #include <stdint.h>
 
 enum TOKEN_TYPE_ENUM: uint32_t {

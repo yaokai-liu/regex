@@ -25,7 +25,7 @@
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#include "tokenizer.h"
+#include "regex/tokenizer.h"
 #include "string_t.h"
 
 #define str_lit_len(str_literal) ((sizeof str_literal) - 1)

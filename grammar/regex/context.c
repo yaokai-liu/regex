@@ -27,7 +27,7 @@
 
 #include "context.h"
 #include "generated/regex/action-table.gen.h"
-#include "tokens.h"
+#include "regex/tokens.h"
 
 fn_ctx_act *getRegexContextAction(uint32_t) {
   return nullptr;

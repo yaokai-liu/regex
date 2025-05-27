@@ -25,8 +25,8 @@
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#include "token.h"
-#include "tokens.h"
+#include "regex/token.h"
+#include "regex/tokens.h"
 
 const char_t *get_name(uint16_t type) {
   return TOKEN_NAMES[type];

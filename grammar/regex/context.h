@@ -28,8 +28,8 @@
 #ifndef REGEX_GRAMMAR_REGEX_CONTEXT_H
 #define REGEX_GRAMMAR_REGEX_CONTEXT_H
 
-#include "error.h"
-#include "token.h"
+#include "regex/error.h"
+#include "regex/token.h"
 #include <stdint.h>
 
 typedef struct RegexContext {

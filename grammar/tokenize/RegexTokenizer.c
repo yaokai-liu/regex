@@ -25,13 +25,13 @@
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
  **/
 
-#include "regex.h"
+#include "regex/regex.h"
 #include "allocator.h"
 #include "array.h"
 #include "regex/target.h"
 #include "string_t.h"
-#include "token.h"
-#include "enum.h"
+#include "regex/token.h"
+#include "regex/enum.h"
 #include <stdint.h>
 
 #define str_lit_len(str_literal) ((sizeof str_literal) - 1)

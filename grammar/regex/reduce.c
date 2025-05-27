@@ -26,12 +26,12 @@
  **/
 
 #include "array.h"
-#include "enum.h"
+#include "regex/enum.h"
 #include "generated/regex/rules.gen.h"
-#include "tokens.h"
+#include "regex/tokens.h"
 #include "stack.h"
 #include "target.h"
-#include "token.h"
+#include "regex/token.h"
 #include <stdint.h>
 #include <string.h>
 

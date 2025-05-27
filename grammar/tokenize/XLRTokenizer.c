@@ -25,8 +25,8 @@
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
-#include "xlr.h"
-#include "enum.h"
+#include "regex/xlr.h"
+#include "regex/enum.h"
 #include "string_t.h"
 #include "regex/target.h"
 

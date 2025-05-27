@@ -28,9 +28,9 @@
 #ifndef REGEX_GRAMMAR_REGEX_PARSE_H
 #define REGEX_GRAMMAR_REGEX_PARSE_H
 
-#include "error.h"
+#include "regex/error.h"
 #include "target.h"
-#include "tokenizer.h"
+#include "regex/tokenizer.h"
 
 Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator);
 

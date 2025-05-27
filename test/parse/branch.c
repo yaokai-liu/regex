@@ -27,9 +27,9 @@
 
 #include "action.h"
 #include "allocator.h"
-#include "char_t.h"
-#include "tokens.h"
-#include "regex.h"
+#include "regex/char_t.h"
+#include "regex/tokens.h"
+#include "regex/regex.h"
 #include "regex/parse.h"
 #include "regex/target.h"
 #include <check.h>

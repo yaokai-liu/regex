@@ -65,10 +65,10 @@ inline uint32_t t_IDENTIFIER(XLRTokenizer *tokenizer, Terminal *const result, co
   return result->location.length;
 }
 
-const char_t XLR_TERMINALS[] = "()|^=";
+const char_t XLR_TERMINALS[] = "()|^=;";
 enum TOKEN_TYPE_ENUM XLR_TERMINAL_TYPES[] = {
     enum_LEFT_PARENTHESIS, enum_RIGHT_PARENTHESIS,
-    enum_SPLIT, enum_INVERSE, enum_ASSIGNER,
+    enum_SPLIT, enum_INVERSE, enum_ASSIGNER, enum_SEMICOLON
 };
 
 inline uint32_t

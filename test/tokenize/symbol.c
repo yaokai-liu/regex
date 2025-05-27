@@ -155,7 +155,7 @@ START_TEST(test_IDENTIFIER_2) {
 END_TEST
 
 START_TEST(test_IDENTIFIER_3) {
-  const char_t * const string = "~@#$%&:;\"'<>./{}";
+  const char_t * const string = "~@#$%&:\"'<>./{}";
   uint32_t cost = 0, n_tokens = 0;
   Array *ident_array = Array_new(sizeof(char_t), enum_SYMBOL, &STDAllocator);
   Array_append(ident_array, "", 1);

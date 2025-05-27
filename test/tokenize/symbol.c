@@ -120,8 +120,8 @@ START_TEST(test_IDENTIFIER) {
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);
   ck_assert_uint_eq(terminals[0].type, enum_SYMBOL);
-  char_t *ident = Array_virt2real(ident_array, terminals[0].value);
-  ck_assert_str_eq(ident, string);
+  char_t *v_ident = Array_virt2real(ident_array, terminals[0].value);
+  ck_assert_str_eq(v_ident, string);
   ck_assert_str_eq(get_name(terminals[0].type), string_t("SYMBOL"));
   ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
   ck_assert_uint_eq((uint64_t) terminals[1].value, 0);

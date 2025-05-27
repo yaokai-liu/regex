@@ -260,21 +260,19 @@ START_TEST(test_xLR_QUANTIFIER_3) {
   }
 END_TEST
 
-START_TEST(test_xLR_QUANTIFIER_4) {
+START_TEST(test_xLR_END_OF_RULE) {
     char_t *string = ";";
     uint32_t cost, n_tokens;
     Array *ident_array = Array_new(sizeof(char_t), enum_SYMBOL, &STDAllocator);
     Array_append(ident_array, "", 1);
     const Terminal *terminals = xlr_tokenize(string, &cost, ident_array, &n_tokens,
                                              nullptr, nullptr, &STDAllocator);
-    ck_assert_uint_eq(cost, 1);
-    ck_assert_uint_eq(n_tokens, 2);
+    ck_assert_uint_eq(cost, 0);
+    ck_assert_uint_eq(n_tokens, 1);
     ck_assert_ptr_ne(terminals, nullptr);
-    ck_assert_str_eq(get_name(terminals[0].type), string_t("SEMICOLON"));
+    ck_assert_uint_eq(terminals[0].type, enum_TERMINATOR);
     ck_assert_uint_eq((uint64_t) terminals[0].value, 0);
-    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
-    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
-    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
+    ck_assert_str_eq(get_name(terminals[0].type), string_t("TERMINATOR"));
     STDAllocator.free((void *) terminals);
   }
 END_TEST
@@ -302,7 +300,7 @@ Suite *single_token_suite() {
   tcase_add_test(tc_single_char, test_xLR_QUANTIFIER_1);
   tcase_add_test(tc_single_char, test_xLR_QUANTIFIER_2);
   tcase_add_test(tc_single_char, test_xLR_QUANTIFIER_3);
-  tcase_add_test(tc_single_char, test_xLR_QUANTIFIER_4);
+  tcase_add_test(tc_single_char, test_xLR_END_OF_RULE);
   suite_add_tcase(suite, tc_single_char);
   return suite;
 }

@@ -38,7 +38,6 @@
 uint32_t t_IDENTIFIER(XLRTokenizer *tokenizer, Terminal *result, const Allocator *allocator);
 uint32_t xlr_single_tokenize(XLRTokenizer *tokenizer, Terminal *result, const Allocator *allocator);
 uint32_t XLRTokenizer_next(Tokenizer *tokenizer, Token *token, ErrInfo *, const Allocator *allocator);
-uint64_t get_char(const void *key);
 
 inline uint32_t t_IDENTIFIER(XLRTokenizer *tokenizer, Terminal *const result, const Allocator *allocator) {
   const char_t *input = tokenizer->SUPER.src + tokenizer->SUPER.offset;
@@ -65,10 +64,10 @@ inline uint32_t t_IDENTIFIER(XLRTokenizer *tokenizer, Terminal *const result, co
   return result->location.length;
 }
 
-const char_t XLR_TERMINALS[] = "()|^=;";
+const char_t XLR_TERMINALS[] = "()|^=";
 enum TOKEN_TYPE_ENUM XLR_TERMINAL_TYPES[] = {
     enum_LEFT_PARENTHESIS, enum_RIGHT_PARENTHESIS,
-    enum_SPLIT, enum_INVERSE, enum_ASSIGNER, enum_SEMICOLON
+    enum_SPLIT, enum_INVERSE, enum_ASSIGNER
 };
 
 inline uint32_t
@@ -118,6 +117,20 @@ xlr_single_tokenize(XLRTokenizer *tokenizer, Terminal *result, const Allocator *
       tokenizer->SUPER.offset += 1;
       return REGEX_SUCCESS;
     }
+    case ';': {
+      if (!tokenizer->end_of_rule) {
+        result->type = enum_TERMINATOR;
+        result->location.length = 0;
+        result->value = nullptr;
+        return REGEX_SUCCESS;
+      } else {
+        tokenizer->end_of_rule = false;
+        result->type = enum_SEMICOLON;
+        result->location.length = 1;
+        result->value = nullptr;
+        return REGEX_SUCCESS;
+      }
+    }
     default: {}
   }
   uint32_t length = t_IDENTIFIER(tokenizer, result, allocator);
@@ -130,7 +143,8 @@ xlr_single_tokenize(XLRTokenizer *tokenizer, Terminal *result, const Allocator *
 const Terminal *
 xlr_tokenize(const char_t *input, uint32_t *cost, Array *ident_array, uint32_t *n_tokens, uint32_t *lineno,
              uint32_t *column, const Allocator *allocator) {  // NOLINT(*-easily-swappable-parameters)
-  XLRTokenizer *tokenizer = XLRTokenizer_new(input, ident_array, allocator);
+  Trie *ident_trie = Trie_new(sizeof(char_t), char2u64, allocator);
+  XLRTokenizer *tokenizer = XLRTokenizer_new(input, ident_array, ident_trie, allocator);
   Array *terminals = Array_new(sizeof(Terminal), enum_TOKEN, allocator);
   const uint32_t max_cost = (*cost) > 0 ? *cost : UINT32_MAX;
   tokenizer->SUPER.lineno = lineno ? *lineno : 0;
@@ -154,12 +168,13 @@ xlr_tokenize(const char_t *input, uint32_t *cost, Array *ident_array, uint32_t *
 }
 
 
-XLRTokenizer *XLRTokenizer_new(const char_t *src, Array *ident_array, const Allocator *allocator) {
+XLRTokenizer *XLRTokenizer_new(const char_t *src, Array *ident_array, Trie *ident_trie, const Allocator *allocator) {
   XLRTokenizer *tokenizer = allocator->calloc(1, sizeof(XLRTokenizer));
-  tokenizer->ident_trie = Trie_new(sizeof(char_t), get_char, allocator);
+  tokenizer->ident_trie = ident_trie;
   tokenizer->SUPER.next = XLRTokenizer_next;
   tokenizer->SUPER.allocator = allocator;
   tokenizer->ident_array = ident_array;
+  tokenizer->end_of_rule = false;
   tokenizer->SUPER.lineno = 1;
   tokenizer->SUPER.column = 1;
   tokenizer->SUPER.src = src;
@@ -168,7 +183,6 @@ XLRTokenizer *XLRTokenizer_new(const char_t *src, Array *ident_array, const Allo
 }
 
 void XLRTokenizer_destroy(XLRTokenizer *tokenizer) {
-  Trie_destroy(tokenizer->ident_trie);
   tokenizer->SUPER.allocator->free(tokenizer);
 }
 
@@ -186,8 +200,4 @@ uint32_t XLRTokenizer_next(Tokenizer *tokenizer, Token *token, ErrInfo *errInfo,
     return result;
   }
   return REGEX_SUCCESS;
-}
-
-uint64_t get_char(const void *key) {
-  return *(const char_t *) key;
 }

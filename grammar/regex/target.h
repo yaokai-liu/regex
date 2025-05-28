@@ -1,6 +1,6 @@
 /* License
  *
- * xRegex - a Kind of Regular Expression
+ * x-regex - A light regular expression and its compiler
  * Copyright (C) 2025 Yaokai Liu
  *
  * This program is free software: you can redistribute it and/or modify

@@ -38,22 +38,38 @@
 #define MAX_ARGC       16
 #define _sizeof(_type) ((int32_t) sizeof(_type))
 
+void terminal2Token(Terminal *terminal, Token *token);
+
 Regex *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *result,
                                  uint32_t result_type, const Allocator *allocator);
 Regex *failed_to_parse(Stack *state_stack, Stack *token_stack, Token *, uint32_t,
                         const Allocator *allocator);
 Regex *failed_to_get_action(Stack *state_stack, Stack *token_stack, const Allocator *allocator);
 
+void terminal2Token(Terminal *terminal, Token *token) {
+  token->type = terminal->type;
+  token->start.lineno = terminal->location.lineno;
+  token->start.offset = terminal->location.offset;
+  token->start.column = terminal->location.column;
+  token->end.lineno = terminal->location.lineno;
+  token->end.offset = terminal->location.offset + terminal->length;
+  token->end.column = terminal->location.column + terminal->length;
+  token->length = terminal->length;
+  token->value = terminal->value;
+}
+
 Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator) {
-  Terminal token = {}, result = {};
+  Token token = {};
+  Terminal terminal = {};
   Token args[MAX_ARGC] = {};
   RegexContext context = {};
   Stack *state_stack = Stack_new(allocator);
   Stack *token_stack = Stack_new(allocator);
-  int32_t state = 0;
+  uint32_t state = Regex_state_;
   Stack_push(state_stack, &state, sizeof(int32_t));
-  uint32_t status = tokenizer->next(tokenizer, &token, errInfo, allocator);
+  uint32_t status = tokenizer->next(tokenizer, &terminal, errInfo, allocator);
   if (status != REGEX_SUCCESS) { return nullptr; }
+  terminal2Token(&terminal, &token);
   while (true) {
     const struct grammar_action *act = getParseAction(state, token.type);
     if (!act) {
@@ -62,35 +78,41 @@ Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator)
     if (act->action == Regex_action_stack) {
       state = act->offset;
       Stack_push(token_stack, &token, sizeof(Token));
-      Stack_push(state_stack, &state, sizeof(int32_t));
-      status = tokenizer->next(tokenizer, &token, errInfo, allocator);
-      if (status != REGEX_SUCCESS) { return failed_to_get_action(state_stack, token_stack, allocator); }
+      Stack_push(state_stack, &state, sizeof(uint32_t));
+      status = tokenizer->next(tokenizer, &terminal, errInfo, allocator);
+      if (status != REGEX_SUCCESS) {
+        return failed_to_get_action(state_stack, token_stack, allocator);
+      }
+      terminal2Token(&terminal, &token);
       fn_ctx_act *ctxAct = getRegexContextAction(state);
       if (ctxAct) { ctxAct(&context, &token); }
     } else if (act->action == Regex_action_reduce) {
-      Stack_pop(token_stack, args, act->count * _sizeof(Token));
-      Stack_pop(state_stack, nullptr, act->count * _sizeof(int32_t));
-      Stack_top(state_stack, (int32_t *) &state, _sizeof(int32_t));
+      Stack_pop(token_stack, args, act->count * sizeof(Token));
+      Stack_pop(state_stack, nullptr, act->count * sizeof(uint32_t));
+      Stack_top(state_stack, (uint32_t *) &state, sizeof(uint32_t));
       fn_regex_reduce *func = REGEX_PRODUCTS[act->offset];
-      result.type = act->type;
-      result.location.offset = args[0].location.offset;
-      result.location.lineno = args[0].location.lineno;
-      result.location.column = args[0].location.column;
-      result.location.length = args[act->count - 1].location.offset - args[0].location.offset
-                               + args[act->count - 1].location.length;
-      result.value = func(args, &context, errInfo, allocator);
-      if (!result.value) {
+      token.type = act->type;
+      token.start.offset = args[0].start.offset;
+      token.start.lineno = args[0].start.lineno;
+      token.start.column = args[0].start.column;
+      token.end.offset = args[act->count - 1].end.offset;
+      token.end.lineno = args[act->count - 1].end.lineno;
+      token.end.column = args[act->count - 1].end.column;
+      token.length = token.end.offset - token.start.offset;
+      token.value = func(args, &context, errInfo, allocator);
+      if (!token.value) {
         return failed_to_parse(state_stack, token_stack, args, act->count, allocator);
       }
       state = parseJumpState(state, act->type);
-      if (state < 0) {
-        return failed_to_get_next_state(state_stack, token_stack, &result, act->type, allocator);
+      if (state == Regex_BAD_STATE) {
+        return failed_to_get_next_state(state_stack, token_stack, &token, act->type, allocator);
       }
-      Stack_push(token_stack, &result, sizeof(Token));
-      Stack_push(state_stack, &state, _sizeof(int32_t));
+      Stack_push(token_stack, &token, sizeof(Token));
+      Stack_push(state_stack, &state, sizeof(uint32_t));
       fn_ctx_act *ctxAct = getRegexContextAction(state);
       if (ctxAct) { ctxAct(&context, &token); }
       if (act->offset == enum_Regex_Regex_EXT) { break; }
+      terminal2Token(&terminal, &token);
     } else {
       // never be touched
     }
@@ -99,5 +121,5 @@ Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator)
   Stack_clear(state_stack);
   allocator->free(token_stack);
   allocator->free(state_stack);
-  return (enum_Regex == (uint64_t) result.value) ? nullptr : result.value;
+  return (enum_Regex == (uint64_t) token.value) ? nullptr : token.value;
 }

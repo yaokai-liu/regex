@@ -37,7 +37,7 @@
 
 uint32_t t_IDENTIFIER(XLRTokenizer *tokenizer, Terminal *result, const Allocator *allocator);
 uint32_t xlr_single_tokenize(XLRTokenizer *tokenizer, Terminal *result, const Allocator *allocator);
-uint32_t XLRTokenizer_next(Tokenizer *tokenizer, Token *token, ErrInfo *, const Allocator *allocator);
+uint32_t XLRTokenizer_next(Tokenizer *tokenizer, Terminal *terminal, ErrInfo *errInfo, const Allocator *allocator);
 
 inline uint32_t t_IDENTIFIER(XLRTokenizer *tokenizer, Terminal *const result, const Allocator *allocator) {
   const char_t *input = tokenizer->SUPER.src + tokenizer->SUPER.offset;
@@ -60,8 +60,8 @@ inline uint32_t t_IDENTIFIER(XLRTokenizer *tokenizer, Terminal *const result, co
   }
   allocator->free(result->value);
   result->value = v_ident;
-  result->location.length = pText - input;
-  return result->location.length;
+  result->length = pText - input;
+  return result->length;
 }
 
 const char_t XLR_TERMINALS[] = "()|^=";
@@ -76,7 +76,7 @@ xlr_single_tokenize(XLRTokenizer *tokenizer, Terminal *result, const Allocator *
   const char_t *pText = input;
   if (!*pText) {
     result->type = enum_TERMINATOR;
-    result->location.length = 0;
+    result->length = 0;
     result->value = nullptr;
     return REGEX_SUCCESS;
   }
@@ -84,7 +84,7 @@ xlr_single_tokenize(XLRTokenizer *tokenizer, Terminal *result, const Allocator *
   if (idx < str_lit_len(XLR_TERMINALS)) {
     result->type = XLR_TERMINAL_TYPES[idx];
     result->value = nullptr;
-    result->location.length  = 1;
+    result->length  = 1;
     tokenizer->SUPER.column += 1;
     tokenizer->SUPER.offset += 1;
     return REGEX_SUCCESS;
@@ -94,7 +94,7 @@ xlr_single_tokenize(XLRTokenizer *tokenizer, Terminal *result, const Allocator *
       Quantifier quant = { .min = 0, .max = 0 };
       result->type = enum_QUANTIFIER;
       result->value = (void *) Quantifier_toUint64(quant);
-      result->location.length  = 1;
+      result->length  = 1;
       tokenizer->SUPER.column += 1;
       tokenizer->SUPER.offset += 1;
       return REGEX_SUCCESS;
@@ -103,7 +103,7 @@ xlr_single_tokenize(XLRTokenizer *tokenizer, Terminal *result, const Allocator *
       Quantifier quant = { .min = 1, .max = 0 };
       result->type = enum_QUANTIFIER;
       result->value = (void *) Quantifier_toUint64(quant);
-      result->location.length  = 1;
+      result->length  = 1;
       tokenizer->SUPER.column += 1;
       tokenizer->SUPER.offset += 1;
       return REGEX_SUCCESS;
@@ -112,7 +112,7 @@ xlr_single_tokenize(XLRTokenizer *tokenizer, Terminal *result, const Allocator *
       Quantifier quant = { .min = 0, .max = 1 };
       result->type = enum_QUANTIFIER;
       result->value = (void *) Quantifier_toUint64(quant);
-      result->location.length  = 1;
+      result->length  = 1;
       tokenizer->SUPER.column += 1;
       tokenizer->SUPER.offset += 1;
       return REGEX_SUCCESS;
@@ -120,13 +120,13 @@ xlr_single_tokenize(XLRTokenizer *tokenizer, Terminal *result, const Allocator *
     case ';': {
       if (!tokenizer->end_of_rule) {
         result->type = enum_TERMINATOR;
-        result->location.length = 0;
+        result->length = 0;
         result->value = nullptr;
         return REGEX_SUCCESS;
       } else {
         tokenizer->end_of_rule = false;
         result->type = enum_SEMICOLON;
-        result->location.length = 1;
+        result->length = 1;
         result->value = nullptr;
         return REGEX_SUCCESS;
       }
@@ -186,12 +186,12 @@ void XLRTokenizer_destroy(XLRTokenizer *tokenizer) {
   tokenizer->SUPER.allocator->free(tokenizer);
 }
 
-uint32_t XLRTokenizer_next(Tokenizer *tokenizer, Token *token, ErrInfo *errInfo, const Allocator *allocator) {
+uint32_t XLRTokenizer_next(Tokenizer *tokenizer, Terminal *terminal, ErrInfo *errInfo, const Allocator *allocator) {
   tokenizer->offset += pass_space(tokenizer->src + tokenizer->offset, &tokenizer->lineno, &tokenizer->column);
-  token->location.lineno = tokenizer->lineno;
-  token->location.column = tokenizer->column;
-  token->location.offset = tokenizer->offset;
-  uint32_t result = xlr_single_tokenize((XLRTokenizer *) tokenizer, token, allocator);
+  terminal->location.lineno = tokenizer->lineno;
+  terminal->location.column = tokenizer->column;
+  terminal->location.offset = tokenizer->offset;
+  uint32_t result = xlr_single_tokenize((XLRTokenizer *) tokenizer, terminal, allocator);
   if (result != REGEX_SUCCESS) {
     errInfo->pos.lineno = tokenizer->lineno;
     errInfo->pos.column = tokenizer->column;

@@ -71,13 +71,13 @@ inline const struct grammar_action *getParseAction(uint32_t index, uint32_t ahea
     return act;
 }
 
-inline int32_t parseJumpState(uint32_t index, uint32_t current) {
+inline uint32_t parseJumpState(uint32_t index, uint32_t current) {
     const state *state = &REGEX_STATES[index];
     const struct unit *unit = getParseUnit(state, current);
-    if (!unit) { return -1; }
+    if (!unit) { return Regex_BAD_STATE; }
     return REGEX_JUMPS[state->goto_base + unit->offset];
 }
 
 inline uint32_t getParseStateCurrentTokenType(int32_t state) {
-  return REGEX_CURRENT_TOKENS[state];
+    return REGEX_CURRENT_TOKENS[state];
 }

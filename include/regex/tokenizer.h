@@ -34,7 +34,8 @@
 #include "token.h"
 
 typedef struct Tokenizer Tokenizer;
-typedef uint32_t tokenizer_next_t(Tokenizer *tokenizer, Token *token, ErrInfo *err_info, const Allocator *allocator);
+typedef uint32_t tokenizer_next_t(Tokenizer *tokenizer, Terminal *terminal,
+                                  ErrInfo *err_info, const Allocator *allocator);
 
 typedef struct Tokenizer {
   const Allocator *allocator;

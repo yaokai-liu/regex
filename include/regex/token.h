@@ -19,7 +19,7 @@
  *
  * Project Name: regex
  * Module Name:
- * Filename: token.h
+ * Filename: terminal.h
  * Creator: Yaokai Liu
  * Create Date: 24-6-29
  * Copyright (c) 2024 Yaokai Liu. All rights reserved.
@@ -40,19 +40,30 @@ typedef struct Location {
   uint32_t lineno;
   /// column offset in the line in src file
   uint32_t column;
-  /// length of the token (size in bytes)
-  uint32_t length;
 } Location;
 
 typedef struct Terminal {
   Location location;
+  /// length of the terminal (size in bytes)
+  uint32_t length;
   /// Token Type
   uint32_t type;
-  /// Version in standard: [0] enable; [1] deprecated.
-  uint16_t mark[2];
-  /// value of the token
+  /// value of the terminal
   void *value;
-} Terminal, Token;
+} Terminal;
+
+typedef struct Token {
+  /// start of the terminal
+  Location start;
+  /// end of the terminal
+  Location end;
+  /// length of the terminal (size in bytes)
+  uint32_t length;
+  /// Token Type
+  uint32_t type;
+  /// value of the terminal
+  void *value;
+} Token;
 
 const char_t *get_name(uint16_t type);
 

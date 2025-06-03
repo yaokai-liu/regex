@@ -28,23 +28,22 @@
 #ifndef REGEX_XLR_H
 #define REGEX_XLR_H
 
-#include "types.h"
 #include "token.h"
 #include "tokenizer.h"
 #include "trie.h"
+#include "types.h"
 
 typedef struct XLRTokenizer {
   Tokenizer SUPER;
-  bool      end_of_rule;
-  Array *   ident_array;  // Array<Identifier>
-  Trie *    ident_trie;   // Trie<char_t, Identifier>
+  bool end_of_rule;
+  Array *ident_array;  // Array<Identifier>
+  Trie *ident_trie;  // Trie<char_t, Identifier>
 } XLRTokenizer;
 
-const Terminal *
-xlr_tokenize(const char_t *input, uint32_t *cost, Array *ident_array, uint32_t *n_tokens, uint32_t *lineno,
-             uint32_t *column, const Allocator *allocator);
+const Terminal *xlr_tokenize(const char_t *input, uint32_t *cost, Array *ident_array, uint32_t *n_tokens,
+                             uint32_t *lineno, uint32_t *column, const Allocator *allocator);
 
 XLRTokenizer *XLRTokenizer_new(const char_t *src, Array *ident_array, Trie *ident_trie, const Allocator *allocator);
 void XLRTokenizer_destroy(XLRTokenizer *tokenizer);
 
-#endif //REGEX_XLR_H
+#endif  // REGEX_XLR_H

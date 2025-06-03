@@ -42,7 +42,7 @@ inline void releaseCharset(Charset *charset, const Allocator *) {
 }
 
 inline void releaseGroup(Group *group, const Allocator *) {
-  if (((uint64_t) group->regexp) <= enum_Regex) { return; }
+  if (((uint64_t) group->regexp) <= Regex_TOKEN_Regex) { return; }
   Array_destroy(group->regexp);
 }
 
@@ -52,20 +52,20 @@ inline void releaseBranch(Branch *branch, const Allocator *) {
 
 inline void releaseObject(Object *object, const Allocator *allocator) {
   switch (object->type) {
-    case enum_SYMBOL: {
+    case Regex_TOKEN_SYMBOL: {
       return;
     }
-    case enum_Sequence: {
+    case Regex_TOKEN_Sequence: {
       releaseSequence(object->target, allocator);
       Array_destroy(object->target);
       return;
     }
-    case enum_Charset: {
+    case Regex_TOKEN_Charset: {
       releaseCharset(object->target, allocator);
       allocator->free(object->target);
       break;
     }
-    case enum_Group: {
+    case Regex_TOKEN_Group: {
       releaseGroup(object->target, allocator);
       allocator->free(object->target);
       break;
@@ -79,14 +79,14 @@ inline void releaseUnitArray(UnitArray *unitArray, const Allocator *) {
 
 inline void releaseUnit(Unit *unit, const Allocator *allocator) {
   switch (unit->type) {
-    case enum_SYMBOL: {
+    case Regex_TOKEN_SYMBOL: {
       break;
     }
-    case enum_Range: {
+    case Regex_TOKEN_Range: {
       allocator->free(unit->target);
       break;
     }
-    case enum_Charset: {
+    case Regex_TOKEN_Charset: {
       releaseCharset(unit->target, allocator);
       allocator->free(unit->target);
       break;
@@ -94,19 +94,15 @@ inline void releaseUnit(Unit *unit, const Allocator *allocator) {
   }
 }
 
-
-
 #define max(a, b) ((a) >= (b) ? (a) : (b))
 #define min(a, b) ((a) <= (b) ? (a) : (b))
 
 void Charset_update(Charset *old, const Charset *new, bool inverse) {
-  auto normal_part  = &new->parts[ inverse];
+  auto normal_part = &new->parts[inverse];
   auto inverse_part = &new->parts[!inverse];
   uint32_t n_normal_plains = Array_length(normal_part->plains);
   uint32_t *normal_plains = Array_first_real(normal_part->plains);
-  for (uint32_t i = 0; i < n_normal_plains; i++) {
-    Plain_set_update(old->parts[CT_NORMAL].plains, normal_plains[i]);
-  }
+  for (uint32_t i = 0; i < n_normal_plains; i++) { Plain_set_update(old->parts[CT_NORMAL].plains, normal_plains[i]); }
   uint32_t n_inverse_plains = Array_length(inverse_part->plains);
   uint32_t *inverse_plains = Array_first_real(inverse_part->plains);
   for (uint32_t i = 0; i < n_inverse_plains; i++) {
@@ -114,9 +110,7 @@ void Charset_update(Charset *old, const Charset *new, bool inverse) {
   }
   uint32_t n_normal_ranges = Array_length(normal_part->ranges);
   Range *normal_ranges = Array_first_real(normal_part->ranges);
-  for (uint32_t i = 0; i < n_normal_ranges; i++) {
-    Range_set_update(old->parts[CT_NORMAL].ranges, normal_ranges[i]);
-  }
+  for (uint32_t i = 0; i < n_normal_ranges; i++) { Range_set_update(old->parts[CT_NORMAL].ranges, normal_ranges[i]); }
   uint32_t n_inverse_ranges = Array_length(inverse_part->ranges);
   Range *inverse_ranges = Array_first_real(inverse_part->ranges);
   for (uint32_t i = 0; i < n_inverse_ranges; i++) {

@@ -31,8 +31,8 @@
 #include "tokens.h"
 
 enum REGEX_GRAMMAR_EXTEND_TYPE_ENUM {
-  enum_Sequence = MAX_TOTAL_TOKEN + 1,
-  enum_TOKEN
+  Regex_TOKEN_Sequence = MAX_TOTAL_TOKEN + 1,
+  Regex_TOKEN_TOKEN
 };
 
 enum REGEX_ESCAPED_CHARSET_ENUM {

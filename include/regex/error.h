@@ -38,7 +38,7 @@ enum REGEX_ERROR_TYPE_ENUM {
 typedef struct ErrInfo {
   Location pos;
   uint32_t code;
-  int32_t  state;
+  int32_t state;
   uint32_t token;
 } ErrInfo;
 

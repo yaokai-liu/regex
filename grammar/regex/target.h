@@ -48,17 +48,17 @@ typedef struct Unit {
   void *target;
 } Unit;
 
-#define Quantifier_toUint64(Q) (((uint64_t) (Q).max) << 32 | (Q).min)
+#define Quantifier_toUint64(Q)    (((uint64_t) (Q).max) << 32 | (Q).min)
 #define Quantifier_getMaxFrom(iQ) ((uint32_t) ((iQ) >> 32))
 #define Quantifier_getMinFrom(iQ) ((uint32_t) ((iQ) & 0xFFFFFFFF))
 #define Quantifier_fromUint64(iQ) {.max = Range_getMaxFrom(iQ), .min = Range_getMinFrom(iQ)}
 
-#define Range_toUint64(R)    (((uint64_t) (R).max) << 32 | (R).min)
-#define Range_getMaxFrom(iR) ((uint32_t) ((iR) >> 32))
-#define Range_getMinFrom(iR) ((uint32_t) ((iR) & 0xFFFFFFFF))
-#define Range_fromUint64(iR) {.max = Range_getMaxFrom(iR), .min = Range_getMinFrom(iR)}
-#define Range_cover(R, chr) ((R).min <= chr && chr <= (R).max)
-#define Range_intersect(R1, R2) (Range_cover(R1, (R2).min) || Range_cover(R1, (R2).max))
+#define Range_toUint64(R)         (((uint64_t) (R).max) << 32 | (R).min)
+#define Range_getMaxFrom(iR)      ((uint32_t) ((iR) >> 32))
+#define Range_getMinFrom(iR)      ((uint32_t) ((iR) & 0xFFFFFFFF))
+#define Range_fromUint64(iR)      {.max = Range_getMaxFrom(iR), .min = Range_getMinFrom(iR)}
+#define Range_cover(R, chr)       ((R).min <= chr && chr <= (R).max)
+#define Range_intersect(R1, R2)   (Range_cover(R1, (R2).min) || Range_cover(R1, (R2).max))
 
 void releaseBranch(Branch *branch, const Allocator *allocator);
 void releaseGroup(Group *group, const Allocator *allocator);

@@ -27,9 +27,9 @@
 
 #include "allocator.h"
 #include "regex/char_t.h"
+#include "regex/parse.h"
 #include "regex/regex.h"
 #include "regex/target.h"
-#include "regex/parse.h"
 #include <check.h>
 
 #define string_to_test "(abcd[(sdcc)])"

@@ -26,24 +26,23 @@
  **/
 
 #include "action.h"
-#include "regex/error.h"
-#include "stack.h"
-#include "target.h"
-#include "regex/token.h"
 #include "generated/regex/action-table.gen.h"
 #include "generated/regex/rules.gen.h"
-#include "regex/tokens.h"
+#include "regex/error.h"
+#include "regex/token.h"
 #include "regex/tokenizer.h"
+#include "regex/tokens.h"
+#include "stack.h"
+#include "target.h"
 
 #define MAX_ARGC       16
 #define _sizeof(_type) ((int32_t) sizeof(_type))
 
 void terminal2Token(Terminal *terminal, Token *token);
 
-Regex *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *result,
-                                 uint32_t result_type, const Allocator *allocator);
-Regex *failed_to_parse(Stack *state_stack, Stack *token_stack, Token *, uint32_t,
-                        const Allocator *allocator);
+Regex *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *result, uint32_t result_type,
+                                const Allocator *allocator);
+Regex *failed_to_parse(Stack *state_stack, Stack *token_stack, Token *, uint32_t, const Allocator *allocator);
 Regex *failed_to_get_action(Stack *state_stack, Stack *token_stack, const Allocator *allocator);
 
 void terminal2Token(Terminal *terminal, Token *token) {
@@ -72,17 +71,13 @@ Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator)
   terminal2Token(&terminal, &token);
   while (true) {
     const struct grammar_action *act = getParseAction(state, token.type);
-    if (!act) {
-      return failed_to_get_action(state_stack, token_stack, allocator);
-    }
+    if (!act) { return failed_to_get_action(state_stack, token_stack, allocator); }
     if (act->action == Regex_action_stack) {
       state = act->offset;
       Stack_push(token_stack, &token, sizeof(Token));
       Stack_push(state_stack, &state, sizeof(uint32_t));
       status = tokenizer->next(tokenizer, &terminal, errInfo, allocator);
-      if (status != REGEX_SUCCESS) {
-        return failed_to_get_action(state_stack, token_stack, allocator);
-      }
+      if (status != REGEX_SUCCESS) { return failed_to_get_action(state_stack, token_stack, allocator); }
       terminal2Token(&terminal, &token);
       fn_ctx_act *ctxAct = getRegexContextAction(state);
       if (ctxAct) { ctxAct(&context, &token); }
@@ -100,9 +95,7 @@ Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator)
       token.end.column = args[act->count - 1].end.column;
       token.length = token.end.offset - token.start.offset;
       token.value = func(args, &context, errInfo, allocator);
-      if (!token.value) {
-        return failed_to_parse(state_stack, token_stack, args, act->count, allocator);
-      }
+      if (!token.value) { return failed_to_parse(state_stack, token_stack, args, act->count, allocator); }
       state = parseJumpState(state, act->type);
       if (state == Regex_BAD_STATE) {
         return failed_to_get_next_state(state_stack, token_stack, &token, act->type, allocator);
@@ -111,7 +104,7 @@ Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator)
       Stack_push(state_stack, &state, sizeof(uint32_t));
       fn_ctx_act *ctxAct = getRegexContextAction(state);
       if (ctxAct) { ctxAct(&context, &token); }
-      if (act->offset == enum_Regex_Regex_EXT) { break; }
+      if (act->offset == Regex_RULE_Regex_EXT) { break; }
       terminal2Token(&terminal, &token);
     } else {
       // never be touched
@@ -121,5 +114,5 @@ Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator)
   Stack_clear(state_stack);
   allocator->free(token_stack);
   allocator->free(state_stack);
-  return (enum_Regex == (uint64_t) token.value) ? nullptr : token.value;
+  return (Regex_TOKEN_Regex == (uint64_t) token.value) ? nullptr : token.value;
 }

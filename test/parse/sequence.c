@@ -28,10 +28,10 @@
 #include "action.h"
 #include "allocator.h"
 #include "regex/char_t.h"
-#include "regex/regex.h"
-#include "regex/tokens.h"
-#include "regex/target.h"
 #include "regex/parse.h"
+#include "regex/regex.h"
+#include "regex/target.h"
+#include "regex/tokens.h"
 #include <check.h>
 
 #define string_to_test         \
@@ -53,7 +53,7 @@ START_TEST(test_SEQUENCE_NORMAL) {
   Object *objects = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(objects, nullptr);
   for (uint32_t i = 0; i < Array_length(branch); i++) {
-    ck_assert_uint_eq(objects[i].type, enum_SYMBOL);
+    ck_assert_uint_eq(objects[i].type, Regex_TOKEN_SYMBOL);
     ck_assert_uint_eq((uint64_t) objects[i].target, string_to_test[i]);
   }
   Array_reset(regexp, (destruct_t *) releaseBranch);
@@ -77,7 +77,7 @@ START_TEST(test_SEQUENCE_FALL_THROUGH) {
   Object *objects = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(objects, nullptr);
   for (uint32_t i = 0; i < Array_length(branch); i++) {
-    ck_assert_uint_eq(objects[i].type, enum_SYMBOL);
+    ck_assert_uint_eq(objects[i].type, Regex_TOKEN_SYMBOL);
     ck_assert_uint_eq((uint64_t) objects[i].target, string_to_test2[i]);
   }
   Array_reset(regexp, (destruct_t *) releaseBranch);
@@ -101,7 +101,7 @@ START_TEST(test_SEQUENCE_FALL_THROUGH_2) {
   Object *objects = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(objects, nullptr);
   for (uint32_t i = 0; i < Array_length(branch); i++) {
-    ck_assert_uint_eq(objects[i].type, enum_SYMBOL);
+    ck_assert_uint_eq(objects[i].type, Regex_TOKEN_SYMBOL);
     ck_assert_uint_eq((uint64_t) objects[i].target, string_to_test2[i]);
   }
   Array_reset(regexp, (destruct_t *) releaseBranch);

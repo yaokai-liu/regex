@@ -30,7 +30,7 @@
 
 #define str_lit_len(str_literal) ((sizeof str_literal) - 1)
 
-#define WHITESPACES " \t\n\f\v\r"
+#define WHITESPACES              " \t\n\f\v\r"
 uint32_t pass_whitespace(const char_t * const input) {
   const char_t *pText = input;
   while (*pText && stridx_o(WHITESPACES, *pText) < str_lit_len(WHITESPACES)) { pText++; }
@@ -61,7 +61,7 @@ uint32_t pass_space(const char * const input, uint32_t * const lineno, uint32_t 
     }
     pText++;
   }
-  __return:
+__return:
   lineno ? *lineno = l : 0;
   column ? *column = c : 0;
   return pText - input;

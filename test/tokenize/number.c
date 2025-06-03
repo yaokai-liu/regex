@@ -27,10 +27,10 @@
 
 #include "allocator.h"
 #include "regex/char_t.h"
-#include "regex/tokens.h"
+#include "regex/regex.h"
 #include "regex/target.h"
 #include "regex/token.h"
-#include "regex/regex.h"
+#include "regex/tokens.h"
 #include <check.h>
 #include <stdint.h>
 
@@ -41,14 +41,14 @@ START_TEST(test_NUMBER) {
   ck_assert_uint_eq(cost, (sizeof "{255}") - 1);
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);
-  ck_assert_uint_eq(terminals[0].type, enum_QUANTIFIER);
+  ck_assert_uint_eq(terminals[0].type, Regex_TOKEN_QUANTIFIER);
   ck_assert_str_eq(get_name(terminals[0].type), string_t("QUANTIFIER"));
   Quantifier quant = {255, 255};
   ck_assert_uint_eq((uint64_t) terminals[0].value, Quantifier_toUint64(quant));
   Quantifier quant2 = Quantifier_fromUint64((uint64_t) terminals[0].value);
   ck_assert_uint_eq(quant2.max, quant.max);
   ck_assert_uint_eq(quant2.min, quant.min);
-  ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+  ck_assert_uint_eq(terminals[1].type, Regex_TOKEN_TERMINATOR);
   ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
   ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
   STDAllocator.free((void *) terminals);
@@ -62,14 +62,14 @@ START_TEST(test_NUMBER2) {
   ck_assert_uint_eq(cost, (sizeof "{256}") - 1);
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);
-  ck_assert_uint_eq(terminals[0].type, enum_QUANTIFIER);
+  ck_assert_uint_eq(terminals[0].type, Regex_TOKEN_QUANTIFIER);
   ck_assert_str_eq(get_name(terminals[0].type), string_t("QUANTIFIER"));
   Quantifier quant = {256, 256};
   ck_assert_uint_eq((uint64_t) terminals[0].value, Quantifier_toUint64(quant));
   Quantifier quant2 = Quantifier_fromUint64((uint64_t) terminals[0].value);
   ck_assert_uint_eq(quant2.max, quant.max);
   ck_assert_uint_eq(quant2.min, quant.min);
-  ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+  ck_assert_uint_eq(terminals[1].type, Regex_TOKEN_TERMINATOR);
   ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
   ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
   STDAllocator.free((void *) terminals);
@@ -83,14 +83,14 @@ START_TEST(test_NUMBER3) {
   ck_assert_uint_eq(cost, (sizeof "{65536}") - 1);
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);
-  ck_assert_uint_eq(terminals[0].type, enum_QUANTIFIER);
+  ck_assert_uint_eq(terminals[0].type, Regex_TOKEN_QUANTIFIER);
   ck_assert_str_eq(get_name(terminals[0].type), string_t("QUANTIFIER"));
   Quantifier quant = {65536, 65536};
   ck_assert_uint_eq((uint64_t) terminals[0].value, Quantifier_toUint64(quant));
   Quantifier quant2 = Quantifier_fromUint64((uint64_t) terminals[0].value);
   ck_assert_uint_eq(quant2.max, quant.max);
   ck_assert_uint_eq(quant2.min, quant.min);
-  ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+  ck_assert_uint_eq(terminals[1].type, Regex_TOKEN_TERMINATOR);
   ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
   ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
   STDAllocator.free((void *) terminals);
@@ -104,14 +104,14 @@ START_TEST(test_NUMBER4) {
   ck_assert_uint_eq(cost, (sizeof "{4294967295}") - 1);
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);
-  ck_assert_uint_eq(terminals[0].type, enum_QUANTIFIER);
+  ck_assert_uint_eq(terminals[0].type, Regex_TOKEN_QUANTIFIER);
   ck_assert_str_eq(get_name(terminals[0].type), string_t("QUANTIFIER"));
   Quantifier quant = {4294967295, 4294967295};
   ck_assert_uint_eq((uint64_t) terminals[0].value, Quantifier_toUint64(quant));
   Quantifier quant2 = Quantifier_fromUint64((uint64_t) terminals[0].value);
   ck_assert_uint_eq(quant2.max, quant.max);
   ck_assert_uint_eq(quant2.min, quant.min);
-  ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+  ck_assert_uint_eq(terminals[1].type, Regex_TOKEN_TERMINATOR);
   ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
   ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
   STDAllocator.free((void *) terminals);
@@ -125,14 +125,14 @@ START_TEST(test_NUMBER_overflow) {
   ck_assert_uint_eq(cost, (sizeof "{4294967296}") - 1);
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);
-  ck_assert_uint_eq(terminals[0].type, enum_QUANTIFIER);
+  ck_assert_uint_eq(terminals[0].type, Regex_TOKEN_QUANTIFIER);
   ck_assert_str_eq(get_name(terminals[0].type), string_t("QUANTIFIER"));
   Quantifier quant = {0, 0};
   ck_assert_uint_eq((uint64_t) terminals[0].value, Quantifier_toUint64(quant));
   Quantifier quant2 = Quantifier_fromUint64((uint64_t) terminals[0].value);
   ck_assert_uint_eq(quant2.max, quant.max);
   ck_assert_uint_eq(quant2.min, quant.min);
-  ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+  ck_assert_uint_eq(terminals[1].type, Regex_TOKEN_TERMINATOR);
   ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
   ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
   STDAllocator.free((void *) terminals);

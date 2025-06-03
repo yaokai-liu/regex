@@ -28,9 +28,9 @@
 #ifndef REGEX_REGEX_H
 #define REGEX_REGEX_H
 
-#include "tokenizer.h"
 #include "char_t.h"
 #include "token.h"
+#include "tokenizer.h"
 #include "types.h"
 
 typedef Tokenizer RegexTokenizer;
@@ -40,5 +40,4 @@ const Terminal *regex_tokenize(const char_t *input, uint32_t *cost, uint32_t *n_
 
 void RegexTokenizer_init(RegexTokenizer *tokenizer, const char_t *src, const Allocator *allocator);
 
-
-#endif //REGEX_REGEX_H
+#endif  // REGEX_REGEX_H

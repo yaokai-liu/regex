@@ -28,29 +28,28 @@
 #include "allocator.h"
 #include "regex/char_t.h"
 #include "regex/enum.h"
-#include "regex/tokens.h"
-#include "regex/token.h"
 #include "regex/regex.h"
+#include "regex/token.h"
+#include "regex/tokens.h"
 #include <check.h>
 #include <stdint.h>
 
-#define add_test_for(_name, _pattern, _value)                                     \
-  START_TEST(test_ESCAPE_##_name) {                                               \
-    char_t *string = _pattern;                                                    \
-    uint32_t cost = 0, n_tokens = 0;                                              \
-    const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens,          \
-                                               nullptr, nullptr, &STDAllocator);  \
-    ck_assert_uint_eq(cost, (sizeof _pattern) - 1);                               \
-    ck_assert_uint_eq(n_tokens, 2);                                               \
-    ck_assert_ptr_ne(terminals, nullptr);                                         \
-    ck_assert_uint_eq(terminals[0].type, enum_CHARSET_ESCAPE);                    \
-    ck_assert_str_eq(get_name(terminals[0].type), string_t("CHARSET_ESCAPE"));    \
-    ck_assert_uint_eq((uint64_t) terminals[0].value, _value);                     \
-    ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);                        \
-    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);                          \
-    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));        \
-    STDAllocator.free((void *) terminals);                                        \
-  }                                                                               \
+#define add_test_for(_name, _pattern, _value)                                                              \
+  START_TEST(test_ESCAPE_##_name) {                                                                        \
+    char_t *string = _pattern;                                                                             \
+    uint32_t cost = 0, n_tokens = 0;                                                                       \
+    const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &STDAllocator); \
+    ck_assert_uint_eq(cost, (sizeof _pattern) - 1);                                                        \
+    ck_assert_uint_eq(n_tokens, 2);                                                                        \
+    ck_assert_ptr_ne(terminals, nullptr);                                                                  \
+    ck_assert_uint_eq(terminals[0].type, Regex_TOKEN_CHARSET_ESCAPE);                                      \
+    ck_assert_str_eq(get_name(terminals[0].type), string_t("CHARSET_ESCAPE"));                             \
+    ck_assert_uint_eq((uint64_t) terminals[0].value, _value);                                              \
+    ck_assert_uint_eq(terminals[1].type, Regex_TOKEN_TERMINATOR);                                          \
+    ck_assert_uint_eq((uint64_t) terminals[1].value, 0);                                                   \
+    ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));                                 \
+    STDAllocator.free((void *) terminals);                                                                 \
+  }                                                                                                        \
   END_TEST
 
 add_test_for(CHARSET_DEC_DIGITAL, "\\d", CHARSET_DEC_DIGITAL);
@@ -67,10 +66,10 @@ START_TEST(test_ESCAPE_FALL_THROUGH) {
   ck_assert_uint_eq(cost, (sizeof "\\[") - 1);
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);
-  ck_assert_uint_eq(terminals[0].type, enum_SYMBOL);
+  ck_assert_uint_eq(terminals[0].type, Regex_TOKEN_SYMBOL);
   ck_assert_str_eq(get_name(terminals[0].type), string_t("SYMBOL"));
   ck_assert_uint_eq((uint64_t) terminals[0].value, '[');
-  ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+  ck_assert_uint_eq(terminals[1].type, Regex_TOKEN_TERMINATOR);
   ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
   ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
   STDAllocator.free((void *) terminals);

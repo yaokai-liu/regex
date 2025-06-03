@@ -28,8 +28,8 @@
 #ifndef REGEX_PARSE_H
 #define REGEX_PARSE_H
 
-#include "regex/error.h"
-#include "regex/tokenizer.h"
+#include "error.h"
+#include "regex.h"
 
 Regex *parse(Tokenizer *tokenizer, ErrInfo *errInfo, const Allocator *allocator);
 

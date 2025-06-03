@@ -27,9 +27,9 @@
 
 #include "allocator.h"
 #include "regex/char_t.h"
-#include "regex/tokens.h"
-#include "regex/token.h"
 #include "regex/regex.h"
+#include "regex/token.h"
+#include "regex/tokens.h"
 #include <check.h>
 #include <stdint.h>
 #include <string.h>
@@ -123,7 +123,7 @@ START_TEST(test_REALLOC_FAILED) {
   const Terminal *terminals = regex_tokenize(string, &cost, &n_tokens, nullptr, nullptr, &MocAllocator);
   ck_assert_uint_eq(cost, sizeof(string_for_test3) - 1);
   ck_assert_uint_lt(n_tokens, sizeof(string_for_test3) - 1);
-  ck_assert_uint_ne(terminals[n_tokens - 1].type, enum_TERMINATOR);
+  ck_assert_uint_ne(terminals[n_tokens - 1].type, Regex_TOKEN_TERMINATOR);
   for (uint32_t i = 0; i < BUFFER_SIZE; i++) { buffer[i] = '\0'; }
   allocated = 0;
 }

@@ -26,12 +26,12 @@
  **/
 
 #include "array.h"
-#include "regex/enum.h"
 #include "generated/regex/rules.gen.h"
+#include "regex/enum.h"
+#include "regex/token.h"
 #include "regex/tokens.h"
 #include "stack.h"
 #include "target.h"
-#include "regex/token.h"
 #include <stdint.h>
 #include <string.h>
 
@@ -73,39 +73,38 @@ Branch *Regex_Branch_0(Token argv[], RegexContext *, ErrInfo *, const Allocator 
 
 Branch *Regex_Branch_1(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   Object *_arg0 = argv[0].value;
-  Branch *br = Array_new(sizeof(Object), enum_Object, allocator);
+  Branch *br = Array_new(sizeof(Object), Regex_TOKEN_Object, allocator);
   Array_append(br, _arg0, 1);
   allocator->free(_arg0);
   return br;
 }
 
-Charset *Regex_Charset_0(Token argv[], RegexContext *, ErrInfo *,
-                         const Allocator * const allocator) {
+Charset *Regex_Charset_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   UnitArray *_arg1 = argv[1].value;
 
   Charset *charset = allocator->calloc(1, sizeof(Charset));
   // create parts
-  charset->parts[CT_NORMAL ].plains = Array_new(sizeof(uint32_t), enum_SYMBOL, allocator);
-  charset->parts[CT_NORMAL ].ranges = Array_new(sizeof(Range), enum_Range, allocator);
-  charset->parts[CT_INVERSE].plains = Array_new(sizeof(uint32_t), enum_SYMBOL, allocator);
-  charset->parts[CT_INVERSE].ranges = Array_new(sizeof(Range), enum_Range, allocator);
+  charset->parts[CT_NORMAL].plains = Array_new(sizeof(uint32_t), Regex_TOKEN_SYMBOL, allocator);
+  charset->parts[CT_NORMAL].ranges = Array_new(sizeof(Range), Regex_TOKEN_Range, allocator);
+  charset->parts[CT_INVERSE].plains = Array_new(sizeof(uint32_t), Regex_TOKEN_SYMBOL, allocator);
+  charset->parts[CT_INVERSE].ranges = Array_new(sizeof(Range), Regex_TOKEN_Range, allocator);
 
   uint32_t length = Array_length(_arg1);
   Unit *units = Array_first_real(_arg1);
   for (uint32_t i = 0; i < length; i++) {
     Unit *unit = &units[i];
-    if (unit->type == enum_Charset) {
+    if (unit->type == Regex_TOKEN_Charset) {
       // select part
       // copy without duplicate
       Charset *target = unit->target;
       Charset_update(charset, target, unit->inverse);
-    } else if (unit->type == enum_SYMBOL) {
+    } else if (unit->type == Regex_TOKEN_SYMBOL) {
       // select part
       struct CharsetPart *part = &charset->parts[unit->inverse];
       // update plains
       uint32_t chr = (uint64_t) unit->target;
       Plain_set_update(part->plains, chr);
-    } else if (unit->type == enum_Range) {
+    } else if (unit->type == Regex_TOKEN_Range) {
       // select part
       struct CharsetPart *part = &charset->parts[unit->inverse];
       // update range
@@ -120,21 +119,22 @@ Charset *Regex_Charset_0(Token argv[], RegexContext *, ErrInfo *,
   return charset;
 }
 
-Charset *Regex_Charset_1(Token argv[], RegexContext *, ErrInfo *,
-                         const Allocator * const allocator) {
+Charset *Regex_Charset_1(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   uint32_t escape_id = (uint32_t) (uint64_t) argv[0].value;
 
   Charset *charset = allocator->calloc(1, sizeof(Charset));
   // create parts
-  charset->parts[CT_NORMAL ].plains = Array_new(sizeof(uint32_t), enum_SYMBOL, allocator);
-  charset->parts[CT_NORMAL ].ranges = Array_new(sizeof(Range), enum_Range, allocator);
-  charset->parts[CT_INVERSE].plains = Array_new(sizeof(uint32_t), enum_SYMBOL, allocator);
-  charset->parts[CT_INVERSE].ranges = Array_new(sizeof(Range), enum_Range, allocator);
+  charset->parts[CT_NORMAL].plains = Array_new(sizeof(uint32_t), Regex_TOKEN_SYMBOL, allocator);
+  charset->parts[CT_NORMAL].ranges = Array_new(sizeof(Range), Regex_TOKEN_Range, allocator);
+  charset->parts[CT_INVERSE].plains = Array_new(sizeof(uint32_t), Regex_TOKEN_SYMBOL, allocator);
+  charset->parts[CT_INVERSE].ranges = Array_new(sizeof(Range), Regex_TOKEN_Range, allocator);
 
   switch (escape_id) {
     case CHARSET_HEX_DIGITAL: {
       Range hex_ranges[3] = {
-          { .min = '0', .max = '9' }, { .min = 'a', .max = 'f' }, { .min = 'A', .max = 'F' }
+        {.min = '0', .max = '9'},
+        {.min = 'a', .max = 'f'},
+        {.min = 'A', .max = 'F'}
       };
       Array_append(charset->parts[CT_NORMAL].ranges, hex_ranges, 3);
       break;
@@ -147,26 +147,39 @@ Charset *Regex_Charset_1(Token argv[], RegexContext *, ErrInfo *,
     case CHARSET_IDENT: {
       char_t *ident_plains = "_";
       Array_append(charset->parts[CT_NORMAL].plains, ident_plains, 1);
-      Range ident_ranges[2] = { { .min = 'a', .max = 'z' }, { .min = 'A', .max = 'Z' } };
+      Range ident_ranges[2] = {
+        {.min = 'a', .max = 'z'},
+        {.min = 'A', .max = 'Z'}
+      };
       Array_append(charset->parts[CT_NORMAL].ranges, ident_ranges, 2);
       break;
     }
     case CHARSET_LETTER: {
-      Range ident_ranges[2] = { { .min = 'a', .max = 'z' }, { .min = 'A', .max = 'Z' } };
+      Range ident_ranges[2] = {
+        {.min = 'a', .max = 'z'},
+        {.min = 'A', .max = 'Z'}
+      };
       Array_append(charset->parts[CT_NORMAL].ranges, ident_ranges, 2);
       break;
     }
     case CHARSET_LOWER_LETTER: {
-      Range ident_ranges[1] = { { .min = 'a', .max = 'z' }};
+      Range ident_ranges[1] = {
+        {.min = 'a', .max = 'z'}
+      };
       Array_append(charset->parts[CT_NORMAL].ranges, ident_ranges, 1);
       break;
     }
     case CHARSET_UPPER_LETTER: {
-      Range ident_ranges[1] = { { .min = 'A', .max = 'Z' } };
+      Range ident_ranges[1] = {
+        {.min = 'A', .max = 'Z'}
+      };
       Array_append(charset->parts[CT_NORMAL].ranges, ident_ranges, 1);
       break;
     }
-    default: { releaseCharset(charset, allocator); return nullptr; }
+    default: {
+      releaseCharset(charset, allocator);
+      return nullptr;
+    }
   }
   return charset;
 }
@@ -174,7 +187,7 @@ Charset *Regex_Charset_1(Token argv[], RegexContext *, ErrInfo *,
 Unit *Regex_Unit_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   void *chr = argv[0].value;
   Unit *unit = allocator->calloc(1, sizeof(Unit));
-  unit->type = enum_SYMBOL;
+  unit->type = Regex_TOKEN_SYMBOL;
   unit->inverse = false;
   unit->target = chr;
   return unit;
@@ -183,7 +196,7 @@ Unit *Regex_Unit_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * co
 Unit *Regex_Unit_1(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   void *_arg0 = argv[0].value;
   Unit *unit = allocator->calloc(1, sizeof(Unit));
-  unit->type = enum_Range;
+  unit->type = Regex_TOKEN_Range;
   unit->inverse = false;
   unit->target = _arg0;
   return unit;
@@ -192,7 +205,7 @@ Unit *Regex_Unit_1(Token argv[], RegexContext *, ErrInfo *, const Allocator * co
 Unit *Regex_Unit_2(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   void *_arg0 = argv[0].value;
   Unit *unit = allocator->calloc(1, sizeof(Unit));
-  unit->type = enum_Charset;
+  unit->type = Regex_TOKEN_Charset;
   unit->inverse = false;
   unit->target = _arg0;
   return unit;
@@ -201,7 +214,7 @@ Unit *Regex_Unit_2(Token argv[], RegexContext *, ErrInfo *, const Allocator * co
 Unit *Regex_Unit_3(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   void *chr = argv[1].value;
   Unit *unit = allocator->calloc(1, sizeof(Unit));
-  unit->type = enum_SYMBOL;
+  unit->type = Regex_TOKEN_SYMBOL;
   unit->inverse = true;
   unit->target = chr;
   return unit;
@@ -210,14 +223,13 @@ Unit *Regex_Unit_3(Token argv[], RegexContext *, ErrInfo *, const Allocator * co
 Unit *Regex_Unit_4(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   void *_arg1 = argv[1].value;
   Unit *unit = allocator->calloc(1, sizeof(Unit));
-  unit->type = enum_Charset;
+  unit->type = Regex_TOKEN_Charset;
   unit->inverse = true;
   unit->target = _arg1;
   return unit;
 }
 
-UnitArray *Regex_UnitArray_0(Token argv[], RegexContext *, ErrInfo *,
-                             const Allocator * const allocator) {
+UnitArray *Regex_UnitArray_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   UnitArray *_arg0 = argv[0].value;
   Unit *_arg1 = argv[1].value;
   Array_append(_arg0, _arg1, 1);
@@ -225,10 +237,9 @@ UnitArray *Regex_UnitArray_0(Token argv[], RegexContext *, ErrInfo *,
   return _arg0;
 }
 
-UnitArray *Regex_UnitArray_1(Token argv[], RegexContext *, ErrInfo *,
-                             const Allocator * const allocator) {
+UnitArray *Regex_UnitArray_1(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   Unit *_arg0 = argv[0].value;
-  UnitArray *array = Array_new(sizeof(Unit), enum_Unit, allocator);
+  UnitArray *array = Array_new(sizeof(Unit), Regex_TOKEN_Unit, allocator);
   Array_append(array, _arg0, 1);
   allocator->free(_arg0);
   return array;
@@ -237,14 +248,14 @@ UnitArray *Regex_UnitArray_1(Token argv[], RegexContext *, ErrInfo *,
 Group *Regex_Group_0(Token argv[], RegexContext *, ErrInfo *, const Allocator *allocator) {
   Regex *regexp = argv[1].value;
   Group *group = allocator->calloc(1, sizeof(Group));
-  group->regexp = (enum_Regex == (uint64_t) regexp) ? nullptr : regexp;
+  group->regexp = (Regex_TOKEN_Regex == (uint64_t) regexp) ? nullptr : regexp;
   return group;
 }
 
 Element *Regex_Element_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   void *chr = argv[0].value;
   Element *ele = allocator->calloc(1, sizeof(Element));
-  ele->type = enum_SYMBOL;
+  ele->type = Regex_TOKEN_SYMBOL;
   ele->assertion = false;
   ele->inverse = false;
   ele->min_times = 1;
@@ -256,7 +267,7 @@ Element *Regex_Element_0(Token argv[], RegexContext *, ErrInfo *, const Allocato
 Object *Regex_Element_1(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   Charset *_arg0 = argv[0].value;
   Element *ele = allocator->calloc(1, sizeof(Element));
-  ele->type = enum_Charset;
+  ele->type = Regex_TOKEN_Charset;
   ele->assertion = false;
   ele->inverse = false;
   ele->min_times = 1;
@@ -268,7 +279,7 @@ Object *Regex_Element_1(Token argv[], RegexContext *, ErrInfo *, const Allocator
 Object *Regex_Element_2(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   Group *_arg0 = argv[0].value;
   Element *ele = allocator->calloc(1, sizeof(Element));
-  ele->type = enum_Group;
+  ele->type = Regex_TOKEN_Group;
   ele->assertion = false;
   ele->inverse = false;
   ele->min_times = 1;
@@ -329,60 +340,59 @@ Regex *Regex_Regex_0(Token argv[], RegexContext *, ErrInfo *, const Allocator * 
 
 Regex *Regex_Regex_1(Token argv[], RegexContext *, ErrInfo *, const Allocator * const allocator) {
   Branch *_arg0 = argv[0].value;
-  Regex *regex = Array_new(sizeof_array, enum_Branch, allocator);
+  Regex *regex = Array_new(sizeof_array, Regex_TOKEN_Branch, allocator);
   Array_append(regex, _arg0, 1);
   allocator->free(_arg0);
   return regex;
 }
 
 Regex *Regex_Regex_2(Token[], RegexContext *, ErrInfo *, const Allocator * const) {
-  return (Regex *) enum_Regex;
+  return (Regex *) Regex_TOKEN_Regex;
 }
 
 Regex *Regex_Regex_EXT(Token argv[], RegexContext *, ErrInfo *, const Allocator *) {
   return (Regex *) argv[0].value;
 }
 
-Regex *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *result,
-                                 uint32_t result_type, const Allocator *allocator);
-Regex *failed_to_parse(Stack *state_stack, Stack *token_stack, Token *, uint32_t,
-                        const Allocator *allocator);
+Regex *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *result, uint32_t result_type,
+                                const Allocator *allocator);
+Regex *failed_to_parse(Stack *state_stack, Stack *token_stack, Token *, uint32_t, const Allocator *allocator);
 Regex *failed_to_get_action(Stack *state_stack, Stack *token_stack, const Allocator *allocator);
 
-Regex *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *result,
-                                 uint32_t result_type, const Allocator *allocator) {
+Regex *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *result, uint32_t result_type,
+                                const Allocator *allocator) {
   int32_t state = 0;
   Stack_top(state_stack, (int32_t *) &state, sizeof(int32_t));
   switch (result_type) {
-    case enum_Regex: {
-      if (((uint64_t) result) > enum_Regex) { Array_destroy(result); }
+    case Regex_TOKEN_Regex: {
+      if (((uint64_t) result) > Regex_TOKEN_Regex) { Array_destroy(result); }
       break;
     }
-    case enum_Branch: {
+    case Regex_TOKEN_Branch: {
       releaseBranch(result, allocator);
       break;
     }
-    case enum_Group: {
+    case Regex_TOKEN_Group: {
       releaseGroup(result, allocator);
       break;
     }
-    case enum_Object: {
+    case Regex_TOKEN_Object: {
       releaseObject(result, allocator);
       break;
     }
-    case enum_Charset: {
+    case Regex_TOKEN_Charset: {
       releaseCharset(result, allocator);
       break;
     }
-    case enum_Sequence: {
+    case Regex_TOKEN_Sequence: {
       releaseSequence(result, allocator);
       break;
     }
-    case enum_UnitArray: {
+    case Regex_TOKEN_UnitArray: {
       releaseUnitArray(result, allocator);
       break;
     }
-    case enum_Unit: {
+    case Regex_TOKEN_Unit: {
       releaseUnit(result, allocator);
       break;
     }
@@ -393,8 +403,7 @@ Regex *failed_to_get_next_state(Stack *state_stack, Stack *token_stack, void *re
   return failed_to_get_action(state_stack, token_stack, allocator);
 }
 
-Regex *failed_to_parse(Stack *state_stack, Stack *token_stack, Token *, uint32_t,
-                        const Allocator *allocator) {
+Regex *failed_to_parse(Stack *state_stack, Stack *token_stack, Token *, uint32_t, const Allocator *allocator) {
   // TODO： release memory allocated.
   return failed_to_get_action(state_stack, token_stack, allocator);
 }

@@ -34,8 +34,8 @@
 #include "token.h"
 
 typedef struct Tokenizer Tokenizer;
-typedef uint32_t tokenizer_next_t(Tokenizer *tokenizer, Terminal *terminal,
-                                  ErrInfo *err_info, const Allocator *allocator);
+typedef uint32_t tokenizer_next_t(Tokenizer *tokenizer, Terminal *terminal, ErrInfo *err_info,
+                                  const Allocator *allocator);
 
 typedef struct Tokenizer {
   const Allocator *allocator;
@@ -46,8 +46,7 @@ typedef struct Tokenizer {
   tokenizer_next_t *next;
 } Tokenizer;
 
-uint32_t pass_whitespace(const char_t * input);
+uint32_t pass_whitespace(const char_t *input);
 uint32_t pass_space(const char *input, uint32_t *lineno, uint32_t *column);
 
-
-#endif //REGEX_TOKENIZER_H
+#endif  // REGEX_TOKENIZER_H

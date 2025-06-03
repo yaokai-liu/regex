@@ -27,9 +27,9 @@
 
 #include "allocator.h"
 #include "regex/char_t.h"
-#include "regex/tokens.h"
-#include "regex/token.h"
 #include "regex/regex.h"
+#include "regex/token.h"
+#include "regex/tokens.h"
 #include "regex/xlr.h"
 #include <check.h>
 #include <stdint.h>
@@ -42,11 +42,11 @@ START_TEST(test_CHAR_DIGITAL) {
   ck_assert_uint_eq(n_tokens, (sizeof "0123456789"));
   ck_assert_ptr_ne(terminals, nullptr);
   for (uint32_t i = 0; i < n_tokens - 1; i++) {
-    ck_assert_uint_eq(terminals[i].type, enum_SYMBOL);
+    ck_assert_uint_eq(terminals[i].type, Regex_TOKEN_SYMBOL);
     ck_assert_uint_eq((uint64_t) terminals[i].value, string[i]);
     ck_assert_str_eq(get_name(terminals[i].type), string_t("SYMBOL"));
   }
-  ck_assert_uint_eq(terminals[n_tokens - 1].type, enum_TERMINATOR);
+  ck_assert_uint_eq(terminals[n_tokens - 1].type, Regex_TOKEN_TERMINATOR);
   ck_assert_uint_eq((uint64_t) terminals[n_tokens - 1].value, 0);
   ck_assert_str_eq(get_name(terminals[n_tokens - 1].type), string_t("TERMINATOR"));
   STDAllocator.free((void *) terminals);
@@ -61,11 +61,11 @@ START_TEST(test_CHAR_LOWER) {
   ck_assert_uint_eq(n_tokens, (sizeof "abcdefghijklmnopqrstuvwxyz"));
   ck_assert_ptr_ne(terminals, nullptr);
   for (uint32_t i = 0; i < n_tokens - 1; i++) {
-    ck_assert_uint_eq(terminals[i].type, enum_SYMBOL);
+    ck_assert_uint_eq(terminals[i].type, Regex_TOKEN_SYMBOL);
     ck_assert_uint_eq((uint64_t) terminals[i].value, string[i]);
     ck_assert_str_eq(get_name(terminals[i].type), string_t("SYMBOL"));
   }
-  ck_assert_uint_eq(terminals[n_tokens - 1].type, enum_TERMINATOR);
+  ck_assert_uint_eq(terminals[n_tokens - 1].type, Regex_TOKEN_TERMINATOR);
   ck_assert_uint_eq((uint64_t) terminals[n_tokens - 1].value, 0);
   ck_assert_str_eq(get_name(terminals[n_tokens - 1].type), string_t("TERMINATOR"));
   STDAllocator.free((void *) terminals);
@@ -80,11 +80,11 @@ START_TEST(test_CHAR_UPPER) {
   ck_assert_uint_eq(n_tokens, (sizeof "ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
   ck_assert_ptr_ne(terminals, nullptr);
   for (uint32_t i = 0; i < n_tokens - 1; i++) {
-    ck_assert_uint_eq(terminals[i].type, enum_SYMBOL);
+    ck_assert_uint_eq(terminals[i].type, Regex_TOKEN_SYMBOL);
     ck_assert_uint_eq((uint64_t) terminals[i].value, string[i]);
     ck_assert_str_eq(get_name(terminals[i].type), string_t("SYMBOL"));
   }
-  ck_assert_uint_eq(terminals[n_tokens - 1].type, enum_TERMINATOR);
+  ck_assert_uint_eq(terminals[n_tokens - 1].type, Regex_TOKEN_TERMINATOR);
   ck_assert_uint_eq((uint64_t) terminals[n_tokens - 1].value, 0);
   ck_assert_str_eq(get_name(terminals[n_tokens - 1].type), string_t("TERMINATOR"));
   STDAllocator.free((void *) terminals);
@@ -99,11 +99,11 @@ START_TEST(test_CHAR_SYMBOL) {
   ck_assert_uint_eq(n_tokens, (sizeof "~@#$%&:;\"'<>./{"));
   ck_assert_ptr_ne(terminals, nullptr);
   for (uint32_t i = 0; i < n_tokens - 1; i++) {
-    ck_assert_uint_eq(terminals[i].type, enum_SYMBOL);
+    ck_assert_uint_eq(terminals[i].type, Regex_TOKEN_SYMBOL);
     ck_assert_uint_eq((uint64_t) terminals[i].value, string[i]);
     ck_assert_str_eq(get_name(terminals[i].type), string_t("SYMBOL"));
   }
-  ck_assert_uint_eq(terminals[n_tokens - 1].type, enum_TERMINATOR);
+  ck_assert_uint_eq(terminals[n_tokens - 1].type, Regex_TOKEN_TERMINATOR);
   ck_assert_uint_eq((uint64_t) terminals[n_tokens - 1].value, 0);
   ck_assert_str_eq(get_name(terminals[n_tokens - 1].type), string_t("TERMINATOR"));
   STDAllocator.free((void *) terminals);
@@ -113,17 +113,17 @@ END_TEST
 START_TEST(test_IDENTIFIER) {
   char_t *string = "abcd_efg";
   uint32_t cost, n_tokens;
-  Array *ident_array = Array_new(sizeof(char_t), enum_SYMBOL, &STDAllocator);
+  Array *ident_array = Array_new(sizeof(char_t), Regex_TOKEN_SYMBOL, &STDAllocator);
   Array_append(ident_array, "", 1);
   const Terminal *terminals = xlr_tokenize(string, &cost, ident_array, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, (sizeof "abcd_efg") - 1);
   ck_assert_uint_eq(n_tokens, 2);
   ck_assert_ptr_ne(terminals, nullptr);
-  ck_assert_uint_eq(terminals[0].type, enum_SYMBOL);
+  ck_assert_uint_eq(terminals[0].type, Regex_TOKEN_SYMBOL);
   char_t *v_ident = Array_virt2real(ident_array, terminals[0].value);
   ck_assert_str_eq(v_ident, string);
   ck_assert_str_eq(get_name(terminals[0].type), string_t("SYMBOL"));
-  ck_assert_uint_eq(terminals[1].type, enum_TERMINATOR);
+  ck_assert_uint_eq(terminals[1].type, Regex_TOKEN_TERMINATOR);
   ck_assert_uint_eq((uint64_t) terminals[1].value, 0);
   ck_assert_str_eq(get_name(terminals[1].type), string_t("TERMINATOR"));
   STDAllocator.free((void *) terminals);
@@ -133,21 +133,21 @@ END_TEST
 START_TEST(test_IDENTIFIER_2) {
   char_t *string = "_ABCde f012";
   uint32_t cost, n_tokens;
-  Array *ident_array = Array_new(sizeof(char_t), enum_SYMBOL, &STDAllocator);
+  Array *ident_array = Array_new(sizeof(char_t), Regex_TOKEN_SYMBOL, &STDAllocator);
   Array_append(ident_array, "", 1);
   const Terminal *terminals = xlr_tokenize(string, &cost, ident_array, &n_tokens, nullptr, nullptr, &STDAllocator);
   ck_assert_uint_eq(cost, (sizeof "_ABCde f012") - 1);
   ck_assert_uint_eq(n_tokens, 3);
   ck_assert_ptr_ne(terminals, nullptr);
-  ck_assert_uint_eq(terminals[0].type, enum_SYMBOL);
+  ck_assert_uint_eq(terminals[0].type, Regex_TOKEN_SYMBOL);
   char_t *ident1 = Array_virt2real(ident_array, terminals[0].value);
   ck_assert_str_eq(ident1, "_ABCde");
   ck_assert_str_eq(get_name(terminals[0].type), string_t("SYMBOL"));
-  ck_assert_uint_eq(terminals[1].type, enum_SYMBOL);
+  ck_assert_uint_eq(terminals[1].type, Regex_TOKEN_SYMBOL);
   char_t *ident2 = Array_virt2real(ident_array, terminals[1].value);
   ck_assert_str_eq(ident2, "f012");
   ck_assert_str_eq(get_name(terminals[1].type), string_t("SYMBOL"));
-  ck_assert_uint_eq(terminals[2].type, enum_TERMINATOR);
+  ck_assert_uint_eq(terminals[2].type, Regex_TOKEN_TERMINATOR);
   ck_assert_uint_eq((uint64_t) terminals[2].value, 0);
   ck_assert_str_eq(get_name(terminals[2].type), string_t("TERMINATOR"));
   STDAllocator.free((void *) terminals);
@@ -157,10 +157,11 @@ END_TEST
 START_TEST(test_IDENTIFIER_3) {
   const char_t * const string = "~@#$%&:\"'<>./{}";
   uint32_t cost = 0, n_tokens = 0;
-  Array *ident_array = Array_new(sizeof(char_t), enum_SYMBOL, &STDAllocator);
+  Array *ident_array = Array_new(sizeof(char_t), Regex_TOKEN_SYMBOL, &STDAllocator);
   Array_append(ident_array, "", 1);
   for (uint32_t i = 0; i < strlen(string); i++) {
-    const Terminal *terminals = xlr_tokenize(&string[i], &cost, ident_array, &n_tokens, nullptr, nullptr, &STDAllocator);
+    const Terminal *terminals =
+      xlr_tokenize(&string[i], &cost, ident_array, &n_tokens, nullptr, nullptr, &STDAllocator);
     ck_assert_uint_eq(cost, 0);
     ck_assert_uint_eq(n_tokens, 0);
     ck_assert_ptr_eq(terminals, nullptr);

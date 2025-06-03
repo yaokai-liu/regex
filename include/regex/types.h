@@ -38,8 +38,8 @@ typedef Array Sequence;
 
 typedef struct Object {
   uint32_t type;
-  bool     inverse;
-  bool     assertion;
+  bool inverse;
+  bool assertion;
   uint32_t min_times;
   uint32_t max_times;
   void *target;
@@ -65,4 +65,4 @@ typedef struct Charset {
   } parts[2];
 } Charset;
 
-#endif //REGEX_COMMON_H
+#endif  // REGEX_COMMON_H

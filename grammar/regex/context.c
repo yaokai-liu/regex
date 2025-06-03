@@ -1,6 +1,6 @@
 /* License
  *
- * x-regex - A light regular expression and its compiler
+ * ${PROJ_DESCRIPTION}
  * Copyright (C) 2025 Yaokai Liu
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,13 +21,11 @@
  * Module Name: grammar/regex
  * Filename: context.c
  * Creator: Yaokai Liu
- * Create Date: 2025-05-04
+ * Create Date: 2025-06-03
  * Copyright (c) 2025 Yaokai Liu. All rights reserved.
  **/
 
 #include "context.h"
-#include "generated/regex/action-table.gen.h"
-#include "regex/tokens.h"
 
 fn_ctx_act *getRegexContextAction(uint32_t) {
   return nullptr;

@@ -28,10 +28,10 @@
 #include "action.h"
 #include "allocator.h"
 #include "regex/char_t.h"
-#include "regex/regex.h"
-#include "regex/tokens.h"
-#include "regex/target.h"
 #include "regex/parse.h"
+#include "regex/regex.h"
+#include "regex/target.h"
+#include "regex/tokens.h"
 #include <check.h>
 
 #define string_to_test "[0123456789^3^[21a-z][^4123ghcA-Z]]"
@@ -49,7 +49,7 @@ START_TEST(test_CHARSET_NORMAL) {
   ck_assert_uint_eq(Array_length(branch), 1);
   Object *object = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(object, nullptr);
-  ck_assert_uint_eq(object->type, enum_Charset);
+  ck_assert_uint_eq(object->type, Regex_TOKEN_Charset);
   ck_assert_uint_eq(object->inverse, false);
 
   Charset *charset = (Charset *) object->target;
@@ -100,7 +100,7 @@ START_TEST(test_CHARSET_DUPLICATED) {
   ck_assert_uint_eq(Array_length(branch), 1);
   Object *object = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(object, nullptr);
-  ck_assert_uint_eq(object->type, enum_Charset);
+  ck_assert_uint_eq(object->type, Regex_TOKEN_Charset);
   ck_assert_uint_eq(object->inverse, false);
 
   Charset *charset = (Charset *) object->target;
@@ -140,7 +140,7 @@ START_TEST(test_CHARSET_RANGES_INTERSECT) {
   ck_assert_uint_eq(Array_length(branch), 1);
   Object *object = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(object, nullptr);
-  ck_assert_uint_eq(object->type, enum_Charset);
+  ck_assert_uint_eq(object->type, Regex_TOKEN_Charset);
   ck_assert_uint_eq(object->inverse, false);
 
   Charset *charset = (Charset *) object->target;
@@ -178,7 +178,7 @@ START_TEST(test_CHARSET_ESCAPE) {
   ck_assert_uint_eq(Array_length(branch), 1);
   Object *object = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(object, nullptr);
-  ck_assert_uint_eq(object->type, enum_Charset);
+  ck_assert_uint_eq(object->type, Regex_TOKEN_Charset);
   ck_assert_uint_eq(object->inverse, false);
 
   Charset *charset = (Charset *) object->target;

@@ -28,10 +28,10 @@
 #include "action.h"
 #include "allocator.h"
 #include "regex/char_t.h"
-#include "regex/regex.h"
-#include "regex/tokens.h"
-#include "regex/target.h"
 #include "regex/parse.h"
+#include "regex/regex.h"
+#include "regex/target.h"
+#include "regex/tokens.h"
 #include <check.h>
 
 #define string_to_test0 "123?"
@@ -49,13 +49,13 @@ START_TEST(test_QUANTIFIED_NURMAL0) {
   ck_assert_uint_eq(Array_length(branch), 3);
   Object *objects = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(objects, nullptr);
-  ck_assert_uint_eq(objects[0].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[0].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[0].inverse, false);
   ck_assert_uint_eq(objects[0].assertion, false);
-  ck_assert_uint_eq(objects[1].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[1].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[2].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
   char_t chr = (uint64_t) objects[2].target;
@@ -83,13 +83,13 @@ START_TEST(test_QUANTIFIED_NURMAL1) {
   ck_assert_uint_eq(Array_length(branch), 3);
   Object *objects = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(objects, nullptr);
-  ck_assert_uint_eq(objects[0].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[0].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[0].inverse, false);
   ck_assert_uint_eq(objects[0].assertion, false);
-  ck_assert_uint_eq(objects[1].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[1].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[2].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
   char_t chr = (uint64_t) objects[2].target;
@@ -117,13 +117,13 @@ START_TEST(test_QUANTIFIED_NURMAL2) {
   ck_assert_uint_eq(Array_length(branch), 3);
   Object *objects = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(objects, nullptr);
-  ck_assert_uint_eq(objects[0].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[0].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[0].inverse, false);
   ck_assert_uint_eq(objects[0].assertion, false);
-  ck_assert_uint_eq(objects[1].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[1].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[2].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
   char_t chr = (uint64_t) objects[2].target;
@@ -151,13 +151,13 @@ START_TEST(test_QUANTIFIED_NURMAL3) {
   ck_assert_uint_eq(Array_length(branch), 3);
   Object *objects = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(objects, nullptr);
-  ck_assert_uint_eq(objects[0].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[0].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[0].inverse, false);
   ck_assert_uint_eq(objects[0].assertion, false);
-  ck_assert_uint_eq(objects[1].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[1].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[2].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
   char_t chr = (uint64_t) objects[2].target;
@@ -185,13 +185,13 @@ START_TEST(test_QUANTIFIED_NURMAL4) {
   ck_assert_uint_eq(Array_length(branch), 3);
   Object *objects = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(objects, nullptr);
-  ck_assert_uint_eq(objects[0].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[0].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[0].inverse, false);
   ck_assert_uint_eq(objects[0].assertion, false);
-  ck_assert_uint_eq(objects[1].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[1].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[2].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
   char_t chr = (uint64_t) objects[2].target;
@@ -219,13 +219,13 @@ START_TEST(test_QUANTIFIED_NURMAL5) {
   ck_assert_uint_eq(Array_length(branch), 3);
   Object *objects = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(objects, nullptr);
-  ck_assert_uint_eq(objects[0].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[0].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[0].inverse, false);
   ck_assert_uint_eq(objects[0].assertion, false);
-  ck_assert_uint_eq(objects[1].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[1].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[2].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
   char_t chr = (uint64_t) objects[2].target;
@@ -253,13 +253,13 @@ START_TEST(test_QUANTIFIED_NURMAL6) {
   ck_assert_uint_eq(Array_length(branch), 3);
   Object *objects = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(objects, nullptr);
-  ck_assert_uint_eq(objects[0].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[0].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[0].inverse, false);
   ck_assert_uint_eq(objects[0].assertion, false);
-  ck_assert_uint_eq(objects[1].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[1].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[2].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
   char_t chr = (uint64_t) objects[2].target;
@@ -287,13 +287,13 @@ START_TEST(test_QUANTIFIED_NURMAL7) {
   ck_assert_uint_eq(Array_length(branch), 3);
   Object *objects = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(objects, nullptr);
-  ck_assert_uint_eq(objects[0].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[0].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[0].inverse, false);
   ck_assert_uint_eq(objects[0].assertion, false);
-  ck_assert_uint_eq(objects[1].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[1].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[2].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
   char_t chr = (uint64_t) objects[2].target;
@@ -321,13 +321,13 @@ START_TEST(test_QUANTIFIED_NURMAL8) {
   ck_assert_uint_eq(Array_length(branch), 3);
   Object *objects = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(objects, nullptr);
-  ck_assert_uint_eq(objects[0].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[0].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[0].inverse, false);
   ck_assert_uint_eq(objects[0].assertion, false);
-  ck_assert_uint_eq(objects[1].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[1].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[2].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
   char_t chr = (uint64_t) objects[2].target;
@@ -355,13 +355,13 @@ START_TEST(test_QUANTIFIED_NURMAL9) {
   ck_assert_uint_eq(Array_length(branch), 3);
   Object *objects = (Object *) Array_real_addr(branch, 0);
   ck_assert_ptr_ne(objects, nullptr);
-  ck_assert_uint_eq(objects[0].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[0].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[0].inverse, false);
   ck_assert_uint_eq(objects[0].assertion, false);
-  ck_assert_uint_eq(objects[1].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[1].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[1].inverse, false);
   ck_assert_uint_eq(objects[1].assertion, false);
-  ck_assert_uint_eq(objects[2].type, enum_SYMBOL);
+  ck_assert_uint_eq(objects[2].type, Regex_TOKEN_SYMBOL);
   ck_assert_uint_eq(objects[2].inverse, false);
   ck_assert_uint_eq(objects[2].assertion, false);
   char_t chr = (uint64_t) objects[2].target;
